@@ -1,0 +1,327 @@
+"<!doctype html>
+<html lang=\"zh\">\n
+<head>\n
+    <meta charset=\"utf-8\">
+    <title>##Message##1020002##</title>\n
+    <base href=\"./\">
+    <meta name=\"renderer\" content=\"webkit\"/>
+    <meta name=\"force-rendering\" content=\"webkit\"/>
+    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=Edge,chrome=1\"/>
+    <meta content=\"always\" name=\"referrer\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0\">
+    <meta name=\"google\" content=\"notranslate\"/><!-- HTTP 1.1 -->
+    <meta http-equiv=\"pragma\" content=\"no-cache\"><!-- HTTP 1.0 -->
+    <meta http-equiv=\"cache-control\" content=\"no-cache\"><!-- Prevent caching at the proxy server -->
+    <meta http-equiv=\"expires\" content=\"0\">
+    <link rel=\"icon\" type=\"image/x-icon\" href=\"/linkid/api/image/download/login_favicon.png\"/>
+    <style>\n html, \n body {
+        \n margin: 0px;
+        \n padding: 0px;
+        \n
+    }
+
+    \n\n #sso_redirect {
+        \n border: 0;
+        \n width: 100%;
+        \n height: 100%;
+        \n padding: 0;
+        \n margin: 0;
+        \n background-size: contain;
+        \n background-image: url(\"/images/loading30.gif\");
+        \n background-repeat: no-repeat;
+        \n background-position: center;
+        \n
+    }
+
+    \n\n
+
+    @media screen and (min-width: 1400px) {
+        \n #sso_redirect {
+            \n background-image: url(\"/images/loading50.gif\");
+            \n
+        }
+
+        \n
+    }
+
+    \n\n .background-div {
+        \n width: 100%;
+        \n height: 100%;
+        \n position: absolute;
+        \n z-index: -1;
+        \n
+    }
+
+    \n\n .table-tr-th {
+        \n background-color: white;
+        \n padding: 20px 50px 20px 50px;
+        \n
+    }
+
+    \n\n .browser-download-item {
+        \n /* display: inline-block; */ \n
+        float: left;
+        \n height: 160px;
+        \n width: 120px;
+        \n text-align: center;
+        \n
+    }
+
+    \n\n .copy-right {
+        \n position: absolute;
+        \n bottom: 32px;
+        \n text-align: center;
+        \n width: 100%;
+        \n color: white;
+        \n bottom: 32px;
+        \n
+    }
+
+    \n    </style>
+    \n
+</head>
+\n
+<body>\n
+<div style=\"display: none\
+" class=\"ruleList\">\n
+<div class=\"code\">UsernamePassword</div>
+\n
+<div class=\"showName\">用户名密码</div>
+\n
+<div class=\"image\">./images/login-page/UsernamePassword.png</div>
+\n
+<div class=\"isRedirect\">false</div>
+\n\n</div>\n
+<div style=\"display: none\
+" class=\"ruleList\">\n
+<div class=\"code\">singleWechat</div>
+\n
+<div class=\"showName\">微信扫码</div>
+\n
+<div class=\"image\">./images/login-page/singleWechat.png</div>
+\n
+<div class=\"isRedirect\">false</div>
+\n\n</div>\n
+<div style=\"display: none\
+" class=\"ruleList\">\n
+<div class=\"code\">smsLogin</div>
+\n
+<div class=\"showName\">手机短信</div>
+\n
+<div class=\"image\">./images/login-page/smsLogin.png</div>
+\n
+<div class=\"isRedirect\">false</div>
+\n\n</div>\n
+<div style=\"display: none\
+" class=\"ruleList\">\n
+<div class=\"code\">corpwechatQr</div>
+\n
+<div class=\"showName\">企业微信入网认证</div>
+\n
+<div class=\"image\"></div>
+\n
+<div class=\"isRedirect\">false</div>
+\n\n</div>\n
+<div style=\"display: none\
+">\n <p id=\"current-login-type\">UsernamePassword</p>\n <p id=\"login-croypto\">rl7cZ9/pwjc=</p>\n <p
+        id=\"sso-second\"></p>\n <p id=\"user-id\"></p>\n <p id=\"user-object-id\"></p>\n <p id=\"phone-number\"></p>\n
+<p id=\"login-rule-type\">normal</p>\n <p id=\"login-page-flowkey\">
+    f459eb68-c43b-46df-8273-0739cd48ac39_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</p>
+\n <p id=\"captcha-url\"></p>\n <p id=\"redirect-uri\"></p>\n <p id=\"login-back-uri\">
+    https%3A%2F%2Fsso.cqu.edu.cn%2Flogin</p>\n <p id=\"login-error-code\"></p>\n <p id=\"recaptcha-invisible\"></p>\n
+<form method=\"post\">\n
+    <div id=\"login-type\"></div>
+    \n
+    <div id=\"login-username\"></div>
+    \n
+</form>
+\n
+<div id=\"list-providers\"\n class=\"card d-sm-none d-md-block bg-light\
+">\n
+<div class=\"card-body\">\n <h3 class=\"card-title\">Or login with:</h3>\n\n
+    <div class=\"card-text\">\n
+        <ul>\n
+            <li>\n <a class=\"btn btn-block btn-social btn-cas\"\n href=\"clientredirect?client_name=adapter\"\n
+                title=\"adapter\" autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                adapter\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-qyweixin\"\n href=\"clientredirect?client_name=corpWechat\"\n
+                title=\"corpWechat\" autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                corpWechat\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-wechat\"\n href=\"clientredirect?client_name=Wechat\"\n
+                title=\"Wechat\" autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                Wechat\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-tyeducloud\"\n
+                href=\"clientredirect?client_name=tyEduCloud\"\n title=\"tyEduCloud\" autoredirect=\"false\"> <span\n
+                class=\"fa fa-sign-in-alt\"></span> tyEduCloud\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-dingding\"\n href=\"clientredirect?client_name=dingDing\"\n
+                title=\"dingDing\" autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                dingDing\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-dingdingwlan\"\n
+                href=\"clientredirect?client_name=dingDingWlan\"\n title=\"dingDingWlan\" autoredirect=\"false\"> <span\n
+                class=\"fa fa-sign-in-alt\"></span> dingDingWlan\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-singlewechatoauth\"\n
+                href=\"clientredirect?client_name=singleWechatOauth\"\n title=\"singleWechatOauth\"
+                autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                singleWechatOauth\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-feishuoauth\"\n
+                href=\"clientredirect?client_name=feishuOauth\"\n title=\"feishuOauth\" autoredirect=\"false\"> <span\n
+                class=\"fa fa-sign-in-alt\"></span> feishuOauth\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-isni\"\n href=\"clientredirect?client_name=isni\"\n
+                title=\"isni\" autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                isni\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-genericoauth20\"\n
+                href=\"clientredirect?client_name=ssoOauth\"\n title=\"ssoOauth\" autoredirect=\"false\"> <span\n
+                class=\"fa fa-sign-in-alt\"></span> ssoOauth\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-genericoauth20\"\n
+                href=\"clientredirect?client_name=corpWechatOauth2\"\n title=\"corpWechatOauth2\"
+                autoredirect=\"false\"> <span\n class=\"fa fa-sign-in-alt\"></span>
+                corpWechatOauth2\n                        </a>\n
+            </li>
+            \n
+            <li>\n <a class=\"btn btn-block btn-social btn-genericoauth20\"\n
+                href=\"clientredirect?client_name=welinkOauth\"\n title=\"welinkOauth\" autoredirect=\"false\"> <span\n
+                class=\"fa fa-sign-in-alt\"></span> welinkOauth\n                        </a>\n
+            </li>
+            \n
+        </ul>
+        \n
+    </div>
+    \n
+</div>
+\n    </div>\n</div>\n<p style=\"display: none\" id=\"frontend-addr\">https://sso.cqu.edu.cn</p>\n\n<!--[if lt IE 11]>\n
+<div class=\"background-div\">\n <img id=\"low-img-bg\" style=\"width:100%;height: 100%;\">\n</div>\n
+<div style=\"position: relative;top: 100px\">\n
+<table width=100% cellspacing=\"0\">\n
+    <tbody>\n
+    <tr>\n
+        <th width=15%></th>
+        \n
+        <th align=\"left\" class=\"table-tr-th\" colspan=\"2\">\n <h3 style=\"font-size:18px;color: #1c1c1c;margin-top:
+                                                                      12px\
+            ">你的浏览器版本过低，为保障正常使用网站功能，请使用以下推荐的浏览器</h3>\n
+        </th>
+        \n
+        <th width=15%></th>
+        \n
+    </tr>
+    \n
+    <tr>\n
+        <th width=15%></th>
+        \n\n
+        <th align=\"left\" valign=\"top\" class=\"table-tr-th\" width=35%>\n\n
+            <div style=\"height: 60px\
+            ">\n
+            <div style=\"font-size:14px;color: #1c1c1c;\
+            ">1、请尝试切换至极速模式</div>\n <p style=\"font-size:14px;color: #666;text-indet:2em\
+            ">(如果使用360、搜狗、QQ、百度、猎豹、傲游等双核浏览器)</p>\n                </div>\n
+            <div>\n <img id=\"switch-kernel-img\">\n</div>
+            \n
+        </th>
+        \n\n
+        <th align=\"left\" valign=\"top\" class=\"table-tr-th\">\n
+            <div style=\"height: 60px\
+            ">\n
+            <div style=\"font-size:14px;color: #1c1c1c;\
+            ">2、使用以下推荐的浏览器</div>\n                </div>\n
+            <div style=\"height: 180px\
+            ">\n
+            <div class=\"browser-download-item\">\n <img width=\"64\" id=\"win7-google-img\">\n <p>谷歌浏览器</p>\n <a
+                    id=\"win7-google-a\">点击下载</a>\n
+            </div>
+            \n
+            <div class=\"browser-download-item\">\n <img width=\"64\" id=\"win7-ie11-img\">\n <p>IE 11浏览器</p>\n <a
+                    id=\"win7-ie11-a\">点击下载</a>\n
+            </div>
+            \n                </div>\n\n
+            <div style=\"height: 40px\
+            ">\n
+            <div style=\"font-size:14px;color: #1c1c1c;\
+            ">XP系统及Vista系统</div>\n                </div>\n
+            <div style=\"height: 160px\
+            ">\n
+            <div class=\"browser-download-item\">\n <img width=\"64\" src=\"./images/browser-google-icon.jpg\"
+                                                         id=\"xp-google-img\">\n <p>谷歌浏览器</p>\n <a
+                    id=\"xp-google-a\">点击下载</a>\n
+            </div>
+            \n                </div>\n
+        </th>
+        \n\n
+        <th width=15%></th>
+        \n
+    </tr>
+    \n
+    </tbody>
+    \n\n
+</table>\n</div>\n
+<script>\n
+var url = document.getElementById('frontend-addr').innerText;\n
+document.getElementById('low-img-bg').src = url + '/public/polyfills-page/images/bg.jpg';\n
+document.getElementById('win7-google-img').src = url + '/public/polyfills-page/images/browser-google-icon.jpg';\n
+document.getElementById('win7-google-a').href = url + '/public/polyfills-page/install-package/70.0.3538.67_chrome_installer.exe';\n
+document.getElementById('win7-ie11-img').src = url + '/public/polyfills-page/images/browser-ie-icon.jpg';\n
+document.getElementById('win7-ie11-a').href = url + '/public/polyfills-page/install-package/ie11_zh-cn_wol_win7.exe';\n
+document.getElementById('xp-google-img').src = url + '/public/polyfills-page/images/browser-google-icon.jpg';\n
+document.getElementById('xp-google-a').href = url + '/public/polyfills-page/install-package/49.0.2623.112_chrome_installer.exe';\n
+document.getElementById('switch-kernel-img').src = url + '/public/polyfills-page/images/kernel-readme.jpg';\n</script>\n
+<![endif]-->
+<div id=\"sso_redirect\">\n</div>
+\n
+<script>\n
+var list = document.getElementsByClassName('ruleList');\n
+var isAdapterRedirect = false;\n
+var isAutoRedirect = false;\n
+var isAutoRedirectClientName = null;\n
+for (var i = 0; i < list.length; i++) {\n
+    var ele = list[i].getElementsByClassName('code')[0];\n
+    var code = ele.innerText;\n
+    var autoRedirect = list[i].getElementsByClassName('isRedirect')[0];\n
+    var autoRedirectCode = autoRedirect.innerText;\n
+    if (autoRedirectCode == 'true') {\n
+        isAutoRedirect = true;\n
+        isAutoRedirectClientName = code;\n
+        break;\n
+    }\n
+    if (code == 'adapter') {\n
+        isAdapterRedirect = true;\n
+    }\n
+}\n\n
+var paramArr = window.location.search.substring(1).split('&');\n
+var url = './clientredirect?client_name=#client_name';\n\n
+if (paramArr.length > 0) {\n
+    for (var j = 0; j < paramArr.length; j++) {\n
+        if (paramArr[j].split('=')[0] == 'service') {\n
+            url = url + '&' + paramArr[j];\n
+        }\n
+    }\n
+}\n
+var clientType = document.getElementById(\"current-login-type\").innerText;\n    var errorCode = document.getElementById(\"login-error-code\").innerText;\n    if (errorCode === \"1410041\" && (clientType == \"dingDingWlan\" ||  clientType==\"adapter\" ||  clientType==\"welinkOauth\"||\n        clientType==\"feishuOauth\" || clientType==\"corpWechatOauth2\" || clientType==\"ssoOauth\" || clientType==\"\" || clientType==\"singleWechatOauth\")) {\n        if(clientType == \"\"){\n            clientType = \"appToken\"\n        }\n        url = \"./public/client/bind/fail?clientname=#clientname\";\n        url = url.replace('#clientname', clientType);\n        window.location.href = url;\n    }\n\n    if (errorCode === \"1030028\" && (clientType == \"dingDingWlan\" ||  clientType==\"adapter\" ||  clientType==\"welinkOauth\"||\n        clientType==\"feishuOauth\" || clientType==\"corpWechatOauth2\" || clientType==\"ssoOauth\"|| clientType==\"\" || clientType==\"singleWechatOauth\")) {\n        if(clientType == \"\"){\n            clientType = \"appToken\"\n        }\n        url = \"./public/client/bind/error?clientname=#clientname\";\n        url = url.replace('#clientname', clientType);\n        window.location.href = url;\n    }\n\n    if (isAutoRedirect) {\n        url = url.replace('#client_name', isAutoRedirectClientName);\n        window.location.href = url;\n    }\n\n    if (isAdapterRedirect) {\n        url = url.replace('#client_name', 'adapter');\n        window.location.href = url;\n    }\n\n    var sso = document.getElementById('sso_redirect');\n    document.body.removeChild(sso);\n</script>
+\n
+<app-root></app-root>
+\n
+<!--<script>\n    var url = document.getElementById(\"frontend-addr\").innerText;\n    var script = document.createElement('script');\n    script.type = 'text/javascript';\n    script.src = url + '/public/deploy/deploy.js?' + (new Date()).getTime();\n    script.onload = function () {\n        window.casPageInit(\"login\");\n    };\n    script.onerror = function (e) {\n        console.log(e);\n    };\n    document.body.appendChild(script);\n</script>-->
+<script>\n
+var script = document.createElement(\"script\");\n    script.type = \"text/javascript\";\n    script.src = \"/public/deploy/deploy.js?\" + new Date().getTime();\n    script.onload = function () {\n        window.casPageInit(\"login\");\n    };\n    script.onerror = function (e) {\n        console.log(e);\n    };\n    document.body.appendChild(script);\n</script>
+\n\n
+</body>
+\n
+</html>\n\n\n\n"
