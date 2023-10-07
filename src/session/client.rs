@@ -3,6 +3,7 @@
 use reqwest::redirect::Policy;
 use reqwest::{Client as reqwestClient, ClientBuilder};
 use std::ops::Deref;
+use crate::errors::session::SessionResult;
 
 /// [`reqwest::Client`]的`new type`
 ///
@@ -56,7 +57,7 @@ impl Client {
     /// - [cookie_store(true)](ClientBuilder::cookie_store)
     ///
     /// 以确保自动重定向被禁用、cookies被启用
-    pub(super) fn custom<F>(custom_builder: F) -> Self
+    pub(super) fn custom<F>(custom_builder: F) -> SessionResult<Self>
     where
         F: Fn(&mut ClientBuilder) + 'static,
     {
@@ -65,8 +66,8 @@ impl Client {
         let client = builder
             .redirect(Policy::none())
             .cookie_store(true)
-            .build()
-            .unwrap();
-        Client(client)
+            .build()?;
+
+        Ok(Client(client))
     }
 }

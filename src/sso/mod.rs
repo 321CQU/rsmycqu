@@ -19,13 +19,10 @@ mod tests;
 /// 退出账号登陆
 pub async fn logout(session: &mut Session) -> SSOResult<()> {
     let client = &session.client;
-    match client.get(SSO_LOGOUT_URL).send().await {
-        Ok(_) => {
-            session.is_login = false;
-            Ok(())
-        }
-        Err(_) => Err(SSOError::LogoutError.into()),
-    }
+    client.get(SSO_LOGOUT_URL).send().await.map_err(|_| SSOError::LogoutError)?;
+    session.is_login = false;
+
+    Ok(())
 }
 
 /// 登陆结果
@@ -55,7 +52,7 @@ pub async fn login(
         }
 
         LoginPageResponse::NormalLogin { login_page_data } => {
-            let login_data = launch_login_data(auth, password, &login_page_data);
+            let login_data = launch_login_data(auth, password, &login_page_data)?;
             let res = session
                 .client
                 .post(SSO_LOGIN_URL)

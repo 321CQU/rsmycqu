@@ -9,6 +9,7 @@ use access_info::AccessInfoValue;
 pub(crate) use client::Client;
 #[doc(inline)]
 pub use session_builder::*;
+use crate::errors::session::SessionResult;
 
 pub mod access_info;
 mod client;
@@ -25,7 +26,7 @@ pub struct Session {
     /// 是否已经通过[`sso`](crate::sso)登陆
     pub is_login: bool,
     /// 是否已经通过[`mycqu`](crate::mycqu)获取`my.cqu.edu.cn`的访问权限
-    pub access_info: HashMap<AccessInfoKey, AccessInfoValue>,
+    pub access_info: HashMap<&'static AccessInfoKey, AccessInfoValue>,
 }
 
 impl Session {
@@ -53,21 +54,30 @@ impl Session {
     /// - [cookie_store(true)](ClientBuilder::cookie_store)
     ///
     /// 以确保自动重定向被禁用、cookies被启用
-    pub fn custom<F>(custom_builder: F) -> Self
+    pub fn custom<F>(custom_builder: F) -> SessionResult<Self>
     where
         F: Fn(&mut ClientBuilder) + 'static,
     {
-        let client = Client::custom(custom_builder);
-        Session {
-            client,
-            is_login: false,
-            access_info: HashMap::new(),
-        }
+        let client = Client::custom(custom_builder)?;
+
+        Ok(
+            Session {
+                client,
+                is_login: false,
+                access_info: HashMap::new(),
+            }
+        )
     }
 }
 
 impl Default for Session {
     fn default() -> Self {
         Session::new()
+    }
+}
+
+impl Session {
+    pub(crate) fn can_access(&self, target: &AccessInfoKey) -> bool {
+        self.is_login && self.access_info.contains_key(target)
     }
 }

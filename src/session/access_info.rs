@@ -7,7 +7,7 @@ pub struct AccessInfoKey {
 }
 
 /// 用于访问[`mycqu`](crate::mycqu)所需登陆状态的键
-pub const MY_CQU_ACCESS_INFO_KEY: AccessInfoKey = AccessInfoKey { id: "mycqu" };
+pub const MYCQU_ACCESS_INFO_KEY: AccessInfoKey = AccessInfoKey { id: "mycqu" };
 
 /// 各模块支持服务所需的登陆状态
 #[derive(Debug, Clone)]

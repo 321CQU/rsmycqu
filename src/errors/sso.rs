@@ -3,10 +3,15 @@
 use crate::errors::{Error, PubInnerError};
 use snafu::prelude::*;
 use std::fmt::Debug;
+use base64::DecodeError;
 
 /// SSOError
 #[derive(Debug, Snafu)]
 pub enum SSOError {
+    /// 当加密密码错误时抛出
+    #[snafu(display("Password Encrypt Error"))]
+    PasswordEncryptError,
+
     /// 当登出失败时抛出
     #[snafu(display("Logout Error"))]
     LogoutError,
@@ -23,3 +28,9 @@ pub enum SSOError {
 pub type SSOResult<T> = Result<T, Error<SSOError>>;
 
 impl PubInnerError for SSOError {}
+
+impl From<DecodeError> for SSOError {
+    fn from(_: DecodeError) -> Self {
+        SSOError::PasswordEncryptError
+    }
+}

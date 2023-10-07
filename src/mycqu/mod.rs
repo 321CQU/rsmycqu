@@ -3,7 +3,7 @@
 use crate::errors::mycqu::MyCQUResult;
 use crate::errors::{Error, ErrorHandler};
 use crate::mycqu::utils::access::get_oauth_token;
-use crate::session::access_info::{AccessInfoValue, MY_CQU_ACCESS_INFO_KEY};
+use crate::session::access_info::{AccessInfoValue, MYCQU_ACCESS_INFO_KEY};
 use crate::session::Session;
 use crate::sso::access_services;
 use crate::utils::consts::MYCQU_SERVICE_URL;
@@ -18,15 +18,17 @@ pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
     if !session.is_login {
         return Err(Error::NotLogin);
     }
+
+    // access_services 只会因为网络原因产生异常，不会产生任何`SSOError`
     if let Err(err) = access_services(&session.client, MYCQU_SERVICE_URL).await {
         return Err(err.handle_other_error(|_| Error::UnExceptedError {
-            msg: "Except No SSOError Happened".to_string(),
+            msg: "Except no SSOError happened".to_string(),
         }));
     }
 
     let auth_token = get_oauth_token(&session.client).await?;
     session.access_info.insert(
-        MY_CQU_ACCESS_INFO_KEY,
+        &MYCQU_ACCESS_INFO_KEY,
         AccessInfoValue::MyCQU {
             auth_header: auth_token,
         },

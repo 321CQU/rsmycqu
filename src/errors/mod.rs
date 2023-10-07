@@ -5,6 +5,7 @@ use snafu::Snafu;
 pub use sso::*;
 use std::error::Error as stdError;
 
+pub mod session;
 #[cfg(feature = "sso")]
 pub(crate) mod page_parser;
 #[cfg(feature = "sso")]
@@ -14,6 +15,7 @@ pub mod sso;
 pub mod mycqu;
 
 pub(crate) trait PubInnerError: stdError {}
+/// 支持不同泛型的[`Error`]相互转换
 pub(crate) trait ErrorHandler<T: PubInnerError> {
     fn handle_other_error<U: PubInnerError, F>(self, inner_error_handler: F) -> Error<U>
     where
@@ -54,7 +56,6 @@ pub enum Error<T: stdError> {
 }
 
 pub(crate) mod error_handle_help {
-    use crate::errors::page_parser::PageParseError;
     use crate::errors::{Error, ErrorHandler, PubInnerError};
 
     impl<T: PubInnerError> From<T> for Error<T> {
@@ -74,18 +75,6 @@ pub(crate) mod error_handle_help {
             Error::UnExceptedError {
                 msg: format!(
                     "Expected http header can transfer to str, but received: {}",
-                    value
-                ),
-            }
-        }
-    }
-
-    #[cfg(feature = "sso")]
-    impl<T: PubInnerError> From<PageParseError<'_>> for Error<T> {
-        fn from(value: PageParseError) -> Self {
-            Error::UnExceptedError {
-                msg: format!(
-                    "Expected to successfully parse the page, but received: {}",
                     value
                 ),
             }

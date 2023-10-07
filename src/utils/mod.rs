@@ -1,5 +1,7 @@
 //! [rsmycqu] 的工具库
 
+pub trait APIModel {}
+
 pub(crate) mod consts;
 #[cfg(feature = "sso")]
 pub(crate) mod encrypt;
@@ -7,4 +9,4 @@ pub(crate) mod encrypt;
 pub(crate) mod page_parser;
 
 #[cfg(test)]
-pub(crate) mod test_tools;
+pub(crate) mod test_fixture;

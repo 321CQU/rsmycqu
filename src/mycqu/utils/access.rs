@@ -5,17 +5,15 @@ use regex::Regex;
 use serde_json::Value;
 use std::collections::HashMap;
 
+#[inline]
 fn find_code(location: &str) -> MyCQUResult<&str> {
-    let reg = Regex::new(r"\?code=([^&]+)&").unwrap();
-    let mats = reg.captures(location);
-    if let Some(code) = mats {
-        Ok(code.get(1).unwrap().as_str())
-    } else {
-        Err(MyCQUError::AccessError {
-            msg: "Get Auth Code Error".to_string(),
-        }
-        .into())
-    }
+    Ok(
+        Regex::new(r"\?code=([^&]+)&").unwrap()
+            .captures(location)
+            .and_then(|captures| captures.get(1))
+            .ok_or(MyCQUError::AccessError {msg: "Get Auth Code Error".to_string()})?
+            .as_str()
+    )
 }
 
 pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<String> {

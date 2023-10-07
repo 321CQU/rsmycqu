@@ -8,15 +8,16 @@ pub struct SSOLoginPageData {
     pub login_page_flowkey: String,
 }
 
+#[inline]
 fn get_text_by_id<'a, 'b>(
     document: &'a Document,
     node_name: &'a str,
     id: &'b str,
 ) -> PageParseResult<'b, String> {
-    match document.find(Name(node_name).and(Attr("id", id))).next() {
-        Some(node) => Ok(node.text()),
-        None => Err(PageParseError::RequireInfoNotFound { target: id }),
-    }
+    // 寻找是`node_name`节点且id为`id`的元素
+    document.find(Name(node_name).and(Attr("id", id)))
+            .next().map(|node| node.text()) // 获取第一个满足上述标准的元素并取其文本
+            .ok_or(PageParseError::RequireInfoNotFound { target: id })  // 如果失败，返回`RequireInfoNotFound`
 }
 
 pub(crate) fn sso_login_parser(login_html: &str) -> PageParseResult<SSOLoginPageData> {
