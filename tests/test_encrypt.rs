@@ -2,7 +2,7 @@
 // use base64::Engine;
 // use block_padding::generic_array::{GenericArray, typenum::U8};
 // use des::cipher::KeyInit;
-// use rust_mycqu::encrypt::{BASE64PURPOSE, DesEcbEnc, pad8};
+// use rsmycqu::encrypt::{BASE64PURPOSE, DesEcbEnc, pad8};
 //
 // #[test]
 // fn test_login_page_encrypt() {

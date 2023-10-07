@@ -1,4 +1,4 @@
-//! [rust_mycqu] 的工具库
+//! [rsmycqu] 的工具库
 
 pub(crate) mod consts;
 #[cfg(feature = "sso")]

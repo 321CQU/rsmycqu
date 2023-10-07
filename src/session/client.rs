@@ -8,7 +8,7 @@ use std::ops::Deref;
 ///
 /// [`Client`]实现了`Deref`以支持像传递[`reqwest::Client`]一样传递[`Client`]的引用
 ///
-/// [`rust_mycqu`](crate)的正确运行要求[`reqwest::Client`]关闭自动跳转且启用`cookies`
+/// [`rsmycqu`](crate)的正确运行要求[`reqwest::Client`]关闭自动跳转且启用`cookies`
 ///
 /// [`Client`]的唯二构造方法`default`, `custom`保证了这一点
 pub(crate) struct Client(reqwestClient);

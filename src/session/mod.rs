@@ -16,7 +16,7 @@ mod session_builder;
 
 /// 发起校园信息请求的会话
 ///
-/// [`rust_mycqu`](crate)要求传入的[`reqwest::Client`]禁用自动重定向并启用cookies
+/// [`rsmycqu`](crate)要求传入的[`reqwest::Client`]禁用自动重定向并启用cookies
 /// [`Session`]的`new`, `custom`方法保证了这一点
 #[derive(Clone)]
 pub struct Session {

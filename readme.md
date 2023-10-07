@@ -1,5 +1,5 @@
-# rust_mycqu
-`rust_mycqu`是重庆大学校园信息查询库`pymycqu`的rust版本，
+# rsmycqu
+`rsmycqu`是重庆大学校园信息查询库`pymycqu`的rust版本，
 几乎完全支持`pymycqu`中所有已经支持的API
 
 目前已经实现以下功能
