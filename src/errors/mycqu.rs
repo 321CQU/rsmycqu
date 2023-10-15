@@ -13,6 +13,10 @@ pub enum MyCQUError {
         /// 错误详细信息
         msg: String,
     },
+
+    /// 学期解析异常时抛出
+    #[snafu(display("CQU Session Parse Error"))]
+    CQUSessionParseError,
 }
 
 /// [Result<T, Error<MyCQUError>>]的重命名

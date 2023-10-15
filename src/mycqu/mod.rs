@@ -1,6 +1,5 @@
 //! 提供教务网`my.cqu.edu.cn`的已知可用接口
 
-use reqwest::StatusCode;
 use serde::{Serialize, Deserialize};
 
 use crate::errors::mycqu::MyCQUResult;
@@ -10,9 +9,13 @@ use crate::session::Session;
 use crate::sso::access_services;
 use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
 
+pub use score::*;
+use crate::mycqu::utils::mycqu_request_handler;
+use crate::session::access_info::MyCQUAccessInfo;
 use crate::utils::APIModel;
 
 mod utils;
+pub mod score;
 
 #[cfg(test)]
 mod tests;
@@ -58,8 +61,9 @@ pub struct User {
 impl APIModel for User{}
 
 impl User {
-    /// 从教务网获取已登陆会话的用户信息
+    /// 通过具有教务网权限的会话(`Session`)，从教务网获取已登陆会话的用户信息(`User`)
     ///
+    /// # Examples
     /// ```rust, no_run
     /// # use rsmycqu::mycqu::{access_mycqu, User};
     /// use rsmycqu::session::Session;
@@ -67,23 +71,14 @@ impl User {
     ///
     /// # async fn fetch_user() {
     /// let mut session = Session::new();
-    /// login(&mut session, "abce", "abce", false).await.unwrap();
+    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
     /// access_mycqu(&mut session).await.unwrap();
     /// let user = User::fetch_self(&session);
     /// # }
     /// ```
     pub async fn fetch_self(session: &Session) -> MyCQUResult<Self> {
-        if session.mycqu_access_info.is_none() {
-            return Err(Error::NotAccess)
-        }
+        let res = mycqu_request_handler(session, |client| client.get(MYCQU_API_USER_URL)).await?;
 
-        let res = session.client.get(MYCQU_API_USER_URL)
-            .bearer_auth(session.mycqu_access_info.as_ref().unwrap().auth_header.as_str())
-            .send().await?;
-
-        if res.status() == StatusCode::UNAUTHORIZED {
-            return Err(Error::NotAccess)
-        }
         Ok(res.json::<Self>().await?)
     }
 }
