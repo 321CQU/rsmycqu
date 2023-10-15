@@ -1,10 +1,8 @@
 //! 在[`reqwest::Client`]的基础上增加了额外的状态以保证库运行正确性
 
 use reqwest::ClientBuilder;
-use std::collections::HashMap;
 
-use crate::session::access_info::AccessInfoKey;
-use access_info::AccessInfoValue;
+use crate::session::access_info::MyCQUAccessInfo;
 #[doc(inline)]
 pub(crate) use client::Client;
 #[doc(inline)]
@@ -19,14 +17,17 @@ mod session_builder;
 ///
 /// [`rsmycqu`](crate)要求传入的[`reqwest::Client`]禁用自动重定向并启用cookies
 /// [`Session`]的`new`, `custom`方法保证了这一点
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Session {
     /// 包裹了[`reqwest::Client`]的[`Client`]
     pub(crate) client: Client,
     /// 是否已经通过[`sso`](crate::sso)登陆
     pub is_login: bool,
-    /// 是否已经通过[`mycqu`](crate::mycqu)获取`my.cqu.edu.cn`的访问权限
-    pub access_info: HashMap<&'static AccessInfoKey, AccessInfoValue>,
+
+    // TODO: 寻找一个更便捷的方式，在保证类型安全且无运行时开销的情况下，避免每次新增服务都需要在这里增加信息
+
+    /// [`mycqu`](crate::mycqu)所需的登陆信息
+    pub mycqu_access_info: Option<MyCQUAccessInfo>,
 }
 
 impl Session {
@@ -41,7 +42,7 @@ impl Session {
         Session {
             client: Client::default(),
             is_login: false,
-            access_info: HashMap::new(),
+            mycqu_access_info: None,
         }
     }
 
@@ -64,7 +65,7 @@ impl Session {
             Session {
                 client,
                 is_login: false,
-                access_info: HashMap::new(),
+                mycqu_access_info: None,
             }
         )
     }
@@ -73,11 +74,5 @@ impl Session {
 impl Default for Session {
     fn default() -> Self {
         Session::new()
-    }
-}
-
-impl Session {
-    pub(crate) fn can_access(&self, target: &AccessInfoKey) -> bool {
-        self.is_login && self.access_info.contains_key(target)
     }
 }

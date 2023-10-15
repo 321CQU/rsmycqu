@@ -1,5 +1,6 @@
 //! new type of [`reqwest::Client`]
 
+use std::fmt::{Debug, Formatter};
 use reqwest::redirect::Policy;
 use reqwest::{Client as reqwestClient, ClientBuilder};
 use std::ops::Deref;
@@ -25,6 +26,12 @@ impl Deref for Client {
 impl Clone for Client {
     fn clone(&self) -> Self {
         Client(self.0.clone())
+    }
+}
+
+impl Debug for Client {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
     }
 }
 

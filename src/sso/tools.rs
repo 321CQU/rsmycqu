@@ -29,12 +29,12 @@ async fn launch_normal_login_result(res: Response) -> SSOResult<LoginPageRespons
 /// 获取登陆请求所需数据
 pub(super) async fn get_login_request_data(
     session: &mut Session,
-    force_relogin: &bool,
+    force_relogin: bool,
 ) -> SSOResult<LoginPageResponse> {
     let res = session.client.get(SSO_LOGIN_URL).send().await?;
     match res.status() {
         StatusCode::FOUND => {
-            if *force_relogin {
+            if force_relogin {
                 logout(session).await?;
                 let local_res = session.client.get(SSO_LOGIN_URL).send().await?;
                 return launch_normal_login_result(local_res).await;

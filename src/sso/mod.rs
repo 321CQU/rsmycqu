@@ -40,7 +40,7 @@ pub async fn login(
     session: &mut Session,
     auth: &str,
     password: &str,
-    force_relogin: &bool,
+    force_relogin: bool,
 ) -> SSOResult<LoginResult> {
     let request_data = get_login_request_data(session, force_relogin).await?;
 

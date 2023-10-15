@@ -48,7 +48,7 @@ pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<St
                 msg: "Get Access Token Error".to_string(),
             })?
     {
-        Ok(format!("Bearer {}", access_token))
+        Ok(access_token.to_string())
     } else {
         Err(MyCQUError::AccessError {
             msg: "Get Access Token Error".to_string(),

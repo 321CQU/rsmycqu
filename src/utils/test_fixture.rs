@@ -61,7 +61,7 @@ pub(crate) async fn login_session(session_map: &ShareSessionMap, login_data: &Lo
                 &mut session,
                 &login_data.auth,
                 &login_data.password,
-                &false,
+                false,
             ).await;
 
             assert_eq!(res.unwrap(), LoginResult::Success);
@@ -81,7 +81,6 @@ pub(crate) async fn login_session(session_map: &ShareSessionMap, login_data: &Lo
 
 #[fixture]
 pub(crate) async fn access_mycqu_session(session_map: &ShareSessionMap, #[future] login_session: Session) -> Session {
-
     match session_map.get_session(&SessionType::AccessMycqu) {
         None => {
             let mut session = login_session.await;
