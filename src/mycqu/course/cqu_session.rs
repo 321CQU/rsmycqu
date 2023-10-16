@@ -99,10 +99,9 @@ impl CQUSession {
     ///
     /// 如果您通过`CQUSession.fetch_all`获取学期信息，则所有学期的ID值会被正确设置
     /// 然而，通过字符串创建的学期没有ID信息，为此，我们提供了可选的`session_info_provider`
-    ///
     /// 这允许你从外部提供一个函数/闭包来查询某一学期对应的ID，这允许你自由的决定在学期变量无ID时如何获取该ID的行为
     ///
-    /// 这里提供一个当无ID信息时，通过查询来获取ID的例子
+    /// 下面是一个当无ID信息时，通过查询来获取ID的例子
     /// ```rust, no_run
     /// # use rsmycqu::session::Session;
     /// # use std::str::FromStr;

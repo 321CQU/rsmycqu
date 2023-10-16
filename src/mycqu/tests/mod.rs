@@ -1,4 +1,4 @@
-use crate::mycqu::{access_mycqu, CQUSession, User};
+use crate::mycqu::{access_mycqu, CQUSession, CQUSessionInfo, User};
 use crate::session::Session;
 use crate::utils::test_fixture::{access_mycqu_session, login_session};
 use rstest::*;
@@ -46,5 +46,34 @@ async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
 
     let res = CQUSession::fetch_all(&access_mycqu_session.await).await.unwrap();
     assert!(res.iter().all(|item| item.id.is_some()));
-    assert!(res.len() > 0);
+    assert!(!res.is_empty());
+}
+
+#[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_fetch_all_session_info(#[future] access_mycqu_session: Session) {
+    {
+        let session = Session::new();
+        let res = CQUSessionInfo::fetch_all(&session).await;
+        assert!(res.is_err());
+        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+    }
+
+    let res = CQUSessionInfo::fetch_all(&access_mycqu_session.await).await.unwrap();
+    assert!(!res.is_empty());
+}
+
+#[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_fetch_curr_session_info(#[future] access_mycqu_session: Session) {
+    {
+        let session = Session::new();
+        let res = CQUSessionInfo::fetch_curr(&session).await;
+        assert!(res.is_err());
+        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+    }
+
+    CQUSessionInfo::fetch_curr(&access_mycqu_session.await).await.unwrap();
 }

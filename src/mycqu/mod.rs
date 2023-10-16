@@ -9,12 +9,14 @@ use crate::session::Session;
 use crate::sso::access_services;
 use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
 
+pub use course::*;
 pub use score::*;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::access_info::MyCQUAccessInfo;
 use crate::utils::APIModel;
 
 mod utils;
+pub mod course;
 pub mod score;
 
 #[cfg(test)]
