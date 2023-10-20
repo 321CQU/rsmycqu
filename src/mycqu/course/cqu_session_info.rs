@@ -7,6 +7,7 @@ use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::CQUSession;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::Session;
+use crate::utils::APIModel;
 use crate::utils::consts::{MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL};
 
 /// 重庆大学某一学期的详细信息
@@ -23,7 +24,8 @@ pub struct CQUSessionInfo {
 }
 
 impl CQUSessionInfo {
-    fn from_map(map: &Map<String, Value>) -> Option<Self> {
+    /// 从json字典中解析[`CQUSessionInfo`]
+    pub(crate) fn from_json(map: &Map<String, Value>) -> Option<Self> {
         if let (
             Some(Value::String(year)),
             Some(Value::String(term)),
@@ -38,16 +40,16 @@ impl CQUSessionInfo {
                 year.parse::<u16>().ok()
             ) {
                 let begin_date_str = map.get("beginDate")
-                    .and_then(|date| date.as_str())
-                    .map(|date_str| date_str.to_string());
+                    .and_then(Value::as_str)
+                    .map(ToString::to_string);
                 let end_date_str = map.get("endDate")
-                    .and_then(|date| date.as_str())
-                    .map(|date_str| date_str.to_string());
+                    .and_then(Value::as_str)
+                    .map(ToString::to_string);
 
                 // `fetch_curr` 接口返回值不包括该项，为当前学期，所以默认值为`true`
                 // `fetch_all` 接口返回值包括该项，`Y`表示活跃，`N`表示不活跃
                 let active = map.get("active")
-                    .and_then(|active| active.as_str())
+                    .and_then(Value::as_str)
                     .map_or(true, |str| str == "Y");
 
                 return Some(
@@ -69,7 +71,7 @@ impl CQUSessionInfo {
         None
     }
 
-    /// 通过具有教务网权限的会话(`Session`)，从教务网获取全部包括了ID的详细学期信息(`CQUSessionInfo`)
+    /// 通过具有教务网权限的会话([`Session`])，从教务网获取全部包括了ID的详细学期信息([`CQUSessionInfo`])
     ///
     /// 返回的所有详细学期信息`begin_date_str`和`end_date_str`字段通常不为None
     ///
@@ -92,7 +94,7 @@ impl CQUSessionInfo {
 
         if let Some(Value::Array(all_session)) = res.get("sessionVOList") {
             Ok(
-                all_session.iter().map_while(|item| item.as_object().and_then(CQUSessionInfo::from_map)).collect()
+                all_session.iter().map_while(Value::as_object).map_while(CQUSessionInfo::from_json).collect()
             )
         } else {
             Err(
@@ -101,7 +103,7 @@ impl CQUSessionInfo {
         }
     }
 
-    /// 通过具有教务网权限的会话(`Session`)，从教务网获取包括了ID的当前学期详细信息(`CQUSessionInfo`)
+    /// 通过具有教务网权限的会话([`Session`])，从教务网获取包括了ID的当前学期详细信息([`CQUSessionInfo`])
     ///
     /// 返回的当前学期详细信息`begin_date_str`和`end_date_str`字段通常为None
     ///
@@ -122,7 +124,7 @@ impl CQUSessionInfo {
             session, |client| client.get(MYCQU_API_CURR_SESSION_INFO_URL)).await?
             .json::<Map<String, Value>>().await?;
         if let Some(Value::Object(curr_session)) = res.get("data") {
-            if let Some(result) = CQUSessionInfo::from_map(curr_session) {
+            if let Some(result) = CQUSessionInfo::from_json(curr_session) {
                 return Ok(
                     result
                 )
@@ -134,3 +136,5 @@ impl CQUSessionInfo {
         )
     }
 }
+
+impl APIModel for CQUSessionInfo{}

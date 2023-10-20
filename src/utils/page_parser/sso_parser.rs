@@ -20,8 +20,8 @@ fn get_text_by_id<'a, 'b>(
             .ok_or(PageParseError::RequireInfoNotFound { target: id })  // 如果失败，返回`RequireInfoNotFound`
 }
 
-pub(crate) fn sso_login_parser(login_html: &str) -> PageParseResult<SSOLoginPageData> {
-    let document = Document::from(login_html);
+pub(crate) fn sso_login_parser(login_html: impl AsRef<str>) -> PageParseResult<'static, SSOLoginPageData> {
+    let document = Document::from(login_html.as_ref());
 
     Ok(SSOLoginPageData {
         login_croypto: get_text_by_id(&document, "p", "login-croypto")?,

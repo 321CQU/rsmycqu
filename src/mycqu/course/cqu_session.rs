@@ -9,6 +9,7 @@ use crate::errors::Error;
 use crate::errors::mycqu::{MyCQUError, MyCQUResult};
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::Session;
+use crate::utils::APIModel;
 use crate::utils::consts::MYCQU_API_SESSION_URL;
 
 /// 重庆大学的某一学期
@@ -94,11 +95,11 @@ impl FromStr for CQUSession {
 }
 
 impl CQUSession {
-    /// 当`CQUSession.id`为`None`时，调用`session_info_provider`尝试获取，如果成果则返回对应ID值并设置该对象，否则返回`None`
-    /// 当`CQUSession.id`不为`None`时，返回`CQUSession.id`
+    /// 当[`CQUSession.id`]为[`None`]时，调用[`session_info_provider`]尝试获取，如果成果则返回对应ID值并设置该对象，否则返回[`None`]
+    /// 当[`CQUSession.id`]不为[`None`]时，返回[`CQUSession.id`]
     ///
-    /// 如果您通过`CQUSession.fetch_all`获取学期信息，则所有学期的ID值会被正确设置
-    /// 然而，通过字符串创建的学期没有ID信息，为此，我们提供了可选的`session_info_provider`
+    /// 如果您通过[`CQUSession.fetch_all`]获取学期信息，则所有学期的ID值会被正确设置
+    /// 然而，通过字符串创建的学期没有ID信息，为此，我们提供了可选的[`session_info_provider`]
     /// 这允许你从外部提供一个函数/闭包来查询某一学期对应的ID，这允许你自由的决定在学期变量无ID时如何获取该ID的行为
     ///
     /// 下面是一个当无ID信息时，通过查询来获取ID的例子
@@ -127,7 +128,7 @@ impl CQUSession {
         self.id
     }
 
-    /// 通过具有教务网权限的会话(`Session`)，从教务网获取全部包括了ID的学期信息(`CQUSession`)
+    /// 通过具有教务网权限的会话([`Session`])，从教务网获取全部包括了ID的学期信息([`CQUSession`])
     ///
     /// # Examples
     /// ```rust, no_run
@@ -163,3 +164,5 @@ impl CQUSession {
         )
     }
 }
+
+impl APIModel for CQUSession{}

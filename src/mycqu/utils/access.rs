@@ -6,10 +6,10 @@ use serde_json::Value;
 use std::collections::HashMap;
 
 #[inline]
-fn find_code(location: &str) -> MyCQUResult<&str> {
+fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
     Ok(
         Regex::new(r"\?code=([^&]+)&").unwrap()
-            .captures(location)
+            .captures(location.as_ref())
             .and_then(|captures| captures.get(1))
             .ok_or(MyCQUError::AccessError {msg: "Get Auth Code Error".to_string()})?
             .as_str()

@@ -76,12 +76,12 @@ pub(super) async fn get_login_request_data(
 
 #[inline]
 pub(super) fn launch_login_data(
-    username: &str,
-    password: &str,
+    username: impl AsRef<str>,
+    password: impl AsRef<str>,
     login_page_data: &SSOLoginPageData,
 ) -> SSOResult<[(&'static str, String); 7]> {
     Ok([
-        ("username", username.to_owned()),
+        ("username", username.as_ref().to_owned()),
         ("type", "UsernamePassword".to_string()),
         ("_eventId", "submit".to_string()),
         ("geolocation", "".to_string()),

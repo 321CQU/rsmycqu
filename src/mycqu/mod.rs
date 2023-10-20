@@ -8,12 +8,12 @@ use crate::mycqu::utils::access::get_oauth_token;
 use crate::session::Session;
 use crate::sso::access_services;
 use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
-
-pub use course::*;
-pub use score::*;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::access_info::MyCQUAccessInfo;
 use crate::utils::APIModel;
+
+pub use course::*;
+pub use score::*;
 
 mod utils;
 pub mod course;
@@ -63,7 +63,7 @@ pub struct User {
 impl APIModel for User{}
 
 impl User {
-    /// 通过具有教务网权限的会话(`Session`)，从教务网获取已登陆会话的用户信息(`User`)
+    /// 通过具有教务网权限的会话([`Session`])，从教务网获取已登陆会话的用户信息([`User`])
     ///
     /// # Examples
     /// ```rust, no_run

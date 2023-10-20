@@ -38,8 +38,8 @@ pub enum LoginResult {
 /// 登陆账号
 pub async fn login(
     session: &mut Session,
-    auth: &str,
-    password: &str,
+    auth: impl AsRef<str>,
+    password: impl AsRef<str>,
     force_relogin: bool,
 ) -> SSOResult<LoginResult> {
     let request_data = get_login_request_data(session, force_relogin).await?;
@@ -87,11 +87,11 @@ pub async fn login(
 }
 
 #[cfg(feature = "mycqu")]
-///使用登陆了统一身份认证的账号获取指定服务许可
-pub(super) async fn access_services(client: &Client, service: &str) -> SSOResult<()> {
+/// 使用登陆了统一身份认证的账号获取指定服务许可
+pub(super) async fn access_services(client: &Client, service: impl AsRef<str>) -> SSOResult<()> {
     let res = client
         .get(SSO_LOGIN_URL)
-        .query(&[("service", service)])
+        .query(&[("service", service.as_ref())])
         .send()
         .await?;
     if res.status() != StatusCode::FOUND {
