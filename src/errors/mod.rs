@@ -1,4 +1,4 @@
-//! `errors`模块提供了`rust-mycqu`的所有错误定义
+//! [`errors`]模块提供了[`rsmycqu`]的所有错误定义
 
 use snafu::Snafu;
 #[cfg(feature = "sso")]
@@ -47,6 +47,10 @@ pub enum Error<T: stdError> {
         err: reqwest::Error,
     },
 
+    /// 数据模型解析异常时抛出
+    #[snafu(display("Model Parse Error"))]
+    ModelParseError,
+
     /// 其他错误
     #[snafu(display("{err}"))]
     InnerError {
@@ -91,6 +95,7 @@ pub(crate) mod error_handle_help {
                 Error::NotAccess => Error::NotAccess,
                 Error::UnExceptedError { msg } => Error::UnExceptedError { msg },
                 Error::RequestError { err } => Error::RequestError { err },
+                Error::ModelParseError => Error::ModelParseError,
                 Error::InnerError { err: inner_err } => inner_error_handler(inner_err),
             }
         }

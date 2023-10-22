@@ -24,6 +24,11 @@ pub(crate) const MYCQU_API_ALL_SESSION_INFO_URL: &str = formatcp!("{MYCQU_ROOT_U
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_CURR_SESSION_INFO_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/resourceapi/session/cur-active-session");
 
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_TIMETABLE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/timetable/class/timetable/student/table-detail");
+
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_ENROLL_TIMETABLE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/enrollment/timetable/student");
 
 #[cfg(feature = "sso")]
 pub(crate) const SSO_ROOT_URL: &str = "https://sso.cqu.edu.cn";

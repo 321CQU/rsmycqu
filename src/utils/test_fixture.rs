@@ -10,16 +10,15 @@ use rstest::*;
 pub(crate) struct LoginData {
     pub auth: String,
     pub password: String,
+    pub student_id: String
 }
 #[fixture]
 #[once]
 pub(crate) fn login_data() -> LoginData {
-    todo!("replace auth and password with your own");
-
-    #[allow(unreachable_code)]
-    LoginData {
-        auth: "your_auth",
-        password: "your_password",
+    LoginData{
+        auth: std::env::var("AUTH").unwrap(),
+        password: std::env::var("PASSWORD").unwrap(),
+        student_id: std::env::var("STUDENT_ID").unwrap()
     }
 }
 

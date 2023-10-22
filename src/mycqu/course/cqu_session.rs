@@ -90,16 +90,16 @@ impl FromStr for CQUSession {
                     is_autumn: season == "秋",
                 }
             )
-            .ok_or(Error::InnerError {err: MyCQUError::CQUSessionParseError})
+            .ok_or(Error::ModelParseError)
     }
 }
 
 impl CQUSession {
-    /// 当[`CQUSession.id`]为[`None`]时，调用[`session_info_provider`]尝试获取，如果成果则返回对应ID值并设置该对象，否则返回[`None`]
+    /// 当[`CQUSession.id`]为[`None`]时，调用`session_info_provider`尝试获取，如果成果则返回对应ID值并设置该对象，否则返回[`None`]
     /// 当[`CQUSession.id`]不为[`None`]时，返回[`CQUSession.id`]
     ///
     /// 如果您通过[`CQUSession.fetch_all`]获取学期信息，则所有学期的ID值会被正确设置
-    /// 然而，通过字符串创建的学期没有ID信息，为此，我们提供了可选的[`session_info_provider`]
+    /// 然而，通过字符串创建的学期没有ID信息，为此，我们提供了可选的`session_info_provider`
     /// 这允许你从外部提供一个函数/闭包来查询某一学期对应的ID，这允许你自由的决定在学期变量无ID时如何获取该ID的行为
     ///
     /// 下面是一个当无ID信息时，通过查询来获取ID的例子
@@ -128,6 +128,20 @@ impl CQUSession {
         self.id
     }
 
+    /// 从json字典中解析[`CQUSession`]
+    pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
+        if let (Some(Value::String(name)), Some(Value::String(id))) = (json_map.get("name"), json_map.get("id")) {
+            CQUSession::from_str(name).ok()
+                .map(|mut session| {
+                    let id = id.as_str().parse::<u16>().ok();
+                    session.id = id;
+                    session
+                })
+        } else {
+            None
+        }
+    }
+
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取全部包括了ID的学期信息([`CQUSession`])
     ///
     /// # Examples
@@ -147,20 +161,9 @@ impl CQUSession {
             session, |client| client.get(MYCQU_API_SESSION_URL)).await?
             .json::<Vec<Map<String, Value>>>().await?;
         Ok(
-            res.iter().map_while(|item| {
-                if let (Some(Value::String(name)), Some(Value::String(id))) = (item.get("name"), item.get("id")) {
-                    Some((name, id))
-                } else {
-                    None
-                }
-            }).map_while(|item| {
-                CQUSession::from_str(item.0).ok().map(|mut session| {
-                    let id = item.1.as_str().parse::<u16>().ok();
-                    session.id = id;
-                    session
-                })
-            }).filter(|item| item.id.is_some()) // 仅有"2015春"没有ID
-            .collect()
+            res.iter().map_while(CQUSession::from_json)
+                .filter(|item| item.id.is_some()) // 仅有"2015春"没有ID
+                .collect()
         )
     }
 }
