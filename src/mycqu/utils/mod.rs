@@ -1,5 +1,7 @@
 use reqwest::{RequestBuilder, Response, StatusCode};
+use serde_json::{Map, Value};
 use crate::errors::Error;
+use crate::errors::mycqu::MyCQUError::MyCQUWebsiteError;
 use crate::errors::mycqu::MyCQUResult;
 use crate::session::{Client, Session};
 
@@ -18,4 +20,14 @@ pub(super) async fn mycqu_request_handler<T>(session: &Session, f: T) -> MyCQURe
         return Err(Error::NotAccess)
     }
     Ok(res)
+}
+
+/// 检查响应json的status字段是否为error，如果是则返回错误
+pub(super) fn check_website_response(res: &Map<String, Value>) -> MyCQUResult<()> {
+    if res.get("status").and_then(Value::as_str).is_some_and(|status| status == "error") {
+        return Err(MyCQUWebsiteError {
+            msg: res.get("msg").and_then(Value::as_str).map(ToString::to_string).unwrap_or("".to_string()),
+        }.into())
+    }
+    Ok(())
 }

@@ -1,4 +1,4 @@
-use crate::mycqu::{access_mycqu, User};
+use crate::mycqu::{access_mycqu, GPARanking, Score, User};
 use crate::session::Session;
 use crate::utils::test_fixture::{access_mycqu_session, login_session};
 use rstest::*;
@@ -32,4 +32,35 @@ async fn test_get_user(#[future] access_mycqu_session: Session) {
         assert!(matches!(res.unwrap_err(), Error::NotAccess));
     }
     User::fetch_self(&access_mycqu_session.await).await.unwrap();
+}
+
+#[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_get_score(#[future] access_mycqu_session: Session) {
+    {
+        let session = Session::new();
+        let res1 = Score::fetch_self(&session, false).await;
+        let res2 = Score::fetch_self(&session, true).await;
+        assert!(res1.is_err());
+        assert!(matches!(res1.unwrap_err(), Error::NotAccess));
+        assert!(res2.is_err());
+        assert!(matches!(res2.unwrap_err(), Error::NotAccess));
+    }
+    let session = access_mycqu_session.await;
+    Score::fetch_self(&session, false).await.unwrap();
+    Score::fetch_self(&session, true).await.unwrap();
+}
+
+#[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_get_gpa_ranking(#[future] access_mycqu_session: Session) {
+    {
+        let session = Session::new();
+        let res = GPARanking::fetch_self(&session).await;
+        assert!(res.is_err());
+        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+    }
+    GPARanking::fetch_self(&access_mycqu_session.await).await.unwrap();
 }

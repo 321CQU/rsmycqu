@@ -30,6 +30,13 @@ pub(crate) const MYCQU_API_TIMETABLE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_ENROLL_TIMETABLE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/enrollment/timetable/student");
 
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_SCORE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/sam/score/student/score");
+
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_GPA_RANKING_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/sam/score/student/studentGpaRanking");
+
+
 #[cfg(feature = "sso")]
 pub(crate) const SSO_ROOT_URL: &str = "https://sso.cqu.edu.cn";
 #[cfg(feature = "sso")]

@@ -13,6 +13,13 @@ pub enum MyCQUError {
         /// 错误详细信息
         msg: String,
     },
+
+    /// `my.cqu.edu.cn`网站访问出错
+    #[snafu(display("{msg}"))]
+    MyCQUWebsiteError {
+        /// 错误详细信息
+        msg: String,
+    }
 }
 
 /// [Result<T, Error<MyCQUError>>]的重命名
