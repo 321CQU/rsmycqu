@@ -6,6 +6,7 @@ use crate::errors::mycqu::MyCQUResult;
 use crate::session::{Client, Session};
 
 pub(super) mod access;
+pub(super) mod encrypt;
 
 pub(super) async fn mycqu_request_handler<T>(session: &Session, f: T) -> MyCQUResult<Response> where T: FnOnce(&Client) -> RequestBuilder {
     if session.mycqu_access_info.is_none() {

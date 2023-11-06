@@ -1,6 +1,6 @@
-use crate::mycqu::{access_mycqu, GPARanking, Score, User};
+use crate::mycqu::{access_mycqu, Exam, GPARanking, Score, User};
 use crate::session::Session;
-use crate::utils::test_fixture::{access_mycqu_session, login_session};
+use crate::utils::test_fixture::{access_mycqu_session, login_data, login_session, LoginData};
 use rstest::*;
 use crate::errors::Error;
 
@@ -63,4 +63,17 @@ async fn test_get_gpa_ranking(#[future] access_mycqu_session: Session) {
         assert!(matches!(res.unwrap_err(), Error::NotAccess));
     }
     GPARanking::fetch_self(&access_mycqu_session.await).await.unwrap();
+}
+
+#[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_get_exam(#[future] access_mycqu_session: Session, login_data: &LoginData) {
+    {
+        let session = Session::new();
+        let res = Exam::fetch_all(&session, &login_data.student_id).await;
+        assert!(res.is_err());
+        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+    }
+    println!("{:?}", Exam::fetch_all(&access_mycqu_session.await, &login_data.student_id).await.unwrap());
 }

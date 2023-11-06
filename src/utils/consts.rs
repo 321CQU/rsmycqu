@@ -36,6 +36,9 @@ pub(crate) const MYCQU_API_SCORE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/sam
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_GPA_RANKING_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/sam/score/student/studentGpaRanking");
 
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_EXAM_LIST_URL: &str = formatcp!("{MYCQU_ROOT_URL}/api/exam/examTask/get-student-exam-list-outside");
+
 
 #[cfg(feature = "sso")]
 pub(crate) const SSO_ROOT_URL: &str = "https://sso.cqu.edu.cn";

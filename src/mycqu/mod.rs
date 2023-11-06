@@ -14,10 +14,12 @@ use crate::utils::APIModel;
 
 pub use course::*;
 pub use score::*;
+pub use exam::*;
 
 mod utils;
 pub mod course;
 pub mod score;
+pub mod exam;
 
 #[cfg(test)]
 mod tests;
