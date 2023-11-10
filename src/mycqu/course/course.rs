@@ -1,8 +1,10 @@
 //! 与具体行课时间无关的课程信息
 
 use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+
 use crate::mycqu::CQUSession;
 use crate::utils::APIModel;
 
@@ -22,7 +24,7 @@ pub struct Course {
     /// 教师
     pub instructor: Option<String>,
     /// 学期，无法获取时则为[`None`]
-    pub session: Option<CQUSession>
+    pub session: Option<CQUSession>,
 }
 
 impl Course {
@@ -42,7 +44,7 @@ impl Course {
             Some(instructor_name.to_string())
         } else if let Some(Value::String(instructor_names)) = json_map.get("instructorNames") {
             Some(instructor_names.to_string())
-        }  else if let Some(Value::Array(instructors)) = json_map.get("classTimetableInstrVOList") {
+        } else if let Some(Value::Array(instructors)) = json_map.get("classTimetableInstrVOList") {
             Some(
                 instructors.iter().map_while(Value::as_str).collect::<Vec<&str>>().join(", ")
             )

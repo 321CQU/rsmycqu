@@ -1,8 +1,9 @@
+use rstest::*;
+
+use crate::errors::Error;
 use crate::mycqu::{access_mycqu, Exam, GPARanking, Score, User};
 use crate::session::Session;
 use crate::utils::test_fixture::{access_mycqu_session, login_data, login_session, LoginData};
-use rstest::*;
-use crate::errors::Error;
 
 mod course;
 #[rstest]

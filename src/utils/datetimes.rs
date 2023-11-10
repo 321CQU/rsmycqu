@@ -33,15 +33,15 @@ fn parse_long_weekday(weekday: impl AsRef<str>) -> Option<u8> {
 #[inline]
 pub(crate) fn parse_weekday(weekday: &impl AsRef<str>) -> Option<u8> {
     parse_short_weekday(weekday).or_else(|| parse_long_weekday(weekday))
-} 
+}
 
 impl Period {
     pub(crate) fn parse_period_str(s: impl AsRef<str>) -> Option<Self> {
         let period: Vec<u8> = s.as_ref().split('-').map_while(|item| item.parse().ok()).collect();
 
         match period.len() {
-            1 => Some(Period{start: period[0], end: period[0]}),
-            2 => Some(Period{start: period[0], end: period[1]}),
+            1 => Some(Period { start: period[0], end: period[0] }),
+            2 => Some(Period { start: period[0], end: period[1] }),
             _ => None
         }
     }

@@ -1,9 +1,11 @@
 //! [`errors`]模块提供了[`rsmycqu`]的所有错误定义
 
+use std::error::Error as stdError;
+
 use snafu::Snafu;
+
 #[cfg(feature = "sso")]
 pub use sso::*;
-use std::error::Error as stdError;
 
 pub mod session;
 #[cfg(feature = "sso")]
@@ -15,11 +17,12 @@ pub mod sso;
 pub mod mycqu;
 
 pub(crate) trait PubInnerError: stdError {}
+
 /// 支持不同泛型的[`Error`]相互转换
 pub(crate) trait ErrorHandler<T: PubInnerError> {
     fn handle_other_error<U: PubInnerError, F>(self, inner_error_handler: F) -> Error<U>
-    where
-        F: Fn(T) -> Error<U>;
+        where
+            F: Fn(T) -> Error<U>;
 }
 
 /// 错误类型
@@ -87,8 +90,8 @@ pub(crate) mod error_handle_help {
 
     impl<T: PubInnerError> ErrorHandler<T> for Error<T> {
         fn handle_other_error<U: PubInnerError, F>(self, inner_error_handler: F) -> Error<U>
-        where
-            F: Fn(T) -> Error<U>,
+            where
+                F: Fn(T) -> Error<U>,
         {
             match self {
                 Error::NotLogin => Error::NotLogin,

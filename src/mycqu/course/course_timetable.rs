@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+
 use crate::errors::Error;
 use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::course::course::Course;
@@ -32,7 +33,7 @@ pub struct CourseTimetable {
     /// 行课教室名称
     pub classroom_name: Option<String>,
     /// 实验课各次实验内容
-    pub expr_projects: Vec<String>
+    pub expr_projects: Vec<String>,
 }
 
 impl CourseTimetable {
@@ -40,7 +41,7 @@ impl CourseTimetable {
     pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
         let weeks: Vec<Period> =
             json_map.get("teachingWeekFormat").or_else(|| json_map.get("weeks"))
-            .and_then(Value::as_str).map(Period::parse_week_str)?;
+                .and_then(Value::as_str).map(Period::parse_week_str)?;
 
         Some(
             CourseTimetable {
@@ -58,14 +59,9 @@ impl CourseTimetable {
     }
 
     fn handle_json_response(res: &Map<String, Value>, target_field: impl AsRef<str>) -> MyCQUResult<Vec<Self>> {
-        let result = res.get(target_field.as_ref()).and_then(Value::as_array);
-        if let Some(result) = result {
-            Ok(
-                result.iter().filter_map(Value::as_object).filter_map(CourseTimetable::from_json).collect()
-            )
-        } else {
-            Err(Error::UnExceptedError {msg: format!("Require field \"{}\" not exist", target_field.as_ref())})
-        }
+        res.get(target_field.as_ref()).and_then(Value::as_array)
+            .map(|result| result.iter().filter_map(Value::as_object).filter_map(CourseTimetable::from_json).collect())
+            .ok_or(Error::UnExceptedError { msg: format!("Expected field \"{}\" is missing or format incorrect", target_field.as_ref()) })
     }
 
     /// 通过具有教务网权限的会话([`Session`])，获取当前学期课表([`Vec<CourseTimetable>`])

@@ -1,10 +1,11 @@
+use rstest::*;
+use serde_json::{Value, json};
+
+use crate::errors::Error;
 use crate::mycqu::{Course, CourseDayTime, CourseTimetable, CQUSession, CQUSessionInfo};
 use crate::session::Session;
-use crate::utils::test_fixture::{access_mycqu_session, login_data, LoginData};
-use rstest::*;
-use serde_json::{json, Value};
-use crate::errors::Error;
 use crate::utils::models::Period;
+use crate::utils::test_fixture::{access_mycqu_session, login_data, LoginData};
 
 #[rstest]
 #[ignore]
@@ -29,11 +30,13 @@ fn test_parse_session_info_from_json() {
     let session_info1 = CQUSessionInfo::from_json(json_map1).unwrap();
     assert_eq!(session_info1, CQUSessionInfo {
         active: true,
-        begin_date_str: None, end_date_str: None,
-        session: CQUSession{
+        begin_date_str: None,
+        end_date_str: None,
+        session: CQUSession {
             id: Some(1045),
-            year: 2023, is_autumn: true
-        }
+            year: 2023,
+            is_autumn: true,
+        },
     });
 
     let json2 = json!({"id": "1046", "year": "2024", "term": '春', "beginDate": "2024-02-26", "endDate": "2024-08-25", "active": 'N'});
@@ -41,11 +44,13 @@ fn test_parse_session_info_from_json() {
     let session_info2 = CQUSessionInfo::from_json(json_map2).unwrap();
     assert_eq!(session_info2, CQUSessionInfo {
         active: false,
-        begin_date_str: Some("2024-02-26".to_string()), end_date_str: Some("2024-08-25".to_string()),
-        session: CQUSession{
+        begin_date_str: Some("2024-02-26".to_string()),
+        end_date_str: Some("2024-08-25".to_string()),
+        session: CQUSession {
             id: Some(1046),
-            year: 2024, is_autumn: false
-        }
+            year: 2024,
+            is_autumn: false,
+        },
     });
 }
 
@@ -80,14 +85,14 @@ async fn test_fetch_curr_session_info(#[future] access_mycqu_session: Session) {
 
 #[fixture]
 fn example_course() -> Course {
-    Course{
+    Course {
         code: Some("MT80007".to_string()),
         course_num: Some("000557-045".to_string()),
         credit: Some(0.0),
         dept: Some("马克思主义学院".to_string()),
         instructor: Some("李颖-30922[主讲];".to_string()),
         name: Some("形势与政策7".to_string()),
-        session: None
+        session: None,
     }
 }
 
@@ -109,8 +114,9 @@ fn test_parse_course_day_time() {
     assert_eq!(course_day_time, CourseDayTime {
         weekday: 4,
         period: Period {
-            start: 3, end: 4,
-        }
+            start: 3,
+            end: 4,
+        },
     })
 }
 
@@ -124,12 +130,13 @@ fn test_parse_course_timetable(example_course: Course) {
         course: example_course,
         stu_num: Some(117),
         classroom: None,
-        weeks: vec![Period{start: 14, end: 17}],
+        weeks: vec![Period { start: 14, end: 17 }],
         day_time: Some(CourseDayTime {
             weekday: 4,
             period: Period {
-                start: 3, end: 4,
-            }
+                start: 3,
+                end: 4,
+            },
         }),
         whole_week: false,
         classroom_name: Some("DYC101".to_string()),

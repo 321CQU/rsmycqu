@@ -2,12 +2,13 @@
 
 use reqwest::ClientBuilder;
 
-use crate::session::access_info::MyCQUAccessInfo;
 #[doc(inline)]
 pub(crate) use client::Client;
 #[doc(inline)]
 pub use session_builder::*;
+
 use crate::errors::session::SessionResult;
+use crate::session::access_info::MyCQUAccessInfo;
 
 pub mod access_info;
 mod client;
@@ -56,8 +57,8 @@ impl Session {
     ///
     /// 以确保自动重定向被禁用、cookies被启用
     pub fn custom<F>(custom_builder: F) -> SessionResult<Self>
-    where
-        F: Fn(&mut ClientBuilder) + 'static,
+        where
+            F: Fn(&mut ClientBuilder) + 'static,
     {
         let client = Client::custom(custom_builder)?;
 

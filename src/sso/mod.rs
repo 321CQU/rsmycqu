@@ -1,14 +1,14 @@
 //! 重庆大学单点登录（SSO）相关模块
 
-use crate::errors::sso::{SSOError, SSOResult};
+use reqwest::StatusCode;
+
 use crate::errors::Error;
+use crate::errors::sso::{SSOError, SSOResult};
+#[cfg(any(feature = "mycqu"))]
+use crate::session::Client;
 use crate::session::Session;
 use crate::sso::tools::{get_login_request_data, launch_login_data, LoginPageResponse};
 use crate::utils::consts::{SSO_LOGIN_URL, SSO_LOGOUT_URL};
-use reqwest::StatusCode;
-
-#[cfg(any(feature = "mycqu"))]
-use crate::session::Client;
 
 mod encrypt;
 mod tools;
@@ -79,7 +79,7 @@ pub async fn login(
                         "status code {} is got (302 expected) when sending login post",
                         other
                     )
-                    .to_string(),
+                        .to_string(),
                 }),
             }
         }

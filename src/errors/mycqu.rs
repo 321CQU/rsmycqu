@@ -1,8 +1,10 @@
 //! 包含会在[`crate::mycqu`]中出现的所有错误
 
-use crate::errors::{Error, PubInnerError};
-use snafu::prelude::*;
 use std::fmt::Debug;
+
+use snafu::prelude::*;
+
+use crate::errors::{Error, PubInnerError};
 
 /// MyCQUError
 #[derive(Debug, Snafu)]
@@ -19,7 +21,7 @@ pub enum MyCQUError {
     MyCQUWebsiteError {
         /// 错误详细信息
         msg: String,
-    }
+    },
 }
 
 /// [Result<T, Error<MyCQUError>>]的重命名

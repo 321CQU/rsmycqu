@@ -1,5 +1,7 @@
-use crate::errors::sso::{SSOError, SSOResult};
+use reqwest::{Response, StatusCode};
+
 use crate::errors::Error;
+use crate::errors::sso::{SSOError, SSOResult};
 use crate::session::Session;
 use crate::sso::encrypt::encrypt_password;
 use crate::sso::logout;
@@ -7,7 +9,6 @@ use crate::utils::{
     consts::SSO_LOGIN_URL,
     page_parser::sso_parser::{sso_login_parser, SSOLoginPageData},
 };
-use reqwest::{Response, StatusCode};
 
 /// 登陆页面返回数据，根据该数据确定是否需要验证码或登陆链接
 pub(super) enum LoginPageResponse {
@@ -68,9 +69,9 @@ pub(super) async fn get_login_request_data(
             but can not find the element span.login_auth_error#msg",
                 other
             )
-            .to_string(),
+                .to_string(),
         }
-        .into()),
+            .into()),
     }
 }
 

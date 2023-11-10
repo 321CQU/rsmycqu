@@ -2,9 +2,11 @@
 
 use std::future::Future;
 use std::str::FromStr;
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+
 use crate::errors::Error;
 use crate::errors::mycqu::{MyCQUError, MyCQUResult};
 use crate::mycqu::utils::mycqu_request_handler;
@@ -20,7 +22,7 @@ pub struct CQUSession {
     /// 行课年份
     pub year: u16,
     /// 是否为秋季学期
-    pub is_autumn: bool
+    pub is_autumn: bool,
 }
 
 impl ToString for CQUSession {
@@ -38,7 +40,7 @@ impl ToString for CQUSession {
     /// assert_eq!("2023秋", cqu_session.to_string())
     /// ```
     fn to_string(&self) -> String {
-        format!("{}{}", self.year, if self.is_autumn {"秋"} else { "春" })
+        format!("{}{}", self.year, if self.is_autumn { "秋" } else { "春" })
     }
 }
 
@@ -83,8 +85,8 @@ impl FromStr for CQUSession {
                     None
                 }
             })
-            .map( |(year, season)|
-                CQUSession{
+            .map(|(year, season)|
+                CQUSession {
                     id: None,
                     year: year.parse().unwrap(),
                     is_autumn: season == "秋",
@@ -118,7 +120,7 @@ impl CQUSession {
     /// let id = cqu_session.id_or(Some(session_info_provider));
     /// # }
     /// ```
-    pub async fn id_or<T, U>(&mut self, session_info_provider: Option<T>) -> Option<u16> where T: Fn(u16, bool) -> U, U: Future<Output = Option<u16>> {
+    pub async fn id_or<T, U>(&mut self, session_info_provider: Option<T>) -> Option<u16> where T: Fn(u16, bool) -> U, U: Future<Output=Option<u16>> {
         if self.id.is_none() {
             if let Some(session_info_provider) = session_info_provider {
                 self.id = session_info_provider(self.year, self.is_autumn).await;
@@ -168,4 +170,4 @@ impl CQUSession {
     }
 }
 
-impl APIModel for CQUSession{}
+impl APIModel for CQUSession {}

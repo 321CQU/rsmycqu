@@ -1,9 +1,11 @@
 //! 包含会在[`crate::sso`]中出现的所有错误
 
-use crate::errors::{Error, PubInnerError};
-use snafu::prelude::*;
 use std::fmt::Debug;
+
 use base64::DecodeError;
+use snafu::prelude::*;
+
+use crate::errors::{Error, PubInnerError};
 
 /// SSOError
 #[derive(Debug, Snafu)]

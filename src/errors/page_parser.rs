@@ -1,5 +1,6 @@
-use snafu::prelude::*;
 use std::fmt::Debug;
+
+use snafu::prelude::*;
 
 #[derive(Debug, Snafu)]
 pub(crate) enum PageParseError<'a> {

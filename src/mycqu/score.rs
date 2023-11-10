@@ -1,9 +1,11 @@
 //! 该模块提供成绩查询、绩点查询接口
 
 use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-use crate::errors::Error::UnExceptedError;
+
+use crate::errors::Error;
 use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::{Course, CQUSession};
 use crate::mycqu::utils::{check_website_response, mycqu_request_handler};
@@ -70,7 +72,7 @@ impl Score {
                     arr.iter().filter_map(Value::as_object).filter_map(Score::from_json).collect::<Vec<Score>>()
                 )
             ).flatten().collect()
-        ).ok_or(UnExceptedError {msg: format!("Require field \"{}\" not exist or format incorrect", "data")})
+        ).ok_or(Error::UnExceptedError { msg: "Excepted field \"data\" is missing or not an object".to_string() })
     }
 }
 
@@ -92,7 +94,7 @@ pub struct GPARanking {
     /// 辅修加权平均分
     pub minor_weighted_avg: Option<f32>,
     /// 辅修绩点
-    pub minor_gpa: Option<f32>
+    pub minor_gpa: Option<f32>,
 }
 
 impl GPARanking {
@@ -132,11 +134,10 @@ impl GPARanking {
         let res = mycqu_request_handler(session, |client| {
             client.get(MYCQU_API_GPA_RANKING_URL).query(&[("isMinorBoo", false)])
         }).await?.json::<Map<String, Value>>().await?;
-
         check_website_response(&res)?;
 
         res.get("data").and_then(Value::as_object).and_then(GPARanking::from_json)
-            .ok_or(UnExceptedError {msg: format!("Require field \"{}\" not exist or format incorrect", "data")})
+            .ok_or(Error::UnExceptedError { msg: "Excepted field \"data\" is missing or not an array".to_string() })
     }
 }
 

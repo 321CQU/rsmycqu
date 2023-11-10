@@ -1,9 +1,12 @@
-use crate::errors::mycqu::{MyCQUError, MyCQUResult};
-use crate::session::Client;
-use crate::utils::consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOKEN_URL};
+use std::collections::HashMap;
+
 use regex::Regex;
 use serde_json::Value;
-use std::collections::HashMap;
+
+use crate::errors::mycqu::MyCQUError;
+use crate::errors::mycqu::MyCQUResult;
+use crate::session::Client;
+use crate::utils::consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOKEN_URL};
 
 #[inline]
 fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
@@ -11,7 +14,7 @@ fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
         Regex::new(r"\?code=([^&]+)&").unwrap()
             .captures(location.as_ref())
             .and_then(|captures| captures.get(1))
-            .ok_or(MyCQUError::AccessError {msg: "Get Auth Code Error".to_string()})?
+            .ok_or(MyCQUError::AccessError { msg: "Get Auth Code Error".to_string() })?
             .as_str()
     )
 }
@@ -41,26 +44,26 @@ pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<St
         .await?
         .json::<HashMap<String, Value>>()
         .await?;
-    if let Value::String(access_token) =
-        access_res
-            .get("access_token")
-            .ok_or(MyCQUError::AccessError {
-                msg: "Get Access Token Error".to_string(),
-            })?
-    {
-        Ok(access_token.to_string())
-    } else {
-        Err(MyCQUError::AccessError {
+
+    access_res
+        .get("access_token")
+        .ok_or(MyCQUError::AccessError {
             msg: "Get Access Token Error".to_string(),
-        }
-        .into())
-    }
+        })?
+        .as_str()
+        .map(ToString::to_string)
+        .ok_or(
+            MyCQUError::AccessError {
+                msg: "Get Access Token Error".to_string(),
+            }.into()
+        )
 }
 
 #[cfg(test)]
 mod test {
-    use super::find_code;
     use rstest::*;
+
+    use super::find_code;
 
     #[rstest]
     fn test_parse_code() {

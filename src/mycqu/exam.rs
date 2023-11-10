@@ -2,10 +2,11 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+
 use crate::errors::Error;
 use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::Course;
-use crate::mycqu::utils::{mycqu_request_handler, encrypt::encrypt_student_id};
+use crate::mycqu::utils::{encrypt::encrypt_student_id, mycqu_request_handler};
 use crate::session::Session;
 use crate::utils::APIModel;
 use crate::utils::consts::MYCQU_API_EXAM_LIST_URL;
@@ -68,7 +69,7 @@ pub struct Exam {
     /// 监考员
     pub chief_invigilator: Vec<Invigilator>,
     /// 副监考员
-    pub asst_invigilator: Option<Vec<Invigilator>>
+    pub asst_invigilator: Option<Vec<Invigilator>>,
 }
 
 impl Exam {
@@ -121,12 +122,12 @@ impl Exam {
     /// ```
     pub async fn fetch_all(session: &Session, student_id: impl AsRef<str>) -> MyCQUResult<Vec<Exam>> {
         let res = mycqu_request_handler(session, |client|
-            client.get(MYCQU_API_EXAM_LIST_URL).query(&[("studentId", encrypt_student_id(student_id))])
+            client.get(MYCQU_API_EXAM_LIST_URL).query(&[("studentId", encrypt_student_id(student_id))]),
         ).await?.json::<Map<String, Value>>().await?;
 
         res.get("data").and_then(|item| item.get("content").and_then(Value::as_array))
-                .map(|arr| arr.iter().filter_map(Value::as_object).filter_map(Exam::from_json).collect::<Vec<Exam>>())
-                .ok_or(Error::UnExceptedError {msg: "数据格式与预期不符".to_string()})
+            .map(|arr| arr.iter().filter_map(Value::as_object).filter_map(Exam::from_json).collect::<Vec<Exam>>())
+            .ok_or(Error::UnExceptedError { msg: "Unexpected data format".to_string() })
     }
 }
 

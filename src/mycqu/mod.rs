@@ -1,20 +1,20 @@
 //! 提供教务网`my.cqu.edu.cn`的已知可用接口
 
-use serde::{Serialize, Deserialize};
-
-use crate::errors::mycqu::MyCQUResult;
-use crate::errors::{Error, ErrorHandler};
-use crate::mycqu::utils::access::get_oauth_token;
-use crate::session::Session;
-use crate::sso::access_services;
-use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
-use crate::mycqu::utils::mycqu_request_handler;
-use crate::session::access_info::MyCQUAccessInfo;
-use crate::utils::APIModel;
+use serde::{Deserialize, Serialize};
 
 pub use course::*;
-pub use score::*;
 pub use exam::*;
+pub use score::*;
+
+use crate::errors::{Error, ErrorHandler};
+use crate::errors::mycqu::MyCQUResult;
+use crate::mycqu::utils::access::get_oauth_token;
+use crate::mycqu::utils::mycqu_request_handler;
+use crate::session::access_info::MyCQUAccessInfo;
+use crate::session::Session;
+use crate::sso::access_services;
+use crate::utils::APIModel;
+use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
 
 mod utils;
 pub mod course;
@@ -38,7 +38,7 @@ pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
     }
 
     let auth_token = get_oauth_token(&session.client).await?;
-    session.mycqu_access_info = Some(MyCQUAccessInfo{ auth_header: auth_token });
+    session.mycqu_access_info = Some(MyCQUAccessInfo { auth_header: auth_token });
     Ok(())
 }
 
@@ -48,21 +48,21 @@ pub struct User {
     /// 姓名
     pub name: String,
     /// 统一身份认证号
-    #[serde(alias="username")]
+    #[serde(alias = "username")]
     pub id: String,
     /// 学工号
     pub code: String,
     /// 身份，已知取值有学生(`student`)、教师(`instructor`)
-    #[serde(alias="type")]
+    #[serde(alias = "type")]
     pub role: String,
     /// 电子邮箱
     pub email: Option<String>,
     /// 电话号码
-    #[serde(alias="phoneNumber")]
-    pub phone_number: Option<String>
+    #[serde(alias = "phoneNumber")]
+    pub phone_number: Option<String>,
 }
 
-impl APIModel for User{}
+impl APIModel for User {}
 
 impl User {
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取已登陆会话的用户信息([`User`])

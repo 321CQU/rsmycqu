@@ -1,17 +1,20 @@
 use std::collections::HashMap;
 use std::ops::Deref;
 use std::sync::Mutex;
+
+use rstest::*;
+
 use crate::mycqu::access_mycqu;
 use crate::session::Session;
 use crate::sso::{login, LoginResult};
-use rstest::*;
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) struct LoginData {
     pub auth: String,
     pub password: String,
-    pub student_id: String
+    pub student_id: String,
 }
+
 #[fixture]
 #[once]
 pub(crate) fn login_data() -> LoginData {
@@ -24,7 +27,8 @@ pub(crate) fn login_data() -> LoginData {
 
 #[derive(Hash, Eq, PartialEq)]
 pub(crate) enum SessionType {
-    Login, AccessMycqu
+    Login,
+    AccessMycqu,
 }
 
 pub(crate) struct ShareSessionMap(Mutex<HashMap<SessionType, Session>>);
@@ -40,8 +44,8 @@ impl ShareSessionMap {
     fn get_session(&self, session_type: &SessionType) -> Option<Session> {
         self.lock().ok()
             .and_then(|session_pool| {
-            session_pool.get(session_type).cloned()
-        })
+                session_pool.get(session_type).cloned()
+            })
     }
 }
 

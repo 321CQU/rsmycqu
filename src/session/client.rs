@@ -1,9 +1,11 @@
 //! new type of [`reqwest::Client`]
 
 use std::fmt::{Debug, Formatter};
-use reqwest::redirect::Policy;
-use reqwest::{Client as reqwestClient, ClientBuilder};
 use std::ops::Deref;
+
+use reqwest::{Client as reqwestClient, ClientBuilder};
+use reqwest::redirect::Policy;
+
 use crate::errors::session::SessionResult;
 
 /// [`reqwest::Client`]的`new type`
@@ -65,8 +67,8 @@ impl Client {
     ///
     /// 以确保自动重定向被禁用、cookies被启用
     pub(super) fn custom<F>(custom_builder: F) -> SessionResult<Self>
-    where
-        F: Fn(&mut ClientBuilder) + 'static,
+        where
+            F: Fn(&mut ClientBuilder) + 'static,
     {
         let mut builder = reqwestClient::builder();
         custom_builder(&mut builder);

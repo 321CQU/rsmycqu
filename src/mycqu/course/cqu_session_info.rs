@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+
 use crate::errors::Error;
 use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::CQUSession;
@@ -20,7 +21,7 @@ pub struct CQUSessionInfo {
     /// 学期结束日期字符串（"yyyy-MM-dd"格式）
     pub end_date_str: Option<String>,
     /// 该学期是否为活跃学期（当前学期）
-    pub active: bool
+    pub active: bool,
 }
 
 impl CQUSessionInfo {
@@ -53,19 +54,18 @@ impl CQUSessionInfo {
                     .map_or(true, |str| str == "Y");
 
                 return Some(
-                    CQUSessionInfo{
-                        session: CQUSession{
+                    CQUSessionInfo {
+                        session: CQUSession {
                             id: Some(id),
                             year,
-                            is_autumn: term == "秋"
+                            is_autumn: term == "秋",
                         },
                         begin_date_str,
                         end_date_str,
-                        active
+                        active,
                     }
-                )
+                );
             }
-
         }
 
         None
@@ -92,15 +92,9 @@ impl CQUSessionInfo {
             session, |client| client.get(MYCQU_API_ALL_SESSION_INFO_URL)).await?
             .json::<Map<String, Value>>().await?;
 
-        if let Some(Value::Array(all_session)) = res.get("sessionVOList") {
-            Ok(
-                all_session.iter().map_while(Value::as_object).map_while(CQUSessionInfo::from_json).collect()
-            )
-        } else {
-            Err(
-                Error::UnExceptedError { msg: "Expected field 'sessionVOList' is missing or not an array".to_string() }
-            )
-        }
+        res.get("sessionVOList").and_then(Value::as_array)
+            .map(|all_session| all_session.iter().map_while(Value::as_object).map_while(CQUSessionInfo::from_json).collect())
+            .ok_or(Error::UnExceptedError { msg: "Expected field 'sessionVOList' is missing or not an array".to_string() })
     }
 
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取包括了ID的当前学期详细信息([`CQUSessionInfo`])
@@ -123,18 +117,9 @@ impl CQUSessionInfo {
         let res = mycqu_request_handler(
             session, |client| client.get(MYCQU_API_CURR_SESSION_INFO_URL)).await?
             .json::<Map<String, Value>>().await?;
-        if let Some(Value::Object(curr_session)) = res.get("data") {
-            if let Some(result) = CQUSessionInfo::from_json(curr_session) {
-                return Ok(
-                    result
-                )
-            }
-        }
-
-        Err(
-            Error::UnExceptedError { msg: "Response data format unknown".to_string() }
-        )
+        res.get("data").and_then(Value::as_object).and_then(CQUSessionInfo::from_json)
+            .ok_or(Error::UnExceptedError { msg: "Expected field \"data\" is missing or not an object".to_string() })
     }
 }
 
-impl APIModel for CQUSessionInfo{}
+impl APIModel for CQUSessionInfo {}

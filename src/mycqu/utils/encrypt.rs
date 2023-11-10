@@ -1,7 +1,8 @@
 //! 提供加密相关函数
 
-use crate::utils::encrypt::*;
 use hex::encode_upper;
+
+use crate::utils::encrypt::*;
 
 /// [`Exam`] 中 `fetch_all` API需要加密学号
 pub(in crate::mycqu) fn encrypt_student_id(student_id: impl AsRef<str>) -> String {
