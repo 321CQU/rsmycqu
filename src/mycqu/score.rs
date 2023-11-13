@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::errors::mycqu::MyCQUResult;
-use crate::errors::Error;
 use crate::mycqu::utils::{check_website_response, mycqu_request_handler};
 use crate::mycqu::{CQUSession, Course};
 use crate::session::Session;
@@ -89,9 +88,7 @@ impl Score {
                     .flatten()
                     .collect()
             })
-            .ok_or(Error::UnExceptedError {
-                msg: "Excepted field \"data\" is missing or not an object".to_string(),
-            })
+            .ok_or("Excepted field \"data\" is missing or not an object".into())
     }
 }
 
@@ -182,9 +179,7 @@ impl GPARanking {
         res.get("data")
             .and_then(Value::as_object)
             .and_then(GPARanking::from_json)
-            .ok_or(Error::UnExceptedError {
-                msg: "Excepted field \"data\" is missing or not an array".to_string(),
-            })
+            .ok_or("Excepted field \"data\" is missing or not an array".into())
     }
 }
 

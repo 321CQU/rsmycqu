@@ -69,22 +69,20 @@ pub async fn login(
                     let url = res
                         .headers()
                         .get("Location")
-                        .ok_or(Error::UnExceptedError {
-                            msg: "Expected response has \"Location\" but not found".to_string(),
-                        })?
+                        .ok_or::<Error<SSOError>>(
+                            "Expected response has \"Location\" but not found".into(),
+                        )?
                         .to_str()?;
                     session.client.get(url).send().await?;
                     session.is_login = true;
                     Ok(LoginResult::Success)
                 }
                 StatusCode::UNAUTHORIZED => Ok(LoginResult::IncorrectLoginCredentials),
-                other => Err(Error::UnExceptedError {
-                    msg: format!(
-                        "status code {} is got (302 expected) when sending login post",
-                        other
-                    )
-                    .to_string(),
-                }),
+                other => Err(format!(
+                    "status code {} is got (302 expected) when sending login post",
+                    other
+                )
+                .into()),
             }
         }
     }
@@ -105,9 +103,7 @@ pub(super) async fn access_services(client: &Client, service: impl AsRef<str>) -
     let jump_url = res
         .headers()
         .get("Location")
-        .ok_or(Error::UnExceptedError {
-            msg: "Expected response has \"Location\" but not found".to_string(),
-        })?
+        .ok_or::<Error<SSOError>>("Expected response has \"Location\" but not found".into())?
         .to_str()?;
 
     client.get(jump_url).send().await?;

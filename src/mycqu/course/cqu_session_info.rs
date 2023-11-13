@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::errors::mycqu::MyCQUResult;
-use crate::errors::Error;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::mycqu::CQUSession;
 use crate::session::Session;
@@ -95,9 +94,7 @@ impl CQUSessionInfo {
                     .map_while(CQUSessionInfo::from_json)
                     .collect()
             })
-            .ok_or(Error::UnExceptedError {
-                msg: "Expected field 'sessionVOList' is missing or not an array".to_string(),
-            })
+            .ok_or("Expected field 'sessionVOList' is missing or not an array".into())
     }
 
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取包括了ID的当前学期详细信息([`CQUSessionInfo`])
@@ -126,9 +123,7 @@ impl CQUSessionInfo {
         res.get("data")
             .and_then(Value::as_object)
             .and_then(CQUSessionInfo::from_json)
-            .ok_or(Error::UnExceptedError {
-                msg: "Expected field \"data\" is missing or not an object".to_string(),
-            })
+            .ok_or("Expected field \"data\" is missing or not an object".into())
     }
 }
 

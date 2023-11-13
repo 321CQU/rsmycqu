@@ -64,6 +64,7 @@ pub enum Error<T: stdError> {
 
 pub(crate) mod error_handle_help {
     use crate::errors::{Error, ErrorHandler, PubInnerError};
+    use std::error::Error as stdError;
 
     impl<T: PubInnerError> From<T> for Error<T> {
         fn from(value: T) -> Self {
@@ -79,11 +80,30 @@ pub(crate) mod error_handle_help {
 
     impl<T: PubInnerError> From<reqwest::header::ToStrError> for Error<T> {
         fn from(value: reqwest::header::ToStrError) -> Self {
+            format!(
+                "Expected http header can transfer to str, but received: {}",
+                value
+            )
+            .into()
+        }
+    }
+
+    impl<T> From<String> for Error<T>
+    where
+        T: stdError,
+    {
+        fn from(value: String) -> Self {
+            Error::UnExceptedError { msg: value }
+        }
+    }
+
+    impl<T> From<&str> for Error<T>
+    where
+        T: stdError,
+    {
+        fn from(value: &str) -> Self {
             Error::UnExceptedError {
-                msg: format!(
-                    "Expected http header can transfer to str, but received: {}",
-                    value
-                ),
+                msg: value.to_string(),
             }
         }
     }

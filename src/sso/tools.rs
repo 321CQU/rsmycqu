@@ -46,9 +46,9 @@ pub(super) async fn get_login_request_data(
             let jump_url = res
                 .headers()
                 .get("Location")
-                .ok_or(Error::UnExceptedError {
-                    msg: "Expected response has \"Location\" but not found".to_string(),
-                })?
+                .ok_or::<Error<SSOError>>(
+                    "Expected response has \"Location\" but not found".into(),
+                )?
                 .to_str()?;
 
             let login_url_res = session.client.get(jump_url).send().await?;
@@ -57,9 +57,9 @@ pub(super) async fn get_login_request_data(
                 login_url: login_url_res
                     .headers()
                     .get("Location")
-                    .ok_or(Error::UnExceptedError {
-                        msg: "Expected response has \"Location\" but not found".to_string(),
-                    })?
+                    .ok_or::<Error<SSOError>>(
+                        "Expected response has \"Location\" but not found".into(),
+                    )?
                     .to_str()?
                     .to_string(),
             })

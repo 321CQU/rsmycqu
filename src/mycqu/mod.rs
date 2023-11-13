@@ -32,9 +32,7 @@ pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
 
     // access_services 只会因为网络原因产生异常，不会产生任何`SSOError`
     if let Err(err) = access_services(&session.client, MYCQU_SERVICE_URL).await {
-        return Err(err.handle_other_error(|_| Error::UnExceptedError {
-            msg: "Unexpected SSOError happened".to_string(),
-        }));
+        return Err(err.handle_other_error(|_| "Unexpected SSOError happened".into()));
     }
 
     let auth_token = get_oauth_token(&session.client).await?;

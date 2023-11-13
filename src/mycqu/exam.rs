@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::errors::mycqu::MyCQUResult;
-use crate::errors::Error;
 use crate::mycqu::utils::{encrypt::encrypt_student_id, mycqu_request_handler};
 use crate::mycqu::Course;
 use crate::session::Session;
@@ -154,9 +153,7 @@ impl Exam {
                     .filter_map(Exam::from_json)
                     .collect::<Vec<Exam>>()
             })
-            .ok_or(Error::UnExceptedError {
-                msg: "Unexpected data format".to_string(),
-            })
+            .ok_or("Unexpected data format".into())
     }
 }
 

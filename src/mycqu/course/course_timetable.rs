@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::errors::mycqu::MyCQUResult;
-use crate::errors::Error;
 use crate::mycqu::course::course::Course;
 use crate::mycqu::course_day_time::CourseDayTime;
 use crate::mycqu::utils::mycqu_request_handler;
@@ -89,12 +88,13 @@ impl CourseTimetable {
                     .filter_map(CourseTimetable::from_json)
                     .collect()
             })
-            .ok_or(Error::UnExceptedError {
-                msg: format!(
+            .ok_or(
+                format!(
                     "Expected field \"{}\" is missing or format incorrect",
                     target_field.as_ref()
-                ),
-            })
+                )
+                .into(),
+            )
     }
 
     /// 通过具有教务网权限的会话([`Session`])，获取当前学期课表([`Vec<CourseTimetable>`])
