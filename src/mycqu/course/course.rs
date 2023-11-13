@@ -36,30 +36,53 @@ impl Course {
         if let Some(session) = session {
             cqu_session = Some(session.clone());
         } else {
-            cqu_session = json_map.get("session")
-                .and_then(Value::as_str).and_then(|item| CQUSession::from_str(item).ok());
+            cqu_session = json_map
+                .get("session")
+                .and_then(Value::as_str)
+                .and_then(|item| CQUSession::from_str(item).ok());
         }
 
-        let instructor: Option<String> = if let Some(Value::String(instructor_name)) = json_map.get("instructorName") {
+        let instructor: Option<String> = if let Some(Value::String(instructor_name)) =
+            json_map.get("instructorName")
+        {
             Some(instructor_name.to_string())
         } else if let Some(Value::String(instructor_names)) = json_map.get("instructorNames") {
             Some(instructor_names.to_string())
         } else if let Some(Value::Array(instructors)) = json_map.get("classTimetableInstrVOList") {
             Some(
-                instructors.iter().map_while(Value::as_str).collect::<Vec<&str>>().join(", ")
+                instructors
+                    .iter()
+                    .map_while(Value::as_str)
+                    .collect::<Vec<&str>>()
+                    .join(", "),
             )
         } else {
             None
         };
 
         Course {
-            name: json_map.get("courseName").and_then(Value::as_str).map(ToString::to_string),
-            code: json_map.get("courseCode").and_then(Value::as_str).map(ToString::to_string),
-            course_num: json_map.get("classNbr").and_then(Value::as_str).map(ToString::to_string),
-            dept: json_map.get("courseDepartmentName").or(json_map.get("courseDeptShortName"))
-                .and_then(Value::as_str).map(ToString::to_string),
-            credit: json_map.get("credit").or(json_map.get("courseCredit"))
-                .and_then(Value::as_str).and_then(|item| item.parse().ok()),
+            name: json_map
+                .get("courseName")
+                .and_then(Value::as_str)
+                .map(ToString::to_string),
+            code: json_map
+                .get("courseCode")
+                .and_then(Value::as_str)
+                .map(ToString::to_string),
+            course_num: json_map
+                .get("classNbr")
+                .and_then(Value::as_str)
+                .map(ToString::to_string),
+            dept: json_map
+                .get("courseDepartmentName")
+                .or(json_map.get("courseDeptShortName"))
+                .and_then(Value::as_str)
+                .map(ToString::to_string),
+            credit: json_map
+                .get("credit")
+                .or(json_map.get("courseCredit"))
+                .and_then(Value::as_str)
+                .and_then(|item| item.parse().ok()),
             instructor,
             session: cqu_session,
         }

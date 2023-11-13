@@ -63,7 +63,9 @@ async fn test_get_gpa_ranking(#[future] access_mycqu_session: Session) {
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), Error::NotAccess));
     }
-    GPARanking::fetch_self(&access_mycqu_session.await).await.unwrap();
+    GPARanking::fetch_self(&access_mycqu_session.await)
+        .await
+        .unwrap();
 }
 
 #[rstest]
@@ -76,5 +78,10 @@ async fn test_get_exam(#[future] access_mycqu_session: Session, login_data: &Log
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), Error::NotAccess));
     }
-    println!("{:?}", Exam::fetch_all(&access_mycqu_session.await, &login_data.student_id).await.unwrap());
+    println!(
+        "{:?}",
+        Exam::fetch_all(&access_mycqu_session.await, &login_data.student_id)
+            .await
+            .unwrap()
+    );
 }

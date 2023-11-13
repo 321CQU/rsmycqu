@@ -1,12 +1,15 @@
 //! [rsmycqu] 的工具库
 
+pub use models::*;
+
 pub trait APIModel {}
 
 pub mod models;
 
+pub(crate) mod consts;
+
 #[cfg(feature = "mycqu")]
 pub(crate) mod datetimes;
-pub(crate) mod consts;
 #[cfg(feature = "sso")]
 pub(crate) mod encrypt;
 #[cfg(feature = "sso")]

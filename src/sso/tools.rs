@@ -1,7 +1,7 @@
 use reqwest::{Response, StatusCode};
 
-use crate::errors::Error;
 use crate::errors::sso::{SSOError, SSOResult};
+use crate::errors::Error;
 use crate::session::Session;
 use crate::sso::encrypt::encrypt_password;
 use crate::sso::logout;
@@ -18,12 +18,14 @@ pub(super) enum LoginPageResponse {
 
 async fn launch_normal_login_result(res: Response) -> SSOResult<LoginPageResponse> {
     Ok(LoginPageResponse::NormalLogin {
-        login_page_data: sso_login_parser(&res.text().await?).map_err(
-            |err|
-                Error::UnExceptedError {
-                    msg: format!("Expected to successfully parse the page, but received: {}", err)
-                }
-        )?,
+        login_page_data: sso_login_parser(&res.text().await?).map_err(|err| {
+            Error::UnExceptedError {
+                msg: format!(
+                    "Expected to successfully parse the page, but received: {}",
+                    err
+                ),
+            }
+        })?,
     })
 }
 
@@ -69,9 +71,9 @@ pub(super) async fn get_login_request_data(
             but can not find the element span.login_auth_error#msg",
                 other
             )
-                .to_string(),
+            .to_string(),
         }
-            .into()),
+        .into()),
     }
 }
 
@@ -88,6 +90,9 @@ pub(super) fn launch_login_data(
         ("geolocation", "".to_string()),
         ("execution", login_page_data.login_page_flowkey.to_owned()),
         ("croypto", login_page_data.login_croypto.to_owned()),
-        ("password", encrypt_password(&login_page_data.login_croypto, password)?),
+        (
+            "password",
+            encrypt_password(&login_page_data.login_croypto, password)?,
+        ),
     ])
 }

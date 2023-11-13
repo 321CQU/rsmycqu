@@ -10,13 +10,14 @@ use crate::utils::consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOK
 
 #[inline]
 fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
-    Ok(
-        Regex::new(r"\?code=([^&]+)&").unwrap()
-            .captures(location.as_ref())
-            .and_then(|captures| captures.get(1))
-            .ok_or(MyCQUError::AccessError { msg: "Get Auth Code Error".to_string() })?
-            .as_str()
-    )
+    Ok(Regex::new(r"\?code=([^&]+)&")
+        .unwrap()
+        .captures(location.as_ref())
+        .and_then(|captures| captures.get(1))
+        .ok_or(MyCQUError::AccessError {
+            msg: "Get Auth Code Error".to_string(),
+        })?
+        .as_str())
 }
 
 pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<String> {
@@ -55,7 +56,8 @@ pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<St
         .ok_or(
             MyCQUError::AccessError {
                 msg: "Get Access Token Error".to_string(),
-            }.into()
+            }
+            .into(),
         )
 }
 

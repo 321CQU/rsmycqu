@@ -42,10 +42,9 @@ impl Deref for ShareSessionMap {
 
 impl ShareSessionMap {
     fn get_session(&self, session_type: &SessionType) -> Option<Session> {
-        self.lock().ok()
-            .and_then(|session_pool| {
-                session_pool.get(session_type).cloned()
-            })
+        self.lock()
+            .ok()
+            .and_then(|session_pool| session_pool.get(session_type).cloned())
     }
 }
 
@@ -56,16 +55,14 @@ fn session_map() -> ShareSessionMap {
 }
 
 #[fixture]
-pub(crate) async fn login_session(session_map: &ShareSessionMap, login_data: &LoginData) -> Session {
+pub(crate) async fn login_session(
+    session_map: &ShareSessionMap,
+    login_data: &LoginData,
+) -> Session {
     match session_map.get_session(&SessionType::Login) {
         None => {
             let mut session = Session::new();
-            let res = login(
-                &mut session,
-                &login_data.auth,
-                &login_data.password,
-                false,
-            ).await;
+            let res = login(&mut session, &login_data.auth, &login_data.password, false).await;
 
             assert_eq!(res.unwrap(), LoginResult::Success);
 
@@ -76,14 +73,15 @@ pub(crate) async fn login_session(session_map: &ShareSessionMap, login_data: &Lo
 
             session
         }
-        Some(session) => {
-            session.clone()
-        }
+        Some(session) => session.clone(),
     }
 }
 
 #[fixture]
-pub(crate) async fn access_mycqu_session(session_map: &ShareSessionMap, #[future] login_session: Session) -> Session {
+pub(crate) async fn access_mycqu_session(
+    session_map: &ShareSessionMap,
+    #[future] login_session: Session,
+) -> Session {
     match session_map.get_session(&SessionType::AccessMycqu) {
         None => {
             let mut session = login_session.await;
@@ -96,8 +94,6 @@ pub(crate) async fn access_mycqu_session(session_map: &ShareSessionMap, #[future
 
             session
         }
-        Some(session) => {
-            session.clone()
-        }
+        Some(session) => session.clone(),
     }
 }

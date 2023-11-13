@@ -1,11 +1,11 @@
 use aes::Aes128;
 use base64::engine::{general_purpose, GeneralPurpose};
 pub(crate) use base64::Engine;
-use block_padding::{Padding, Pkcs7};
 pub(crate) use block_padding::generic_array::{
-    GenericArray,
     typenum::{U16, U8},
+    GenericArray,
 };
+use block_padding::{Padding, Pkcs7};
 pub(crate) use crypto::cipher::*;
 use des::Des;
 

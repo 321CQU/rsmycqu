@@ -6,20 +6,20 @@ pub use course::*;
 pub use exam::*;
 pub use score::*;
 
-use crate::errors::{Error, ErrorHandler};
 use crate::errors::mycqu::MyCQUResult;
+use crate::errors::{Error, ErrorHandler};
 use crate::mycqu::utils::access::get_oauth_token;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::access_info::MyCQUAccessInfo;
 use crate::session::Session;
 use crate::sso::access_services;
-use crate::utils::APIModel;
 use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
+use crate::utils::APIModel;
 
-mod utils;
 pub mod course;
-pub mod score;
 pub mod exam;
+pub mod score;
+mod utils;
 
 #[cfg(test)]
 mod tests;
@@ -38,7 +38,9 @@ pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
     }
 
     let auth_token = get_oauth_token(&session.client).await?;
-    session.mycqu_access_info = Some(MyCQUAccessInfo { auth_header: auth_token });
+    session.mycqu_access_info = Some(MyCQUAccessInfo {
+        auth_header: auth_token,
+    });
     Ok(())
 }
 

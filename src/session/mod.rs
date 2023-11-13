@@ -26,7 +26,6 @@ pub struct Session {
     pub is_login: bool,
 
     // TODO: 寻找一个更便捷的方式，在保证类型安全且无运行时开销的情况下，避免每次新增服务都需要在这里增加信息
-
     /// [`mycqu`](crate::mycqu)所需的登陆信息
     pub mycqu_access_info: Option<MyCQUAccessInfo>,
 }
@@ -57,18 +56,16 @@ impl Session {
     ///
     /// 以确保自动重定向被禁用、cookies被启用
     pub fn custom<F>(custom_builder: F) -> SessionResult<Self>
-        where
-            F: Fn(&mut ClientBuilder) + 'static,
+    where
+        F: Fn(&mut ClientBuilder) + 'static,
     {
         let client = Client::custom(custom_builder)?;
 
-        Ok(
-            Session {
-                client,
-                is_login: false,
-                mycqu_access_info: None,
-            }
-        )
+        Ok(Session {
+            client,
+            is_login: false,
+            mycqu_access_info: None,
+        })
     }
 }
 

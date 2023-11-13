@@ -3,14 +3,14 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
-use crate::errors::Error;
 use crate::errors::mycqu::MyCQUResult;
-use crate::mycqu::Course;
+use crate::errors::Error;
 use crate::mycqu::utils::{encrypt::encrypt_student_id, mycqu_request_handler};
+use crate::mycqu::Course;
 use crate::session::Session;
-use crate::utils::APIModel;
 use crate::utils::consts::MYCQU_API_EXAM_LIST_URL;
 use crate::utils::datetimes::parse_weekday;
+use crate::utils::APIModel;
 
 /// 监考员信息
 #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -24,12 +24,10 @@ pub struct Invigilator {
 impl Invigilator {
     /// 从json字典中解析[`Invigilator`]
     pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
-        Some(
-            Invigilator {
-                name: json_map.get("instructor")?.as_str()?.to_string(),
-                dept: json_map.get("instDeptShortName")?.as_str()?.to_string(),
-            }
-        )
+        Some(Invigilator {
+            name: json_map.get("instructor")?.as_str()?.to_string(),
+            dept: json_map.get("instDeptShortName")?.as_str()?.to_string(),
+        })
     }
 }
 
@@ -75,32 +73,47 @@ pub struct Exam {
 impl Exam {
     /// 从json字典中解析[`Exam`]
     pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
-        Some(
-            Exam {
-                course: Course::from_json(json_map, None),
-                batch: json_map.get("batchName")?.as_str()?.to_string(),
-                batch_id: u16::try_from(json_map.get("batchId")?.as_u64()?).ok()?,
-                building: json_map.get("buildingName")?.as_str()?.to_string(),
-                floor: json_map.get("floorNum").and_then(Value::as_u64).map(u16::try_from).transpose().ok()?,
-                room: json_map.get("roomName")?.as_str()?.to_string(),
-                stu_num: u16::try_from(json_map.get("examStuNum")?.as_u64()?).ok()?,
-                date_str: json_map.get("examDate")?.as_str()?.to_string(),
-                start_time_str: json_map.get("startTime")?.as_str()?.to_string(),
-                end_time_str: json_map.get("endTime")?.as_str()?.to_string(),
-                week: u16::try_from(json_map.get("week")?.as_u64()?).ok()?,
-                weekday: parse_weekday(&json_map.get("weekDay")?.as_str()?)?,
-                stu_id: json_map.get("studentId")?.as_str()?.to_string(),
-                seat_num: u16::try_from(json_map.get("seatNum")?.as_u64()?).ok()?,
-                chief_invigilator: json_map.get("simpleChiefinvigilatorVOS")
-                    .and_then(Value::as_array)
-                    .map(|item| item.iter().map_while(Value::as_object).map_while(Invigilator::from_json).collect())
-                    .unwrap_or_default(),
-                asst_invigilator: json_map.get("simpleAssistantInviVOS")
-                    .and_then(Value::as_array)
-                    .map(|item| item.iter().map_while(Value::as_object).map_while(Invigilator::from_json).collect())
-                    .filter(Vec::is_empty),
-            }
-        )
+        Some(Exam {
+            course: Course::from_json(json_map, None),
+            batch: json_map.get("batchName")?.as_str()?.to_string(),
+            batch_id: u16::try_from(json_map.get("batchId")?.as_u64()?).ok()?,
+            building: json_map.get("buildingName")?.as_str()?.to_string(),
+            floor: json_map
+                .get("floorNum")
+                .and_then(Value::as_u64)
+                .map(u16::try_from)
+                .transpose()
+                .ok()?,
+            room: json_map.get("roomName")?.as_str()?.to_string(),
+            stu_num: u16::try_from(json_map.get("examStuNum")?.as_u64()?).ok()?,
+            date_str: json_map.get("examDate")?.as_str()?.to_string(),
+            start_time_str: json_map.get("startTime")?.as_str()?.to_string(),
+            end_time_str: json_map.get("endTime")?.as_str()?.to_string(),
+            week: u16::try_from(json_map.get("week")?.as_u64()?).ok()?,
+            weekday: parse_weekday(&json_map.get("weekDay")?.as_str()?)?,
+            stu_id: json_map.get("studentId")?.as_str()?.to_string(),
+            seat_num: u16::try_from(json_map.get("seatNum")?.as_u64()?).ok()?,
+            chief_invigilator: json_map
+                .get("simpleChiefinvigilatorVOS")
+                .and_then(Value::as_array)
+                .map(|item| {
+                    item.iter()
+                        .map_while(Value::as_object)
+                        .map_while(Invigilator::from_json)
+                        .collect()
+                })
+                .unwrap_or_default(),
+            asst_invigilator: json_map
+                .get("simpleAssistantInviVOS")
+                .and_then(Value::as_array)
+                .map(|item| {
+                    item.iter()
+                        .map_while(Value::as_object)
+                        .map_while(Invigilator::from_json)
+                        .collect()
+                })
+                .filter(Vec::is_empty),
+        })
     }
 
     /// 通过具有教务网权限的会话([`Session`])，获取考表安排([`Vec<Exam>`])
@@ -120,14 +133,30 @@ impl Exam {
     /// let user = Exam::fetch_all(&session, "your_student_id");
     /// # }
     /// ```
-    pub async fn fetch_all(session: &Session, student_id: impl AsRef<str>) -> MyCQUResult<Vec<Exam>> {
-        let res = mycqu_request_handler(session, |client|
-            client.get(MYCQU_API_EXAM_LIST_URL).query(&[("studentId", encrypt_student_id(student_id))]),
-        ).await?.json::<Map<String, Value>>().await?;
+    pub async fn fetch_all(
+        session: &Session,
+        student_id: impl AsRef<str>,
+    ) -> MyCQUResult<Vec<Exam>> {
+        let res = mycqu_request_handler(session, |client| {
+            client
+                .get(MYCQU_API_EXAM_LIST_URL)
+                .query(&[("studentId", encrypt_student_id(student_id))])
+        })
+        .await?
+        .json::<Map<String, Value>>()
+        .await?;
 
-        res.get("data").and_then(|item| item.get("content").and_then(Value::as_array))
-            .map(|arr| arr.iter().filter_map(Value::as_object).filter_map(Exam::from_json).collect::<Vec<Exam>>())
-            .ok_or(Error::UnExceptedError { msg: "Unexpected data format".to_string() })
+        res.get("data")
+            .and_then(|item| item.get("content").and_then(Value::as_array))
+            .map(|arr| {
+                arr.iter()
+                    .filter_map(Value::as_object)
+                    .filter_map(Exam::from_json)
+                    .collect::<Vec<Exam>>()
+            })
+            .ok_or(Error::UnExceptedError {
+                msg: "Unexpected data format".to_string(),
+            })
     }
 }
 

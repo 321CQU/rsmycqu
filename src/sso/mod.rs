@@ -2,8 +2,8 @@
 
 use reqwest::StatusCode;
 
-use crate::errors::Error;
 use crate::errors::sso::{SSOError, SSOResult};
+use crate::errors::Error;
 #[cfg(any(feature = "mycqu"))]
 use crate::session::Client;
 use crate::session::Session;
@@ -19,7 +19,11 @@ mod tests;
 /// 退出账号登陆
 pub async fn logout(session: &mut Session) -> SSOResult<()> {
     let client = &session.client;
-    client.get(SSO_LOGOUT_URL).send().await.map_err(|_| SSOError::LogoutError)?;
+    client
+        .get(SSO_LOGOUT_URL)
+        .send()
+        .await
+        .map_err(|_| SSOError::LogoutError)?;
     session.is_login = false;
 
     Ok(())
@@ -79,7 +83,7 @@ pub async fn login(
                         "status code {} is got (302 expected) when sending login post",
                         other
                     )
-                        .to_string(),
+                    .to_string(),
                 }),
             }
         }

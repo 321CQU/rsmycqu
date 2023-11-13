@@ -12,7 +12,7 @@ fn parse_short_weekday(weekday: impl AsRef<str>) -> Option<u8> {
         "五" => Some(4),
         "六" => Some(5),
         "日" => Some(6),
-        _ => None
+        _ => None,
     }
 }
 
@@ -26,27 +26,40 @@ fn parse_long_weekday(weekday: impl AsRef<str>) -> Option<u8> {
         "星期五" => Some(4),
         "星期六" => Some(5),
         "星期日" => Some(6),
-        _ => None
+        _ => None,
     }
 }
 
 #[inline]
-pub(crate) fn parse_weekday(weekday: &impl AsRef<str>) -> Option<u8> {
+pub(crate) fn parse_weekday(weekday: &(impl AsRef<str> + ?Sized)) -> Option<u8> {
     parse_short_weekday(weekday).or_else(|| parse_long_weekday(weekday))
 }
 
 impl Period {
     pub(crate) fn parse_period_str(s: impl AsRef<str>) -> Option<Self> {
-        let period: Vec<u8> = s.as_ref().split('-').map_while(|item| item.parse().ok()).collect();
+        let period: Vec<u8> = s
+            .as_ref()
+            .split('-')
+            .map_while(|item| item.parse().ok())
+            .collect();
 
         match period.len() {
-            1 => Some(Period { start: period[0], end: period[0] }),
-            2 => Some(Period { start: period[0], end: period[1] }),
-            _ => None
+            1 => Some(Period {
+                start: period[0],
+                end: period[0],
+            }),
+            2 => Some(Period {
+                start: period[0],
+                end: period[1],
+            }),
+            _ => None,
         }
     }
 
     pub(crate) fn parse_week_str(s: impl AsRef<str>) -> Vec<Self> {
-        s.as_ref().split(',').map_while(Self::parse_period_str).collect()
+        s.as_ref()
+            .split(',')
+            .map_while(Self::parse_period_str)
+            .collect()
     }
 }

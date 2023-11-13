@@ -13,8 +13,8 @@ pub enum SessionError {
     #[snafu(display("Session Build Error: {err}"))]
     SessionBuildError {
         /// 引发该异常的[`reqwest::Error`]
-        err: reqwest::Error
-    }
+        err: reqwest::Error,
+    },
 }
 
 /// [Result<T, Error<SessionError>>]的重命名

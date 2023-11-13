@@ -7,12 +7,12 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
-use crate::errors::Error;
 use crate::errors::mycqu::{MyCQUError, MyCQUResult};
+use crate::errors::Error;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::Session;
-use crate::utils::APIModel;
 use crate::utils::consts::MYCQU_API_SESSION_URL;
+use crate::utils::APIModel;
 
 /// 重庆大学的某一学期
 #[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
@@ -76,7 +76,8 @@ impl FromStr for CQUSession {
     /// let cqu_session: CQUSession = "abced".parse().unwrap();
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Regex::new("^([0-9]{4})年?([春秋])$").unwrap()
+        Regex::new("^([0-9]{4})年?([春秋])$")
+            .unwrap()
             .captures(s)
             .and_then(|captures| {
                 if let (Some(year), Some(season)) = (captures.get(1), captures.get(2)) {
@@ -85,13 +86,11 @@ impl FromStr for CQUSession {
                     None
                 }
             })
-            .map(|(year, season)|
-                CQUSession {
-                    id: None,
-                    year: year.parse().unwrap(),
-                    is_autumn: season == "秋",
-                }
-            )
+            .map(|(year, season)| CQUSession {
+                id: None,
+                year: year.parse().unwrap(),
+                is_autumn: season == "秋",
+            })
             .ok_or(Error::ModelParseError)
     }
 }
@@ -120,7 +119,11 @@ impl CQUSession {
     /// let id = cqu_session.id_or(Some(session_info_provider));
     /// # }
     /// ```
-    pub async fn id_or<T, U>(&mut self, session_info_provider: Option<T>) -> Option<u16> where T: Fn(u16, bool) -> U, U: Future<Output=Option<u16>> {
+    pub async fn id_or<T, U>(&mut self, session_info_provider: Option<T>) -> Option<u16>
+    where
+        T: Fn(u16, bool) -> U,
+        U: Future<Output = Option<u16>>,
+    {
         if self.id.is_none() {
             if let Some(session_info_provider) = session_info_provider {
                 self.id = session_info_provider(self.year, self.is_autumn).await;
@@ -132,13 +135,14 @@ impl CQUSession {
 
     /// 从json字典中解析[`CQUSession`]
     pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
-        if let (Some(Value::String(name)), Some(Value::String(id))) = (json_map.get("name"), json_map.get("id")) {
-            CQUSession::from_str(name).ok()
-                .map(|mut session| {
-                    let id = id.as_str().parse::<u16>().ok();
-                    session.id = id;
-                    session
-                })
+        if let (Some(Value::String(name)), Some(Value::String(id))) =
+            (json_map.get("name"), json_map.get("id"))
+        {
+            CQUSession::from_str(name).ok().map(|mut session| {
+                let id = id.as_str().parse::<u16>().ok();
+                session.id = id;
+                session
+            })
         } else {
             None
         }
@@ -159,14 +163,15 @@ impl CQUSession {
     /// # }
     /// ```
     pub async fn fetch_all(session: &Session) -> MyCQUResult<Vec<Self>> {
-        let res = mycqu_request_handler(
-            session, |client| client.get(MYCQU_API_SESSION_URL)).await?
-            .json::<Vec<Map<String, Value>>>().await?;
-        Ok(
-            res.iter().map_while(CQUSession::from_json)
-                .filter(|item| item.id.is_some()) // 仅有"2015春"没有ID
-                .collect()
-        )
+        let res = mycqu_request_handler(session, |client| client.get(MYCQU_API_SESSION_URL))
+            .await?
+            .json::<Vec<Map<String, Value>>>()
+            .await?;
+        Ok(res
+            .iter()
+            .map_while(CQUSession::from_json)
+            .filter(|item| item.id.is_some()) // 仅有"2015春"没有ID
+            .collect())
     }
 }
 
