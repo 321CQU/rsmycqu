@@ -3,7 +3,6 @@
 use std::future::Future;
 use std::str::FromStr;
 
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
@@ -30,7 +29,7 @@ impl ToString for CQUSession {
     ///
     /// # Example
     /// ```rust
-    /// # use rsmycqu::mycqu::CQUSession;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// let cqu_session = CQUSession{
     ///     id: None,
     ///     year: 2023,
@@ -51,7 +50,7 @@ impl FromStr for CQUSession {
     ///
     /// # Example
     /// ```rust
-    /// # use rsmycqu::mycqu::CQUSession;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// let cqu_session: CQUSession = "2023年秋".parse().unwrap();
     /// assert_eq!(cqu_session, CQUSession{
     ///     id: None,
@@ -61,7 +60,7 @@ impl FromStr for CQUSession {
     /// ```
     ///
     /// ```rust
-    /// # use rsmycqu::mycqu::CQUSession;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// let cqu_session: CQUSession = "2023年春".parse().unwrap();
     /// assert_eq!(cqu_session, CQUSession{
     ///     id: None,
@@ -72,12 +71,11 @@ impl FromStr for CQUSession {
     ///
     /// 以下调用方式会抛出[`Error<MyCQUError::CQUSessionParseError>::InnerError`]异常
     /// ```rust, should_panic
-    /// # use rsmycqu::mycqu::CQUSession;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// let cqu_session: CQUSession = "abced".parse().unwrap();
     /// ```
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Regex::new("^([0-9]{4})年?([春秋])$")
-            .unwrap()
+        regex!(r"^([0-9]{4})年?([春秋])$")
             .captures(s)
             .and_then(|captures| {
                 if let (Some(year), Some(season)) = (captures.get(1), captures.get(2)) {
@@ -107,7 +105,7 @@ impl CQUSession {
     /// ```rust, no_run
     /// # use rsmycqu::session::Session;
     /// # use std::str::FromStr;
-    /// # use rsmycqu::mycqu::CQUSession;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// # async fn example() {
     /// async fn session_info_provider(year: u16, is_autumn: bool) -> Option<u16> {
     ///     let session = Session::new();
@@ -152,8 +150,9 @@ impl CQUSession {
     ///
     /// # Examples
     /// ```rust, no_run
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::mycqu::{access_mycqu, CQUSession};
     /// # use rsmycqu::session::Session;
     /// # async fn async_fetch_all_cqu_session() {
     /// # let mut session = Session::new();

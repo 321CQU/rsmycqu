@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
 use crate::errors::mycqu::MyCQUResult;
+use crate::mycqu::course::Course;
 use crate::mycqu::utils::{encrypt::encrypt_student_id, mycqu_request_handler};
-use crate::mycqu::Course;
 use crate::session::Session;
 use crate::utils::consts::MYCQU_API_EXAM_LIST_URL;
 use crate::utils::datetimes::parse_weekday;
@@ -120,10 +120,12 @@ impl Exam {
     /// # Examples
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
-    /// use rsmycqu::mycqu::{access_mycqu, CQUSession, Exam, GPARanking};
-    /// use rsmycqu::session::Session;
-    /// use rsmycqu::sso::login;
-    ///
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSession;
+    /// # use rsmycqu::mycqu::exam::Exam;
+    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::sso::login;
+    /// #
     /// # async fn fetch_exam_list() {
     /// let mut session = Session::new();
     /// let cqu_session = CQUSession {id: Some(1234), year: 2023, is_autumn: true};

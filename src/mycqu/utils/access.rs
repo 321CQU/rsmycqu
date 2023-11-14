@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use regex::Regex;
 use serde_json::Value;
 
 use crate::errors::mycqu::MyCQUError;
@@ -10,8 +9,7 @@ use crate::utils::consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOK
 
 #[inline]
 fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
-    Ok(Regex::new(r"\?code=([^&]+)&")
-        .unwrap()
+    Ok(regex!(r"\?code=([^&]+)&")
         .captures(location.as_ref())
         .and_then(|captures| captures.get(1))
         .ok_or(MyCQUError::AccessError {

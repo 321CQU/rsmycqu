@@ -1,11 +1,15 @@
 use rstest::*;
 
 use crate::errors::Error;
-use crate::mycqu::{access_mycqu, Exam, GPARanking, Score, User};
+use crate::mycqu::exam::Exam;
+use crate::mycqu::score::{GPARanking, Score};
+use crate::mycqu::{access_mycqu, User};
 use crate::session::Session;
 use crate::utils::test_fixture::{access_mycqu_session, login_data, login_session, LoginData};
 
 mod course;
+mod enroll;
+
 #[rstest]
 #[ignore]
 #[tokio::test]
@@ -78,10 +82,7 @@ async fn test_get_exam(#[future] access_mycqu_session: Session, login_data: &Log
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), Error::NotAccess));
     }
-    println!(
-        "{:?}",
-        Exam::fetch_all(&access_mycqu_session.await, &login_data.student_id)
-            .await
-            .unwrap()
-    );
+    Exam::fetch_all(&access_mycqu_session.await, &login_data.student_id)
+        .await
+        .unwrap();
 }

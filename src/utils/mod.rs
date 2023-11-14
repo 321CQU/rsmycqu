@@ -1,5 +1,6 @@
 //! [rsmycqu] 的工具库
 
+pub use macros::*;
 pub use models::*;
 
 pub trait APIModel {}
@@ -7,6 +8,8 @@ pub trait APIModel {}
 pub mod models;
 
 pub(crate) mod consts;
+#[macro_use]
+pub(crate) mod macros;
 
 #[cfg(feature = "mycqu")]
 pub(crate) mod datetimes;

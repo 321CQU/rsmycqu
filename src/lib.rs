@@ -9,6 +9,9 @@
 
 #![warn(missing_docs)]
 
+pub use utils::models;
+
+#[macro_use]
 mod utils;
 
 pub mod errors;

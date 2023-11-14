@@ -3,9 +3,8 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
+use super::{Course, CourseDayTime};
 use crate::errors::mycqu::MyCQUResult;
-use crate::mycqu::course::course::Course;
-use crate::mycqu::course_day_time::CourseDayTime;
 use crate::mycqu::utils::mycqu_request_handler;
 use crate::session::Session;
 use crate::utils::consts::{MYCQU_API_ENROLL_TIMETABLE_URL, MYCQU_API_TIMETABLE_URL};
@@ -102,9 +101,10 @@ impl CourseTimetable {
     /// # Examples
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
-    /// use rsmycqu::mycqu::{access_mycqu, CourseTimetable, CQUSession};
-    /// use rsmycqu::session::Session;
-    /// use rsmycqu::sso::login;
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::{CourseTimetable, CQUSession};
+    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::sso::login;
     ///
     /// # async fn fetch_curr_timetable() {
     /// let mut session = Session::new();
@@ -137,9 +137,10 @@ impl CourseTimetable {
     /// # Examples
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
-    /// use rsmycqu::mycqu::{access_mycqu, CourseTimetable, CQUSession};
-    /// use rsmycqu::session::Session;
-    /// use rsmycqu::sso::login;
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::{CourseTimetable, CQUSession};
+    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::sso::login;
     ///
     /// # async fn fetch_curr_timetable() {
     /// let mut session = Session::new();

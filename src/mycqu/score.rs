@@ -1,13 +1,12 @@
 //! 该模块提供成绩查询、绩点查询接口
 
-use std::str::FromStr;
-
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
+use std::str::FromStr;
 
 use crate::errors::mycqu::MyCQUResult;
+use crate::mycqu::course::{CQUSession, Course};
 use crate::mycqu::utils::{check_website_response, mycqu_request_handler};
-use crate::mycqu::{CQUSession, Course};
 use crate::session::Session;
 use crate::utils::consts::{MYCQU_API_GPA_RANKING_URL, MYCQU_API_SCORE_URL};
 use crate::utils::APIModel;
@@ -47,10 +46,12 @@ impl Score {
     /// # Examples
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
-    /// use rsmycqu::mycqu::{access_mycqu, CQUSession, Score};
-    /// use rsmycqu::session::Session;
-    /// use rsmycqu::sso::login;
-    ///
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSession;
+    /// # use rsmycqu::mycqu::score::Score;
+    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::sso::login;
+    /// #
     /// # async fn fetch_score() {
     /// let mut session = Session::new();
     /// let cqu_session = CQUSession {id: Some(1234), year: 2023, is_autumn: true};
@@ -153,10 +154,12 @@ impl GPARanking {
     /// # Examples
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
-    /// use rsmycqu::mycqu::{access_mycqu, CQUSession, GPARanking};
-    /// use rsmycqu::session::Session;
-    /// use rsmycqu::sso::login;
-    ///
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSession;
+    /// # use rsmycqu::mycqu::score::GPARanking;
+    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::sso::login;
+    /// #
     /// # async fn fetch_gpa_ranking() {
     /// let mut session = Session::new();
     /// let cqu_session = CQUSession {id: Some(1234), year: 2023, is_autumn: true};

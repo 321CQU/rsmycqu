@@ -2,7 +2,7 @@ use rstest::*;
 use serde_json::{json, Value};
 
 use crate::errors::Error;
-use crate::mycqu::{CQUSession, CQUSessionInfo, Course, CourseDayTime, CourseTimetable};
+use crate::mycqu::course::{CQUSession, CQUSessionInfo, Course, CourseDayTime, CourseTimetable};
 use crate::session::Session;
 use crate::utils::models::Period;
 use crate::utils::test_fixture::{access_mycqu_session, login_data, LoginData};

@@ -63,8 +63,9 @@ pub enum Error<T: stdError> {
 }
 
 pub(crate) mod error_handle_help {
-    use crate::errors::{Error, ErrorHandler, PubInnerError};
     use std::error::Error as stdError;
+
+    use crate::errors::{Error, ErrorHandler, PubInnerError};
 
     impl<T: PubInnerError> From<T> for Error<T> {
         fn from(value: T) -> Self {

@@ -5,7 +5,7 @@ use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
-use crate::mycqu::CQUSession;
+use super::CQUSession;
 use crate::utils::APIModel;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

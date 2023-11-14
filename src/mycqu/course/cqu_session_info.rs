@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 
+use super::CQUSession;
 use crate::errors::mycqu::MyCQUResult;
 use crate::mycqu::utils::mycqu_request_handler;
-use crate::mycqu::CQUSession;
 use crate::session::Session;
 use crate::utils::consts::{MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL};
 use crate::utils::APIModel;
@@ -68,8 +68,9 @@ impl CQUSessionInfo {
     ///
     /// # Examples
     /// ```rust, no_run
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSessionInfo;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::mycqu::{access_mycqu, CQUSessionInfo};
     /// # use rsmycqu::session::Session;
     /// # async fn async_fetch_all_cqu_session_info() {
     /// # let mut session = Session::new();
@@ -103,8 +104,9 @@ impl CQUSessionInfo {
     ///
     /// # Examples
     /// ```rust, no_run
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSessionInfo;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::mycqu::{access_mycqu, CQUSessionInfo};
     /// # use rsmycqu::session::Session;
     /// # async fn async_fetch_all_cqu_session_info() {
     /// # let mut session = Session::new();

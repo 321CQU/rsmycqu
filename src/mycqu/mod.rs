@@ -2,10 +2,6 @@
 
 use serde::{Deserialize, Serialize};
 
-pub use course::*;
-pub use exam::*;
-pub use score::*;
-
 use crate::errors::mycqu::MyCQUResult;
 use crate::errors::{Error, ErrorHandler};
 use crate::mycqu::utils::access::get_oauth_token;
@@ -17,6 +13,7 @@ use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
 use crate::utils::APIModel;
 
 pub mod course;
+pub mod enroll;
 pub mod exam;
 pub mod score;
 mod utils;
