@@ -148,7 +148,7 @@ impl Exam {
         .await?;
 
         res.get("data")
-            .and_then(|item| item.get("content").and_then(Value::as_array))
+            .and_then(Value::as_array)
             .map(|arr| {
                 arr.iter()
                     .filter_map(Value::as_object)

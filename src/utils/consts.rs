@@ -48,7 +48,7 @@ pub(crate) const MYCQU_API_GPA_RANKING_URL: &str =
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_EXAM_LIST_URL: &str =
-    formatcp!("{MYCQU_ROOT_URL}/api/exam/examTask/get-student-exam-list-outside");
+    formatcp!("{MYCQU_ROOT_URL}/api/exam/examTask/get-student-exam-tab-list");
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_ENROLL_COURSE_LIST_URL: &str =
