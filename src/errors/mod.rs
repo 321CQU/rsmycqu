@@ -79,16 +79,6 @@ pub(crate) mod error_handle_help {
         }
     }
 
-    impl<T: PubInnerError> From<reqwest::header::ToStrError> for Error<T> {
-        fn from(value: reqwest::header::ToStrError) -> Self {
-            format!(
-                "Expected http header can transfer to str, but received: {}",
-                value
-            )
-            .into()
-        }
-    }
-
     impl<T> From<String> for Error<T>
     where
         T: stdError,

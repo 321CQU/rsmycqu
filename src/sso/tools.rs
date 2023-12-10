@@ -5,10 +5,7 @@ use crate::errors::Error;
 use crate::session::Session;
 use crate::sso::encrypt::encrypt_password;
 use crate::sso::logout;
-use crate::utils::{
-    consts::SSO_LOGIN_URL,
-    page_parser::sso_parser::{sso_login_parser, SSOLoginPageData},
-};
+use crate::utils::{consts::SSO_LOGIN_URL, get_response_header, page_parser::{sso_login_parser, SSOLoginPageData}};
 
 /// 登陆页面返回数据，根据该数据确定是否需要验证码或登陆链接
 pub(super) enum LoginPageResponse {
@@ -43,24 +40,18 @@ pub(super) async fn get_login_request_data(
                 return launch_normal_login_result(local_res).await;
             }
 
-            let jump_url = res
-                .headers()
-                .get("Location")
+            let jump_url = get_response_header(&res, "Location")
                 .ok_or::<Error<SSOError>>(
-                    "Expected response has \"Location\" but not found".into(),
-                )?
-                .to_str()?;
+                "Expected response has \"Location\" but not found".into(),
+            )?;
 
             let login_url_res = session.client.get(jump_url).send().await?;
 
             Ok(LoginPageResponse::HasLogin {
-                login_url: login_url_res
-                    .headers()
-                    .get("Location")
+                login_url: get_response_header(&login_url_res, "Location")
                     .ok_or::<Error<SSOError>>(
                         "Expected response has \"Location\" but not found".into(),
                     )?
-                    .to_str()?
                     .to_string(),
             })
         }

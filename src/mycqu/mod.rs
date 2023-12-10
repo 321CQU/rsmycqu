@@ -40,7 +40,7 @@ pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
 }
 
 /// 教务网用户信息接口响应数据模型
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct User {
     /// 姓名
     pub name: String,

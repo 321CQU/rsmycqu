@@ -11,7 +11,7 @@ use crate::utils::models::Period;
 use crate::utils::APIModel;
 
 /// 可选课程时间表信息
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EnrollCourseTimetable {
     /// 上课周数，例如：["1-5", "7-9"]
     pub weeks: Vec<String>,

@@ -16,7 +16,7 @@ use crate::utils::consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL;
 use crate::utils::APIModel;
 
 /// 可选具体课程，包含课程上课时间、上课教师、教室可容纳学生等信息
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EnrollCourseItem {
     /// 可选具体课程id，每个可选具体课程具有唯一id，部分从属课程该值为`None`
     pub id: Option<String>,

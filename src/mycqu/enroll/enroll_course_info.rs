@@ -13,7 +13,7 @@ use crate::utils::consts::MYCQU_API_ENROLL_COURSE_LIST_URL;
 use crate::utils::APIModel;
 
 /// 可选课程信息
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct EnrollCourseInfo {
     /// 可选课程id
     pub id: String,

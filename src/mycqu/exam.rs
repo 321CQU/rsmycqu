@@ -12,7 +12,7 @@ use crate::utils::datetimes::parse_weekday;
 use crate::utils::APIModel;
 
 /// 监考员信息
-#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Invigilator {
     /// 监考员姓名
     pub name: String,
@@ -33,7 +33,7 @@ impl Invigilator {
 impl APIModel for Invigilator {}
 
 /// 考试信息
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Exam {
     /// 考试对应的课程，其中学分 "credit"、教师 "instructor"、教学班号 "course_num" 可能无法获取（其值会设置为 `None`）
     pub course: Course,
