@@ -16,6 +16,9 @@ pub mod sso;
 #[cfg(feature = "mycqu")]
 pub mod mycqu;
 
+#[cfg(feature = "card")]
+pub mod card;
+
 pub(crate) trait PubInnerError: stdError {}
 
 /// 支持不同泛型的[`Error`]相互转换

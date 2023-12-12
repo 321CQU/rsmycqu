@@ -8,7 +8,10 @@ pub(crate) use client::Client;
 pub use session_builder::*;
 
 use crate::errors::session::SessionResult;
+#[cfg(feature = "mycqu")]
 use crate::session::access_info::MyCQUAccessInfo;
+#[cfg(feature = "card")]
+use crate::session::access_info::CardAccessInfo;
 
 pub mod access_info;
 mod client;
@@ -27,7 +30,12 @@ pub struct Session {
 
     // TODO: 寻找一个更便捷的方式，在保证类型安全且无运行时开销的情况下，避免每次新增服务都需要在这里增加信息
     /// [`mycqu`](crate::mycqu)所需的登陆信息
+    #[cfg(feature = "mycqu")]
     pub mycqu_access_info: Option<MyCQUAccessInfo>,
+
+    /// [`card`](crate::card)所需的登陆信息
+    #[cfg(feature = "card")]
+    pub card_access_info: Option<CardAccessInfo>,
 }
 
 impl Session {
@@ -42,7 +50,10 @@ impl Session {
         Session {
             client: Client::default(),
             is_login: false,
+            #[cfg(feature = "mycqu")]
             mycqu_access_info: None,
+            #[cfg(feature = "card")]
+            card_access_info: None,
         }
     }
 
@@ -64,7 +75,10 @@ impl Session {
         Ok(Session {
             client,
             is_login: false,
+            #[cfg(feature = "mycqu")]
             mycqu_access_info: None,
+            #[cfg(feature = "card")]
+            card_access_info: None,
         })
     }
 }

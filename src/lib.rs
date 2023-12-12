@@ -15,8 +15,14 @@ pub use utils::models;
 mod utils;
 
 pub mod errors;
-#[cfg(feature = "mycqu")]
-pub mod mycqu;
+
 pub mod session;
+
 #[cfg(feature = "sso")]
 pub mod sso;
+
+#[cfg(feature = "mycqu")]
+pub mod mycqu;
+
+#[cfg(feature = "card")]
+pub mod card;

@@ -3,6 +3,8 @@ use std::ops::Deref;
 use std::sync::Mutex;
 
 use rstest::*;
+#[cfg(feature = "card")]
+use crate::card::access_card;
 
 use crate::mycqu::access_mycqu;
 use crate::session::Session;
@@ -29,6 +31,8 @@ pub(crate) fn login_data() -> LoginData {
 pub(crate) enum SessionType {
     Login,
     AccessMycqu,
+    #[cfg(feature = "card")]
+    AccessCard,
 }
 
 pub(crate) struct ShareSessionMap(Mutex<HashMap<SessionType, Session>>);
@@ -90,6 +94,28 @@ pub(crate) async fn access_mycqu_session(
             {
                 let mut session_pool = session_map.lock().unwrap();
                 (*session_pool).insert(SessionType::AccessMycqu, session.clone());
+            }
+
+            session
+        }
+        Some(session) => session.clone(),
+    }
+}
+
+#[cfg(feature = "card")]
+#[fixture]
+pub(crate) async fn access_card_session(
+    session_map: &ShareSessionMap,
+    #[future] login_session: Session,
+) -> Session {
+    match session_map.get_session(&SessionType::AccessCard) {
+        None => {
+            let mut session = login_session.await;
+            access_card(&mut session).await.unwrap();
+
+            {
+                let mut session_pool = session_map.lock().unwrap();
+                (*session_pool).insert(SessionType::AccessCard, session.clone());
             }
 
             session
