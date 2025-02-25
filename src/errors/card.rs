@@ -4,27 +4,16 @@ use std::fmt::Debug;
 
 use snafu::prelude::*;
 
-use crate::errors::{Error, PubInnerError};
+use crate::errors::{ApiResult, RsMyCQUError};
 
 /// MyCQUError
 #[derive(Debug, Snafu)]
+#[snafu(visibility(pub(crate)))]
 pub enum CardError {
-    /// 获取`my.cqu.edu.cn`服务访问权限错误时抛出
-    #[snafu(display("{msg}"))]
-    AccessError {
-        /// 错误详细信息
-        msg: String,
-    },
-
-    /// `card.cqu.edu.cn`网站访问出错
-    #[snafu(display("{msg}"))]
-    WebsiteError {
-        /// 错误详细信息
-        msg: String,
-    },
+    #[snafu(display("获取访问权限失败"))]
+    AccessError,
 }
 
-/// [Result<T, Error<CardError>>]的重命名
-pub type CardResult<T> = Result<T, Error<CardError>>;
+impl RsMyCQUError for CardError {}
 
-impl PubInnerError for CardError {}
+pub type CardResult<T> = ApiResult<T, CardError>;

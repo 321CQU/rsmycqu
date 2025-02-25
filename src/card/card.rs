@@ -1,57 +1,58 @@
 //! 校园课余额、账单查询接口
 
-
 use reqwest::header::CONTENT_LENGTH;
 use serde::{Deserialize, Serialize};
 use serde_json::{from_str, Map, Value};
-use crate::card::utils::card_request_handler;
-use crate::errors::card::{CardError, CardResult};
-use crate::errors::Error;
-use crate::session::Session;
-use crate::utils::consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL};
+use serde_with::serde_as;
+use snafu::{ensure, OptionExt};
+
+use crate::{
+    card::utils::card_request_handler,
+    errors,
+    errors::{
+        card::{CardError, CardResult},
+        ApiError,
+    },
+    session::Session,
+    utils::consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+};
 
 /// 校园卡相关信息
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Card {
     /// 校园卡id
+    #[serde(alias = "acctNo")]
+    #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
     pub id: String,
-    /// 账户余额
-    pub amount: f64,
+    /// 账户余额，单位为分
+    #[serde(alias = "acctAmt")]
+    pub amount: u64,
 }
 
 /// 校园卡账单相关信息
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Bill {
     /// 交易名称
+    #[serde(alias = "tranName")]
     pub name: String,
     /// 交易时间
+    #[serde(alias = "tranDt")]
     pub date: String,
     /// 交易地点
+    #[serde(alias = "mchAcctName")]
     pub place: String,
-    /// 交易金额
-    pub tran_amount: f64,
-    /// 账户余额
-    pub acc_amount: f64
+    /// 交易金额，单位为分
+    #[serde(alias = "tranAmt")]
+    pub tran_amount: u64,
+    /// 账户余额，单位为分
+    #[serde(alias = "acctAmt")]
+    #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
+    pub acc_amount: u64,
 }
 
 impl Card {
-    /// 从json字典中解析[`Card`]
-    pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
-        if let (Some(id), Some(amount)) = (
-            json_map.get("acctNo").and_then(Value::as_number).map(ToString::to_string),
-            json_map.get("acctAmt").and_then(Value::as_f64).map(|item| item / 100.0)
-        ) {
-            return Some(
-                Card {
-                    id,
-                    amount,
-                }
-            )
-        }
-
-        None
-    }
-
     /// 通过具有校园卡查询网址权限的会话([`Session`])，获取校园卡信息([`Card`])
     ///
     /// # Examples
@@ -70,59 +71,35 @@ impl Card {
     /// ```
     pub async fn fetch_self(session: &Session) -> CardResult<Card> {
         let res = card_request_handler(session, |client| {
-            client.post(CARD_GET_CARD_URL)
-                .header(CONTENT_LENGTH, 0)
-        }).await?;
+            client.post(CARD_GET_CARD_URL).header(CONTENT_LENGTH, 0)
+        })
+        .await?;
 
         let text = res.json::<String>().await?;
-        let json = from_str::<Map<String, Value>>(&text)
-            .map_err(|err| {
-                println!("{:?}", err);
-                Error::UnExceptedError {msg: "Website response format incorrect".to_string()}
-            })?;
+        let mut json = from_str::<Map<String, Value>>(&text).map_err(|_| ApiError::Website {
+            msg: "Website response format incorrect".to_string(),
+        })?;
 
-        if json.get("respCode").and_then(Value::as_str).is_some_and(|code| code != "0000") {
-            return Err(
-                CardError::WebsiteError {
-                    msg: json
-                        .get("respInfo")
-                        .and_then(Value::as_str)
-                        .unwrap_or("No Website Error")
-                        .to_string()
-                }.into()
-            )
-        }
+        ensure!(
+            json.get("respCode").and_then(Value::as_str) == Some("0000"),
+            errors::WebsiteSnafu {
+                msg: json
+                    .get("respInfo")
+                    .and_then(Value::as_str)
+                    .unwrap_or("No Website Error")
+                    .to_string(),
+            }
+        );
 
-        if let Some(Value::Object(data)) = json.get("objs").and_then(Value::as_array).and_then(|array| array.get(0)) {
-            return Card::from_json(data).ok_or(Error::UnExceptedError {msg: "Website response format incorrect".to_string()})
-        }
-
-        Err(Error::UnExceptedError {msg: "Website response format incorrect".to_string()})
-    }
-}
-
-impl Bill {
-    /// 从json字典中解析[`Bill`]
-    pub(crate) fn from_json(json_map: &Map<String, Value>) -> Option<Self> {
-        if let (Some(name), Some(date), Some(place), Some(tran_amount), Some(acc_amount)) = (
-            json_map.get("tranName").and_then(Value::as_str).map(ToString::to_string),
-            json_map.get("tranDt").and_then(Value::as_str).map(ToString::to_string),
-            json_map.get("mchAcctName").and_then(Value::as_str).map(ToString::to_string),
-            json_map.get("tranAmt").and_then(Value::as_f64).map(|item| item / 100.0),
-            json_map.get("acctAmt").and_then(Value::as_str).and_then(|item| item.parse::<f64>().ok()).map(|item| item / 100.0)
-        ) {
-            return Some(
-                Bill {
-                    name,
-                    date,
-                    place,
-                    tran_amount,
-                    acc_amount,
-                }
-            )
-        }
-
-        None
+        json.get_mut("objs")
+            .and_then(Value::as_array_mut)
+            .and_then(|array| array.get_mut(0))
+            .map(Value::take)
+            .map(serde_json::from_value)
+            .whatever_context::<&str, ApiError<CardError>>("Website response format incorrect")?
+            .map_err(|err| ApiError::ModelParse {
+                msg: format!("Deserialize error: {}", err),
+            })
     }
 }
 
@@ -146,29 +123,38 @@ impl Card {
     /// let bills = card.fetch_bill(&session, "2023-11-10", "2023-12-12", 1, 100).await.unwrap();
     /// # }
     /// ```
-    pub async fn fetch_bill(&self, session: &Session, start_date: impl AsRef<str>, end_date: impl AsRef<str>, page: u16, row: u16) -> CardResult<Vec<Bill>> {
+    pub async fn fetch_bill(
+        &self,
+        session: &Session,
+        start_date: impl AsRef<str>,
+        end_date: impl AsRef<str>,
+        page: u16,
+        row: u16,
+    ) -> CardResult<Vec<Bill>> {
         let res = card_request_handler(session, |client| {
-            client.post(CARD_GET_BILL_URL)
-                .form(&[
-                    ("sdate", start_date.as_ref()),
-                    ("edate", end_date.as_ref()),
-                    ("account", self.id.as_ref()),
-                    ("page", &page.to_string()),
-                    ("row", &row.to_string()),
-                ])
-        }).await?;
+            client.post(CARD_GET_BILL_URL).form(&[
+                ("sdate", start_date.as_ref()),
+                ("edate", end_date.as_ref()),
+                ("account", self.id.as_ref()),
+                ("page", &page.to_string()),
+                ("row", &row.to_string()),
+            ])
+        })
+        .await?;
 
-        let json = res.json::<Map<String, Value>>().await?;
+        let mut json = res.json::<Map<String, Value>>().await?;
 
-        if let Some(Value::Array(data)) = json.get("rows") {
-            return Ok(
-                data.iter()
-                    .filter_map(Value::as_object)
-                    .filter_map(Bill::from_json)
-                    .collect()
-            )
+        if let Some(Value::Array(data)) = json.get_mut("rows").map(Value::take) {
+            data.into_iter()
+                .map(serde_json::from_value)
+                .collect::<Result<_, serde_json::Error>>()
+                .map_err(|err| ApiError::ModelParse {
+                    msg: format!("Deserialize error: {}", err),
+                })
+        } else {
+            Err(ApiError::Website {
+                msg: "Website response format incorrect".to_string(),
+            })
         }
-
-        Err(Error::UnExceptedError {msg: "Website response format incorrect".to_string()})
     }
 }

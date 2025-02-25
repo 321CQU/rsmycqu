@@ -1,16 +1,19 @@
 //! 提供教务网`my.cqu.edu.cn`的已知可用接口
 
 use serde::{Deserialize, Serialize};
+use snafu::{ensure, whatever};
 
-use crate::errors::mycqu::MyCQUResult;
-use crate::errors::{Error, ErrorHandler};
-use crate::mycqu::utils::access::get_oauth_token;
-use crate::mycqu::utils::mycqu_request_handler;
-use crate::session::access_info::MyCQUAccessInfo;
-use crate::session::Session;
-use crate::sso::access_services;
-use crate::utils::consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL};
-use crate::utils::APIModel;
+use crate::{
+    errors,
+    errors::mycqu::MyCQUResult,
+    mycqu::utils::{access::get_oauth_token, mycqu_request_handler},
+    session::{access_info::MyCQUAccessInfo, Session},
+    sso::access_services,
+    utils::{
+        consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL},
+        ApiModel,
+    },
+};
 
 pub mod course;
 pub mod enroll;
@@ -23,17 +26,16 @@ mod tests;
 
 /// 获取访问教务网`my.cqu.edu.cn`的权限
 pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
-    if !session.is_login {
-        return Err(Error::NotLogin);
-    }
+    ensure!(session.is_login, errors::NotLoginSnafu {});
 
     // access_services 只会因为网络原因产生异常，不会产生任何`SSOError`
-    if let Err(err) = access_services(&session.client, MYCQU_SERVICE_URL).await {
-        return Err(err.handle_other_error(|_| "Unexpected SSOError happened".into()));
-    }
+    whatever!(
+        access_services(&session.client, MYCQU_SERVICE_URL).await,
+        "Unexpected SSOError happened"
+    );
 
     let auth_token = get_oauth_token(&session.client).await?;
-    session.mycqu_access_info = Some(MyCQUAccessInfo {
+    session.access_infos.mycqu_access_info = Some(MyCQUAccessInfo {
         auth_header: auth_token,
     });
     Ok(())
@@ -59,7 +61,7 @@ pub struct User {
     pub phone_number: Option<String>,
 }
 
-impl APIModel for User {}
+impl ApiModel for User {}
 
 impl User {
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取已登陆会话的用户信息([`User`])

@@ -32,7 +32,7 @@ pub(crate) const MYCQU_API_CURR_SESSION_INFO_URL: &str =
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_TIMETABLE_URL: &str =
-    formatcp!("{MYCQU_ROOT_URL}/api/timetable/class/timetable/student/table-detail");
+    formatcp!("{MYCQU_ROOT_URL}/api/timetable/class/timetable/student/my-table-detail");
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_ENROLL_TIMETABLE_URL: &str =
@@ -67,7 +67,6 @@ pub(crate) const SSO_LOGIN_URL: &str = formatcp!("{SSO_ROOT_URL}/login");
 #[cfg(feature = "sso")]
 pub(crate) const SSO_LOGOUT_URL: &str = formatcp!("{SSO_ROOT_URL}/logout");
 
-
 #[cfg(feature = "card")]
 pub(crate) const CARD_SERVICE_URL: &str = "http://card.cqu.edu.cn:7280/ias/prelogin?sysid=FWDT";
 
@@ -78,16 +77,24 @@ pub(crate) const CARD_HALL_TICKET_URL: &str = "http://card.cqu.edu.cn/cassyno/in
 pub(crate) const CARD_PAGE_URL: &str = "http://card.cqu.edu.cn/Page/Page";
 
 #[cfg(feature = "card")]
-pub(crate) const CARD_PAGE_TICKET_POST_FORM_URL: &str = "http://card.cqu.edu.cn:8080/blade-auth/token/thirdToToken/fwdt";
+pub(crate) const CARD_PAGE_TICKET_POST_FORM_URL: &str =
+    "http://card.cqu.edu.cn:8080/blade-auth/token/thirdToToken/fwdt";
 
 #[cfg(feature = "card")]
 pub(crate) const CARD_BLADE_AUTH_URL: &str = "http://card.cqu.edu.cn:8080/blade-auth/token/fwdt";
 
 #[cfg(feature = "card")]
-pub(crate) const CARD_GET_DORM_FEE_URL: &str = "http://card.cqu.edu.cn:8080/charge/feeitem/getThirdData";
+pub(crate) const CARD_GET_DORM_FEE_URL: &str =
+    "http://card.cqu.edu.cn:8080/charge/feeitem/getThirdData";
 
 #[cfg(feature = "card")]
 pub(crate) const CARD_GET_CARD_URL: &str = "http://card.cqu.edu.cn/NcAccType/GetCurrentAccountList";
 
 #[cfg(feature = "card")]
 pub(crate) const CARD_GET_BILL_URL: &str = "http://card.cqu.edu.cn/NcReport/GetMyBill";
+
+#[cfg(feature = "library")]
+pub(crate) const LIB_ROOT_URL: &str = "http://lib.cqu.edu.cn";
+
+#[cfg(feature = "library")]
+pub(crate) const LIB_ACCESS_URL: &str = "http://lib.cqu.edu.cn:8002/api/Auth/AccessToken";

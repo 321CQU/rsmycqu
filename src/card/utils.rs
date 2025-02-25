@@ -1,23 +1,22 @@
 use reqwest::{RequestBuilder, Response, StatusCode};
-use crate::errors::card::CardResult;
-use crate::errors::Error;
-use crate::session::{Client, Session};
 
+use crate::{
+    errors::{card::CardResult, ApiError},
+    session::{Client, Session},
+};
 
 pub(super) async fn card_request_handler<T>(session: &Session, f: T) -> CardResult<Response>
-    where
-        T: FnOnce(&Client) -> RequestBuilder,
+where
+    T: FnOnce(&Client) -> RequestBuilder,
 {
-    if session.card_access_info.is_none() {
-        return Err(Error::NotAccess);
+    if session.access_infos.card_access_info.is_none() {
+        return Err(ApiError::NotAccess);
     }
 
-    let res = f(&session.client)
-        .send()
-        .await?;
+    let res = f(&session.client).send().await?;
 
     if res.status() == StatusCode::UNAUTHORIZED {
-        return Err(Error::NotAccess);
+        return Err(ApiError::NotAccess);
     }
     Ok(res)
 }
