@@ -13,8 +13,8 @@ use crate::{
     session::Session,
     utils::{
         consts::{
-            MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL
-            ,
+            MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL,
+            MYCQU_API_SESSION_INFO_DETAIL_URL,
         },
         ApiModel,
     },
@@ -144,6 +144,34 @@ impl CQUSessionInfo {
     pub async fn fetch_curr(session: &Session) -> MyCQUResult<Self> {
         let mut res = mycqu_request_handler(session, |client| {
             client.get(MYCQU_API_CURR_SESSION_INFO_URL)
+        })
+        .await?
+        .json::<Map<String, Value>>()
+        .await?;
+
+        Self::extract_object(&mut res, "data")
+    }
+
+    /// 通过具有教务网权限的会话([`Session`])，从教务网查询某一学期ID对应的学期具体信息([`CQUSessionInfo`])
+    ///
+    /// # Examples
+    /// ```rust, no_run
+    /// # use rsmycqu::mycqu::access_mycqu;
+    /// # use rsmycqu::mycqu::course::CQUSessionInfo;
+    /// # use rsmycqu::sso::login;
+    /// # use rsmycqu::session::Session;
+    /// # async fn async_fetch_cqu_session_detail_info() {
+    /// # let mut session = Session::new();
+    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&mut session).await.unwrap();
+    /// let cqu_session_info = CQUSessionInfo::fetch_detail(&session, 1059);
+    /// # }
+    pub async fn fetch_detail(session: &Session, session_id: u32) -> MyCQUResult<Self> {
+        let mut res = mycqu_request_handler(session, |client| {
+            client.get(format!(
+                "{}/{}",
+                MYCQU_API_SESSION_INFO_DETAIL_URL, session_id
+            ))
         })
         .await?
         .json::<Map<String, Value>>()
