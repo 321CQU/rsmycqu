@@ -1,11 +1,15 @@
 use rstest::*;
 use serde_json::{json, Value};
 
-use crate::errors::Error;
-use crate::mycqu::course::{CQUSession, CQUSessionInfo, Course, CourseDayTime, CourseTimetable};
-use crate::session::Session;
-use crate::utils::models::Period;
-use crate::utils::test_fixture::{access_mycqu_session, login_data, LoginData};
+use crate::{
+    errors::ApiError,
+    mycqu::course::{CQUSession, CQUSessionInfo, Course, CourseDayTime, CourseTimetable},
+    session::Session,
+    utils::{
+        models::Period,
+        test_fixture::{access_mycqu_session, login_data, LoginData},
+    },
+};
 
 #[rstest]
 #[ignore]
@@ -15,7 +19,7 @@ async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
         let session = Session::new();
         let res = CQUSession::fetch_all(&session).await;
         assert!(res.is_err());
-        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
     let res = CQUSession::fetch_all(&access_mycqu_session.await)
@@ -28,8 +32,7 @@ async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
 #[rstest]
 fn test_parse_session_info_from_json() {
     let json1 = json!({"id": "1045", "year": "2023", "term": '秋', "beginDate": null, "endDate": null, "active": 'Y'});
-    let json_map1 = json1.as_object().unwrap();
-    let session_info1 = CQUSessionInfo::from_json(json_map1).unwrap();
+    let session_info1: CQUSessionInfo = serde_json::from_value(json1).unwrap();
     assert_eq!(
         session_info1,
         CQUSessionInfo {
@@ -39,14 +42,13 @@ fn test_parse_session_info_from_json() {
             session: CQUSession {
                 id: Some(1045),
                 year: 2023,
-                is_autumn: true,
+                is_autumn: true
             },
         }
     );
 
     let json2 = json!({"id": "1046", "year": "2024", "term": '春', "beginDate": "2024-02-26", "endDate": "2024-08-25", "active": 'N'});
-    let json_map2 = json2.as_object().unwrap();
-    let session_info2 = CQUSessionInfo::from_json(json_map2).unwrap();
+    let session_info2: CQUSessionInfo = serde_json::from_value(json2).unwrap();
     assert_eq!(
         session_info2,
         CQUSessionInfo {
@@ -56,7 +58,7 @@ fn test_parse_session_info_from_json() {
             session: CQUSession {
                 id: Some(1046),
                 year: 2024,
-                is_autumn: false,
+                is_autumn: false
             },
         }
     );
@@ -70,7 +72,7 @@ async fn test_fetch_all_session_info(#[future] access_mycqu_session: Session) {
         let session = Session::new();
         let res = CQUSessionInfo::fetch_all(&session).await;
         assert!(res.is_err());
-        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
     let res = CQUSessionInfo::fetch_all(&access_mycqu_session.await)
@@ -87,7 +89,7 @@ async fn test_fetch_curr_session_info(#[future] access_mycqu_session: Session) {
         let session = Session::new();
         let res = CQUSessionInfo::fetch_curr(&session).await;
         assert!(res.is_err());
-        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
     CQUSessionInfo::fetch_curr(&access_mycqu_session.await)
@@ -111,8 +113,7 @@ fn example_course() -> Course {
 #[rstest]
 fn test_parse_course(example_course: Course) {
     let json_value: Value = serde_json::from_str(include_str!("course_timetable.json")).unwrap();
-    let json_map = json_value.as_object().unwrap();
-    let course = Course::from_json(json_map, None);
+    let course: Course = serde_json::from_value(json_value).unwrap();
 
     assert_eq!(course, example_course);
 }
@@ -120,8 +121,7 @@ fn test_parse_course(example_course: Course) {
 #[rstest]
 fn test_parse_course_day_time() {
     let json_value: Value = serde_json::from_str(include_str!("course_timetable.json")).unwrap();
-    let json_map = json_value.as_object().unwrap();
-    let course_day_time = CourseDayTime::from_json(json_map).unwrap();
+    let course_day_time: CourseDayTime = serde_json::from_value(json_value).unwrap();
 
     assert_eq!(
         course_day_time,
@@ -135,8 +135,7 @@ fn test_parse_course_day_time() {
 #[rstest]
 fn test_parse_course_timetable(example_course: Course) {
     let json_value: Value = serde_json::from_str(include_str!("course_timetable.json")).unwrap();
-    let json_map = json_value.as_object().unwrap();
-    let course_timetable = CourseTimetable::from_json(json_map).unwrap();
+    let course_timetable: CourseTimetable = serde_json::from_value(json_value).unwrap();
 
     assert_eq!(
         course_timetable,
@@ -167,18 +166,21 @@ async fn test_fetch_curr_timetable(
         let session = Session::new();
         let res = CourseTimetable::fetch_curr(&session, &login_data.student_id, 0).await;
         assert!(res.is_err());
-        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
     let session = access_mycqu_session.await;
     let cqu_session = CQUSessionInfo::fetch_curr(&session).await.unwrap();
 
-    CourseTimetable::fetch_curr(
-        &session,
-        &login_data.student_id,
-        cqu_session.session.id.unwrap(),
-    )
-    .await
-    .unwrap();
+    println!(
+        "{:?}",
+        CourseTimetable::fetch_curr(
+            &session,
+            &login_data.student_id,
+            cqu_session.session.id.unwrap(),
+        )
+        .await
+        .unwrap()
+    );
 }
 
 #[rstest]
@@ -192,7 +194,7 @@ async fn test_fetch_enroll_timetable(
         let session = Session::new();
         let res = CourseTimetable::fetch_enroll(&session, &login_data.student_id).await;
         assert!(res.is_err());
-        assert!(matches!(res.unwrap_err(), Error::NotAccess));
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
     CourseTimetable::fetch_enroll(&access_mycqu_session.await, &login_data.student_id)

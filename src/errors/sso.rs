@@ -2,17 +2,20 @@
 
 use std::fmt::Debug;
 
-use base64::DecodeError;
 use snafu::prelude::*;
 
-use crate::errors::{Error, PubInnerError};
+use crate::errors::{ApiResult, RsMyCQUError};
 
 /// SSOError
 #[derive(Debug, Snafu)]
+#[snafu(visibility(pub(crate)))]
 pub enum SSOError {
     /// 当加密密码错误时抛出
     #[snafu(display("Password Encrypt Error"))]
-    PasswordEncryptError,
+    PasswordEncryptError {
+        /// 错误信息
+        source: base64::DecodeError,
+    },
 
     /// 当登出失败时抛出
     #[snafu(display("Logout Error"))]
@@ -26,13 +29,7 @@ pub enum SSOError {
     },
 }
 
-/// [Result<T, Error<SSOError>>]的重命名
-pub type SSOResult<T> = Result<T, Error<SSOError>>;
+impl RsMyCQUError for SSOError {}
 
-impl PubInnerError for SSOError {}
-
-impl From<DecodeError> for SSOError {
-    fn from(_: DecodeError) -> Self {
-        SSOError::PasswordEncryptError
-    }
-}
+/// SSOResult
+pub type SSOResult<T> = ApiResult<T, SSOError>;

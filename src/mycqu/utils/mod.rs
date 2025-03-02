@@ -1,10 +1,12 @@
 use reqwest::{RequestBuilder, Response, StatusCode};
 use serde_json::{Map, Value};
+use snafu::ensure;
 
-use crate::errors::mycqu::MyCQUError;
-use crate::errors::mycqu::MyCQUResult;
-use crate::errors::Error;
-use crate::session::{Client, Session};
+use crate::{
+    errors,
+    errors::{mycqu::MyCQUResult, ApiError},
+    session::{Client, Session},
+};
 
 pub(super) mod access;
 pub(super) mod encrypt;
@@ -13,13 +15,14 @@ pub(super) async fn mycqu_request_handler<T>(session: &Session, f: T) -> MyCQURe
 where
     T: FnOnce(&Client) -> RequestBuilder,
 {
-    if session.mycqu_access_info.is_none() {
-        return Err(Error::NotAccess);
+    if session.access_infos.mycqu_access_info.is_none() {
+        return Err(ApiError::NotAccess);
     }
 
     let res = f(&session.client)
         .bearer_auth(
             session
+                .access_infos
                 .mycqu_access_info
                 .as_ref()
                 .unwrap()
@@ -30,26 +33,25 @@ where
         .await?;
 
     if res.status() == StatusCode::UNAUTHORIZED {
-        return Err(Error::NotAccess);
+        return Err(ApiError::NotAccess);
     }
     Ok(res)
 }
 
 /// 检查响应json的status字段是否为error，如果是则返回错误
 pub(super) fn check_website_response(res: &Map<String, Value>) -> MyCQUResult<()> {
-    if res
-        .get("status")
-        .and_then(Value::as_str)
-        .is_some_and(|status| status == "error")
-    {
-        return Err(MyCQUError::MyCQUWebsiteError {
+    ensure!(
+        res.get("status")
+            .and_then(Value::as_str)
+            .is_some_and(|status| status == "success"),
+        errors::WebsiteSnafu {
             msg: res
                 .get("msg")
                 .and_then(Value::as_str)
                 .map(ToString::to_string)
-                .unwrap_or("".to_string()),
+                .unwrap_or("".to_string())
         }
-        .into());
-    }
+    );
+
     Ok(())
 }

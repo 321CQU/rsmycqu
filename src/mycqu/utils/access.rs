@@ -2,31 +2,27 @@ use std::collections::HashMap;
 
 use serde_json::Value;
 
-use crate::errors::mycqu::MyCQUError;
-use crate::errors::mycqu::MyCQUResult;
-use crate::session::Client;
-use crate::utils::consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOKEN_URL};
-use crate::utils::get_response_header;
+use crate::{
+    errors::mycqu::{MyCQUError, MyCQUResult},
+    session::Client,
+    utils::{
+        consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOKEN_URL},
+        get_response_header,
+    },
+};
 
 #[inline]
 fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
     Ok(regex!(r"\?code=([^&]+)&")
         .captures(location.as_ref())
         .and_then(|captures| captures.get(1))
-        .ok_or(MyCQUError::AccessError {
-            msg: "Get Auth Code Error".to_string(),
-        })?
+        .ok_or(MyCQUError::AccessError)?
         .as_str())
 }
 
 pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<String> {
     let res = client.get(MYCQU_AUTHORIZE_URL).send().await?;
-    let code = find_code(
-        get_response_header(&res, "Location")
-            .ok_or(MyCQUError::AccessError {
-                msg: "Get Auth Code Error".to_string(),
-            })?
-    )?;
+    let code = find_code(get_response_header(&res, "Location").ok_or(MyCQUError::AccessError)?)?;
     let token_data = [
         ("client_id", "enroll-prod"),
         ("client_secret", "app-a-1234"),
@@ -45,17 +41,10 @@ pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<St
 
     access_res
         .get("access_token")
-        .ok_or(MyCQUError::AccessError {
-            msg: "Get Access Token Error".to_string(),
-        })?
+        .ok_or(MyCQUError::AccessError)?
         .as_str()
         .map(ToString::to_string)
-        .ok_or(
-            MyCQUError::AccessError {
-                msg: "Get Access Token Error".to_string(),
-            }
-            .into(),
-        )
+        .ok_or(MyCQUError::AccessError.into())
 }
 
 #[cfg(test)]

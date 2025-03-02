@@ -1,14 +1,14 @@
-use std::collections::HashMap;
-use std::ops::Deref;
-use std::sync::Mutex;
+use std::{collections::HashMap, ops::Deref, sync::Mutex};
 
 use rstest::*;
+
 #[cfg(feature = "card")]
 use crate::card::access_card;
-
-use crate::mycqu::access_mycqu;
-use crate::session::Session;
-use crate::sso::{login, LoginResult};
+use crate::{
+    mycqu::access_mycqu,
+    session::Session,
+    sso::{login, LoginResult},
+};
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) struct LoginData {

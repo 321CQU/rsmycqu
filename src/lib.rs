@@ -26,3 +26,6 @@ pub mod mycqu;
 
 #[cfg(feature = "card")]
 pub mod card;
+
+#[cfg(feature = "library")]
+pub mod library;
