@@ -1,5 +1,5 @@
 use rstest::*;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use crate::{
     errors::ApiError,
@@ -7,7 +7,7 @@ use crate::{
     session::Session,
     utils::{
         models::Period,
-        test_fixture::{access_mycqu_session, login_data, LoginData},
+        test_fixture::{LoginData, access_mycqu_session, login_data},
     },
 };
 

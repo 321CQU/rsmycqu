@@ -2,16 +2,16 @@
 
 use reqwest::header::CONTENT_LENGTH;
 use serde::{Deserialize, Serialize};
-use serde_json::{from_str, Map, Value};
+use serde_json::{Map, Value, from_str};
 use serde_with::serde_as;
-use snafu::{ensure, OptionExt};
+use snafu::{OptionExt, ensure};
 
 use crate::{
     card::utils::card_request_handler,
     errors,
     errors::{
-        card::{CardError, CardResult},
         ApiError,
+        card::{CardError, CardResult},
     },
     session::Session,
     utils::consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},

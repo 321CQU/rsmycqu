@@ -7,14 +7,14 @@ use serde_json::{Map, Value};
 use serde_with::serde_as;
 
 use crate::{
-    errors::{mycqu::MyCQUResult, ApiError},
+    errors::{ApiError, mycqu::MyCQUResult},
     mycqu::{
         course::Course,
         enroll::{EnrollCourseTimetable, EnrollCourseTimetableHelper},
         utils::mycqu_request_handler,
     },
     session::Session,
-    utils::{consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL, ApiModel},
+    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL},
 };
 
 /// 可选具体课程，包含课程上课时间、上课教师、教室可容纳学生等信息

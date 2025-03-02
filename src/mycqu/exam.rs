@@ -9,7 +9,7 @@ use crate::{
         utils::{encrypt::encrypt_student_id, mycqu_request_handler},
     },
     session::Session,
-    utils::{consts::MYCQU_API_EXAM_LIST_URL, ApiModel},
+    utils::{ApiModel, consts::MYCQU_API_EXAM_LIST_URL},
 };
 
 /// 监考员信息

@@ -6,11 +6,11 @@ use snafu::ensure;
 use crate::{
     errors,
     errors::{
-        sso::{SSOError, SSOResult},
         ApiError,
+        sso::{SSOError, SSOResult},
     },
     session::{Client, Session},
-    sso::tools::{get_login_request_data, launch_login_data, LoginPageResponse},
+    sso::tools::{LoginPageResponse, get_login_request_data, launch_login_data},
     utils::{
         consts::{SSO_LOGIN_URL, SSO_LOGOUT_URL},
         get_response_header,

@@ -7,11 +7,11 @@ use crate::{
     errors,
     errors::mycqu::MyCQUResult,
     mycqu::utils::{access::get_oauth_token, mycqu_request_handler},
-    session::{access_info::MyCQUAccessInfo, Session},
+    session::{Session, access_info::MyCQUAccessInfo},
     sso::access_services,
     utils::{
-        consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL},
         ApiModel,
+        consts::{MYCQU_API_USER_URL, MYCQU_SERVICE_URL},
     },
 };
 

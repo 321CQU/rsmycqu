@@ -4,7 +4,7 @@ use snafu::ensure;
 
 use crate::{
     errors,
-    errors::{mycqu::MyCQUResult, ApiError},
+    errors::{ApiError, mycqu::MyCQUResult},
     session::{Client, Session},
 };
 

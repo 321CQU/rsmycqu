@@ -1,7 +1,7 @@
 //! 宿舍水电费相关API
 use reqwest::{
-    header::{HeaderValue, COOKIE},
     StatusCode,
+    header::{COOKIE, HeaderValue},
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -10,7 +10,7 @@ use snafu::ensure;
 use crate::{
     card::utils::card_request_handler,
     errors,
-    errors::{card::CardResult, ApiError},
+    errors::{ApiError, card::CardResult},
     session::Session,
     utils::consts::{
         CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL, CARD_PAGE_URL,

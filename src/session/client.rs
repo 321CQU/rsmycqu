@@ -2,7 +2,7 @@
 
 use std::{fmt::Debug, ops::Deref};
 
-use reqwest::{redirect::Policy, ClientBuilder};
+use reqwest::{ClientBuilder, redirect::Policy};
 
 use crate::errors::session::SessionError;
 

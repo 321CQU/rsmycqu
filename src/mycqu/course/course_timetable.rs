@@ -2,7 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
-use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
+use serde_with::{StringWithSeparator, formats::CommaSeparator, serde_as};
 
 use super::{Course, CourseDayTime};
 use crate::{
@@ -10,10 +10,10 @@ use crate::{
     mycqu::utils::mycqu_request_handler,
     session::Session,
     utils::{
+        ApiModel,
         consts::{MYCQU_API_ENROLL_TIMETABLE_URL, MYCQU_API_TIMETABLE_URL},
         datetimes::WeekStrHelper,
         models::Period,
-        ApiModel,
     },
 };
 

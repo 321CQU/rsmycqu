@@ -12,11 +12,11 @@ use crate::{
     mycqu::utils::mycqu_request_handler,
     session::Session,
     utils::{
+        ApiModel,
         consts::{
             MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL,
             MYCQU_API_SESSION_INFO_DETAIL_URL,
         },
-        ApiModel,
     },
 };
 

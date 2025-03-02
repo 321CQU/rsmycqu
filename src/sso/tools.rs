@@ -2,15 +2,15 @@ use reqwest::{Response, StatusCode};
 
 use crate::{
     errors::{
-        sso::{SSOError, SSOResult},
         ApiError,
+        sso::{SSOError, SSOResult},
     },
     session::Session,
     sso::{encrypt::encrypt_password, logout},
     utils::{
         consts::SSO_LOGIN_URL,
         get_response_header,
-        page_parser::{sso_login_parser, SSOLoginPageData},
+        page_parser::{SSOLoginPageData, sso_login_parser},
     },
 };
 

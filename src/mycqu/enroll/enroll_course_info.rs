@@ -7,15 +7,15 @@ use serde_json::{Map, Value};
 
 use crate::{
     errors::{
-        mycqu::{MyCQUError, MyCQUResult},
         ApiError,
+        mycqu::{MyCQUError, MyCQUResult},
     },
     mycqu::{
         course::Course,
         utils::{check_website_response, mycqu_request_handler},
     },
     session::Session,
-    utils::{consts::MYCQU_API_ENROLL_COURSE_LIST_URL, ApiModel},
+    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_LIST_URL},
 };
 
 /// 可选课程信息
