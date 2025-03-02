@@ -14,7 +14,10 @@ use crate::{
         card::{CardError, CardResult},
     },
     session::Session,
-    utils::consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+    utils::{
+        ApiModel,
+        consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+    },
 };
 
 /// 校园卡相关信息
@@ -29,6 +32,8 @@ pub struct Card {
     #[serde(alias = "acctAmt")]
     pub amount: u64,
 }
+
+impl ApiModel for Card {}
 
 /// 校园卡账单相关信息
 #[serde_as]
@@ -51,6 +56,8 @@ pub struct Bill {
     #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
     pub acc_amount: u64,
 }
+
+impl ApiModel for Bill {}
 
 impl Card {
     /// 通过具有校园卡查询网址权限的会话([`Session`])，获取校园卡信息([`Card`])

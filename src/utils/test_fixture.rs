@@ -7,7 +7,7 @@ use crate::card::access_card;
 use crate::{
     mycqu::access_mycqu,
     session::Session,
-    sso::{login, LoginResult},
+    sso::{LoginResult, login},
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -20,10 +20,10 @@ pub(crate) struct LoginData {
 #[fixture]
 #[once]
 pub(crate) fn login_data() -> LoginData {
-    LoginData{
+    LoginData {
         auth: std::env::var("AUTH").unwrap(),
         password: std::env::var("PASSWORD").unwrap(),
-        student_id: std::env::var("STUDENT_ID").unwrap()
+        student_id: std::env::var("STUDENT_ID").unwrap(),
     }
 }
 

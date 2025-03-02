@@ -12,8 +12,12 @@ use crate::{
     errors,
     errors::{ApiError, card::CardResult},
     session::Session,
-    utils::consts::{
-        CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL, CARD_PAGE_URL,
+    utils::{
+        ApiModel,
+        consts::{
+            CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL,
+            CARD_PAGE_URL,
+        },
     },
 };
 
@@ -102,6 +106,8 @@ pub struct EnergyFees {
     #[serde(flatten)]
     pub subsidies: Subsidy,
 }
+
+impl ApiModel for EnergyFees {}
 
 impl EnergyFees {
     /// 通过具有校园卡查询网址权限的会话([`Session`])，获取宿舍水电费([`EnergyFees`])
