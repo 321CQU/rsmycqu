@@ -7,7 +7,7 @@ use serde_with::serde_conv;
 
 use crate::{
     mycqu::course::CourseDayTime,
-    utils::{datetimes::parse_weekday, models::Period, ApiModel},
+    utils::{ApiModel, datetimes::parse_weekday, models::Period},
 };
 
 /// 可选课程时间表信息

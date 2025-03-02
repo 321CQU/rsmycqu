@@ -1,7 +1,7 @@
 use reqwest::{RequestBuilder, Response, StatusCode};
 
 use crate::{
-    errors::{card::CardResult, ApiError},
+    errors::{ApiError, card::CardResult},
     session::{Client, Session},
 };
 

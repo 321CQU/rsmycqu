@@ -3,12 +3,12 @@ use rstest::*;
 use crate::{
     errors::ApiError,
     mycqu::{
-        access_mycqu, exam::Exam,
+        User, access_mycqu,
+        exam::Exam,
         score::{GPARanking, Score},
-        User,
     },
     session::Session,
-    utils::test_fixture::{access_mycqu_session, login_data, login_session, LoginData},
+    utils::test_fixture::{LoginData, access_mycqu_session, login_data, login_session},
 };
 
 mod course;

@@ -7,12 +7,12 @@ use serde_with::serde_conv;
 
 use crate::{
     errors::{
-        mycqu::{MyCQUError, MyCQUResult},
         ApiError,
+        mycqu::{MyCQUError, MyCQUResult},
     },
     mycqu::utils::mycqu_request_handler,
     session::Session,
-    utils::{consts::MYCQU_API_SESSION_URL, ApiModel},
+    utils::{ApiModel, consts::MYCQU_API_SESSION_URL},
 };
 
 /// 重庆大学的某一学期

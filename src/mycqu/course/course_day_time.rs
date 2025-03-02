@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use serde_with::serde_as;
 
-use crate::utils::{datetimes::parse_weekday, models::Period, ApiModel};
+use crate::utils::{ApiModel, datetimes::parse_weekday, models::Period};
 
 /// 课程的星期和节次信息
 #[serde_as]

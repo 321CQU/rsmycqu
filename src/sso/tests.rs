@@ -2,8 +2,8 @@ use rstest::*;
 
 use crate::{
     session::Session,
-    sso::{encrypt::encrypt_password, login, LoginResult},
-    utils::test_fixture::{login_data, LoginData},
+    sso::{LoginResult, encrypt::encrypt_password, login},
+    utils::test_fixture::{LoginData, login_data},
 };
 
 #[rstest]

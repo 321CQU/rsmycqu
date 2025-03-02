@@ -14,8 +14,8 @@ use crate::{
     },
     session::Session,
     utils::{
-        consts::{MYCQU_API_GPA_RANKING_URL, MYCQU_API_SCORE_URL},
         ApiModel,
+        consts::{MYCQU_API_GPA_RANKING_URL, MYCQU_API_SCORE_URL},
     },
 };
 

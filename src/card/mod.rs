@@ -1,16 +1,16 @@
 //! 提供校园卡网页(`card.cqu.edu.cn`)已知接口
 
 use reqwest::StatusCode;
-use snafu::{ensure, whatever, OptionExt};
+use snafu::{OptionExt, ensure, whatever};
 
 pub use crate::card::{card::*, dorm::*};
 use crate::{
     errors,
     errors::{
-        card::{CardError, CardResult},
         ApiError,
+        card::{CardError, CardResult},
     },
-    session::{access_info::CardAccessInfo, Session},
+    session::{Session, access_info::CardAccessInfo},
     sso::access_services,
     utils::{
         consts::{CARD_HALL_TICKET_URL, CARD_SERVICE_URL},

@@ -3,7 +3,7 @@
 use rstest::*;
 
 use crate::{
-    card::{access_card, Card, EnergyFees},
+    card::{Card, EnergyFees, access_card},
     errors::ApiError,
     session::Session,
     utils::test_fixture::{access_card_session, login_session},

@@ -1,9 +1,9 @@
 use aes::Aes128;
-use base64::engine::{general_purpose, GeneralPurpose};
 pub(crate) use base64::Engine;
+use base64::engine::{GeneralPurpose, general_purpose};
 pub(crate) use block_padding::generic_array::{
-    typenum::{U16, U8},
     GenericArray,
+    typenum::{U8, U16},
 };
 use block_padding::{Padding, Pkcs7};
 pub(crate) use crypto::cipher::*;
