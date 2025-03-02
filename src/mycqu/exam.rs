@@ -1,10 +1,8 @@
 //! 考试查询
 
 use serde_json::{Map, Value};
-use snafu::OptionExt;
 
 use crate::{
-    errors,
     errors::mycqu::MyCQUResult,
     mycqu::{
         course::Course,
@@ -114,12 +112,7 @@ impl Exam {
         .json::<Map<String, Value>>()
         .await?;
 
-        res.get_mut("data")
-            .and_then(Value::as_array_mut)
-            .context(errors::ModelParseSnafu {
-                msg: "Failed to parse exam list".to_string(),
-            })
-            .and_then(ApiModel::parse_json_array)
+        Self::extract_array(&mut res, "data")
     }
 }
 

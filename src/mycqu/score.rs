@@ -173,15 +173,7 @@ impl GPARanking {
         .await?;
         check_website_response(&res)?;
 
-        res.get_mut("data")
-            .map(Value::take)
-            .context(errors::ModelParseSnafu {
-                msg: "Excepted field \"data\" is missing or not an object".to_string(),
-            })
-            .map(serde_json::from_value)?
-            .map_err(|e| errors::ApiError::ModelParse {
-                msg: format!("Failed to parse GPA ranking: {e}"),
-            })
+        Self::extract_object(&mut res, "data")
     }
 }
 

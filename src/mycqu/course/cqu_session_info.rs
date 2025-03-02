@@ -8,11 +8,14 @@ use serde_with::{serde_as, serde_conv};
 
 use super::CQUSession;
 use crate::{
-    errors::{mycqu::MyCQUResult, ApiError},
+    errors::mycqu::MyCQUResult,
     mycqu::utils::mycqu_request_handler,
     session::Session,
     utils::{
-        consts::{MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL},
+        consts::{
+            MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL
+            ,
+        },
         ApiModel,
     },
 };
@@ -118,12 +121,7 @@ impl CQUSessionInfo {
                 .json::<Map<String, Value>>()
                 .await?;
 
-        res.get_mut("sessionVOList")
-            .and_then(Value::as_array_mut)
-            .ok_or(ApiError::ModelParse {
-                msg: "Expected field 'sessionVOList' is missing or not an array".into(),
-            })
-            .map(CQUSessionInfo::parse_json_array)?
+        Self::extract_array(&mut res, "sessionVOList")
     }
 
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取包括了ID的当前学期详细信息([`CQUSessionInfo`])
@@ -150,15 +148,8 @@ impl CQUSessionInfo {
         .await?
         .json::<Map<String, Value>>()
         .await?;
-        res.get_mut("data")
-            .map(Value::take)
-            .ok_or(ApiError::ModelParse {
-                msg: "Expected field \"data\" is missing or not an object".into(),
-            })
-            .map(serde_json::from_value)?
-            .map_err(|e| ApiError::ModelParse {
-                msg: format!("Model parse error: {e:?}"),
-            })
+
+        Self::extract_object(&mut res, "data")
     }
 }
 

@@ -6,7 +6,6 @@ use serde_with::{formats::CommaSeparator, serde_as, StringWithSeparator};
 
 use super::{Course, CourseDayTime};
 use crate::{
-    errors,
     errors::mycqu::MyCQUResult,
     mycqu::utils::mycqu_request_handler,
     session::Session,
@@ -61,21 +60,6 @@ pub struct CourseTimetable {
 }
 
 impl CourseTimetable {
-    fn handle_json_response(
-        res: &mut Map<String, Value>,
-        target_field: impl AsRef<str>,
-    ) -> MyCQUResult<Vec<Self>> {
-        res.get_mut(target_field.as_ref())
-            .and_then(Value::as_array_mut)
-            .ok_or(errors::ApiError::ModelParse {
-                msg: format!(
-                    "Expected field \"{}\" is missing or format incorrect",
-                    target_field.as_ref()
-                ),
-            })
-            .and_then(CourseTimetable::parse_json_array)
-    }
-
     /// 通过具有教务网权限的会话([`Session`])，获取当前学期课表([`Vec<CourseTimetable>`])
     ///
     /// # Examples
@@ -109,7 +93,7 @@ impl CourseTimetable {
         .json::<Map<String, Value>>()
         .await?;
 
-        Self::handle_json_response(&mut res, "classTimetableVOList")
+        Self::extract_array(&mut res, "classTimetableVOList")
     }
 
     /// 通过具有教务网权限的会话([`Session`])，获取用户已选课程的课表([`Vec<CourseTimetable>`])
@@ -145,7 +129,7 @@ impl CourseTimetable {
         .json::<Map<String, Value>>()
         .await?;
 
-        Self::handle_json_response(&mut res, "data")
+        Self::extract_array(&mut res, "data")
     }
 }
 

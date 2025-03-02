@@ -171,7 +171,6 @@ impl CQUSession {
     /// # }
     /// ```
     pub async fn fetch_all(session: &Session) -> MyCQUResult<Vec<Self>> {
-        //TODO: adapt to use CQUSessionHelper
         mycqu_request_handler(session, |client| client.get(MYCQU_API_SESSION_URL))
             .await?
             .json::<Vec<String>>()
