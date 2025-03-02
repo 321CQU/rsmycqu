@@ -30,10 +30,10 @@ pub struct CQUSessionInfo {
         deserialize_as = "serde_with::PickFirst<(_, CQUSessionHelper, serde_with::DisplayFromStr)>"
     )]
     pub session: CQUSession,
-    /// 学期开始日期字符串（"yyyy-MM-dd"格式）
+    /// 学期开始日期字符串（"yyyy-MM-dd"格式），对于[fetch_detail]方法，格式为"yyyy-MM-dd HH:mm:ss"
     #[serde(alias = "beginDate")]
     pub begin_date_str: Option<String>,
-    /// 学期结束日期字符串（"yyyy-MM-dd"格式）
+    /// 学期结束日期字符串（"yyyy-MM-dd"格式），对于[fetch_detail]方法，格式为"yyyy-MM-dd HH:mm:ss"
     #[serde(alias = "endDate")]
     pub end_date_str: Option<String>,
     /// 该学期是否为活跃学期（当前学期）
