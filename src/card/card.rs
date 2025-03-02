@@ -82,6 +82,7 @@ impl Card {
         })
         .await?;
 
+        // the result is a json string, so parse response to string first
         let text = res.json::<String>().await?;
         let mut json = from_str::<Map<String, Value>>(&text).map_err(|_| ApiError::Website {
             msg: "Website response format incorrect".to_string(),
