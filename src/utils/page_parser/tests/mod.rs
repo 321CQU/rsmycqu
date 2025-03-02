@@ -1,8 +1,8 @@
 use rstest::rstest;
 
-use super::{sso_login_parser, SSOLoginPageData};
 #[cfg(feature = "card")]
 use super::card_access_parser;
+use super::{sso_login_parser, SSOLoginPageData};
 
 #[rstest]
 fn test_login_page_parser() {

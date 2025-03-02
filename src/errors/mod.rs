@@ -1,15 +1,9 @@
 //! [`errors`]模块提供了[`rsmycqu`]的所有错误定义
 
-use std::error::Error as stdError;
-
 use snafu::Snafu;
 
-#[cfg(feature = "sso")]
-pub use sso::*;
-
-#[cfg(feature = "sso")]
-pub(crate) mod page_parser;
 pub mod session;
+
 #[cfg(feature = "sso")]
 pub mod sso;
 
@@ -19,18 +13,13 @@ pub mod mycqu;
 #[cfg(feature = "card")]
 pub mod card;
 
-pub(crate) trait PubInnerError: stdError {}
-
-/// 支持不同泛型的[`Error`]相互转换
-pub(crate) trait ErrorHandler<T: PubInnerError> {
-    fn handle_other_error<U: PubInnerError, F>(self, inner_error_handler: F) -> Error<U>
-    where
-        F: Fn(T) -> Error<U>;
-}
+pub(crate) trait RsMyCQUError: std::error::Error + 'static {}
 
 /// 错误类型
 #[derive(Debug, Snafu)]
-pub enum Error<T: stdError> {
+#[snafu(visibility(pub(crate)))]
+#[allow(private_bounds)]
+pub enum ApiError<T: RsMyCQUError> {
     /// 当用户未登陆时抛出
     #[snafu(display("Request Before Login"))]
     NotLogin,
@@ -39,82 +28,59 @@ pub enum Error<T: stdError> {
     #[snafu(display("Request Before Get Access"))]
     NotAccess,
 
-    /// 预期外的错误
-    #[snafu(display("{msg}"))]
-    UnExceptedError {
-        /// 该错误如何不符合预期
-        msg: String,
-    },
-
     /// 当使用[reqwest]发起的请求失败时抛出
-    #[snafu(display("Reqwest Error: {err}"))]
-    RequestError {
+    #[snafu(display("Reqwest Error: {source}"))]
+    Request {
         /// [reqwest]抛出的错误[reqwest::Error]
-        err: reqwest::Error,
+        source: reqwest::Error,
     },
 
     /// 数据模型解析异常时抛出
-    #[snafu(display("Model Parse Error"))]
-    ModelParseError,
+    #[snafu(display("Model Parse Error: {msg}"))]
+    ModelParse {
+        /// 错误信息
+        msg: String,
+    },
 
-    /// 其他错误
-    #[snafu(display("{err}"))]
-    InnerError {
-        /// 引发的具体错误
-        err: T,
+    /// 当请求网站出现异常时抛出
+    #[snafu(display("Request Website Error: {msg}"))]
+    Website {
+        /// 错误详细信息
+        msg: String,
+    },
+
+    /// 内部错误
+    #[snafu(transparent)]
+    Inner {
+        /// 内部错误
+        source: T,
+    },
+
+    /// 未知错误
+    #[snafu(whatever)]
+    Whatever {
+        /// 错误信息
+        message: String,
+        /// 错误来源
+        #[snafu(source(from(Box<dyn std::error::Error + Send + Sync>, Some)))]
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
     },
 }
 
-pub(crate) mod error_handle_help {
-    use std::error::Error as stdError;
-
-    use crate::errors::{Error, ErrorHandler, PubInnerError};
-
-    impl<T: PubInnerError> From<T> for Error<T> {
-        fn from(value: T) -> Self {
-            Error::InnerError { err: value }
-        }
-    }
-
-    impl<T: PubInnerError> From<reqwest::Error> for Error<T> {
-        fn from(value: reqwest::Error) -> Self {
-            Error::RequestError { err: value }
-        }
-    }
-
-    impl<T> From<String> for Error<T>
-    where
-        T: stdError,
-    {
-        fn from(value: String) -> Self {
-            Error::UnExceptedError { msg: value }
-        }
-    }
-
-    impl<T> From<&str> for Error<T>
-    where
-        T: stdError,
-    {
-        fn from(value: &str) -> Self {
-            Error::UnExceptedError {
-                msg: value.to_string(),
-            }
-        }
-    }
-
-    impl<T: PubInnerError> ErrorHandler<T> for Error<T> {
-        fn handle_other_error<U: PubInnerError, F>(self, inner_error_handler: F) -> Error<U>
-        where
-            F: Fn(T) -> Error<U>,
-        {
-            match self {
-                Error::NotLogin => Error::NotLogin,
-                Error::NotAccess => Error::NotAccess,
-                Error::UnExceptedError { msg } => Error::UnExceptedError { msg },
-                Error::RequestError { err } => Error::RequestError { err },
-                Error::ModelParseError => Error::ModelParseError,
-                Error::InnerError { err: inner_err } => inner_error_handler(inner_err),
-            }
+#[allow(private_bounds)]
+impl<T: RsMyCQUError> ApiError<T> {
+    pub(crate) fn location_error() -> Self {
+        ApiError::Website {
+            msg: "Expected response has \"Location\" but not found".to_string(),
         }
     }
 }
+
+impl<T: RsMyCQUError> From<reqwest::Error> for ApiError<T> {
+    fn from(source: reqwest::Error) -> Self {
+        ApiError::Request { source }
+    }
+}
+
+/// API返回结果
+pub type ApiResult<T, E> = Result<T, ApiError<E>>;

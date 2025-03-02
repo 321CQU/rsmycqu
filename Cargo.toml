@@ -1,33 +1,35 @@
 [package]
 name = "rsmycqu"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [features]
 default = ["sso", "mycqu"]
 sso = []
 mycqu = ["sso"]
 card = ["sso"]
+library = ["sso"]
+
+blocking = ["reqwest/blocking"]
 
 [dependencies]
-reqwest = {version = "^0.11.22", features = ["json", "cookies"]}
-base64 = {version = "^0.21.4"}
-block-padding = {version = "^0.3.3"}
-crypto = {version = "^0.5.1", features = ["cipher"]}
-ecb = "^0.1.2"
-cbc = "^0.1.2"
-des = "^0.8.1"
-aes = "^0.8.3"
-select = "^0.6.0"
-regex = "^1.10.2"
-snafu = "^0.7.5"
-serde = {version = "^1.0.189", features = ["derive"]}
-serde_json = "^1.0.107"
-serde_urlencoded = "^0.7.1"
-const_format = "^0.2.32"
-hex = "^0.4.3"
-once_cell = "^1.18.0"
+reqwest = { version = "0.12.12", features = ["json", "cookies"] }
+base64 = { version = "0.22.0" }
+block-padding = { version = "0.3.3" }
+crypto = { version = "0.5.1", features = ["cipher"] }
+ecb = "0.1.2"
+cbc = "0.1.2"
+des = "0.8.1"
+aes = "0.8.4"
+select = "0.6.0"
+regex = "1.11.1"
+snafu = "0.8.5"
+serde = { version = "1.0.217", features = ["derive"] }
+serde_with = "3.12.0"
+serde_json = { version = "1.0.138" }
+const_format = "0.2.34"
+hex = "0.4.3"
 
 [dev-dependencies]
-tokio = {version = "^1.33.0", features = ["rt", "macros", "rt-multi-thread"]}
-rstest = "^0.18.2"
+tokio = { version = "1.43.0", features = ["rt", "macros", "rt-multi-thread"] }
+rstest = "0.18.2"

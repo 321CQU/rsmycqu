@@ -1,14 +1,14 @@
-use std::collections::HashMap;
-use std::ops::Deref;
-use std::sync::Mutex;
+use std::{collections::HashMap, ops::Deref, sync::Mutex};
 
 use rstest::*;
+
 #[cfg(feature = "card")]
 use crate::card::access_card;
-
-use crate::mycqu::access_mycqu;
-use crate::session::Session;
-use crate::sso::{login, LoginResult};
+use crate::{
+    mycqu::access_mycqu,
+    session::Session,
+    sso::{login, LoginResult},
+};
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) struct LoginData {
@@ -20,10 +20,13 @@ pub(crate) struct LoginData {
 #[fixture]
 #[once]
 pub(crate) fn login_data() -> LoginData {
-    LoginData{
-        auth: std::env::var("AUTH").unwrap(),
-        password: std::env::var("PASSWORD").unwrap(),
-        student_id: std::env::var("STUDENT_ID").unwrap()
+    LoginData {
+        // auth: std::env::var("AUTH").unwrap(),
+        // password: std::env::var("PASSWORD").unwrap(),
+        // student_id: std::env::var("STUDENT_ID").unwrap()
+        auth: std::env::var("AUTH").unwrap_or("07102028".to_string()),
+        password: std::env::var("PASSWORD").unwrap_or("Zhud626300".to_string()),
+        student_id: std::env::var("STUDENT_ID").unwrap_or("20204051".to_string()),
     }
 }
 

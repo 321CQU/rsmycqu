@@ -1,15 +1,21 @@
 //! 重庆大学单点登录（SSO）相关模块
 
 use reqwest::{Response, StatusCode};
+use snafu::ensure;
 
-use crate::errors::sso::{SSOError, SSOResult};
-use crate::errors::Error;
-#[cfg(any(feature = "mycqu"))]
-use crate::session::Client;
-use crate::session::Session;
-use crate::sso::tools::{get_login_request_data, launch_login_data, LoginPageResponse};
-use crate::utils::consts::{SSO_LOGIN_URL, SSO_LOGOUT_URL};
-use crate::utils::get_response_header;
+use crate::{
+    errors,
+    errors::{
+        sso::{SSOError, SSOResult},
+        ApiError,
+    },
+    session::{Client, Session},
+    sso::tools::{get_login_request_data, launch_login_data, LoginPageResponse},
+    utils::{
+        consts::{SSO_LOGIN_URL, SSO_LOGOUT_URL},
+        get_response_header,
+    },
+};
 
 mod encrypt;
 mod tools;
@@ -67,19 +73,16 @@ pub async fn login(
 
             match res.status() {
                 StatusCode::FOUND => {
-                    let url = get_response_header(&res, "Location")
-                        .ok_or::<Error<SSOError>>(
-                            "Expected response has \"Location\" but not found".into(),
-                        )?;
+                    let url =
+                        get_response_header(&res, "Location").ok_or(ApiError::location_error())?;
                     session.client.get(url).send().await?;
                     session.is_login = true;
                     Ok(LoginResult::Success)
                 }
                 StatusCode::UNAUTHORIZED => Ok(LoginResult::IncorrectLoginCredentials),
-                other => Err(format!(
-                    "status code {} is got (302 expected) when sending login post",
-                    other
-                )
+                other => Err(SSOError::UnknownSSOError {
+                    msg: format!("Unexpected status code: {}", other),
+                }
                 .into()),
             }
         }
@@ -88,18 +91,19 @@ pub async fn login(
 
 #[cfg(feature = "mycqu")]
 /// 使用登陆了统一身份认证的账号获取指定服务许可
-pub(super) async fn access_services(client: &Client, service: impl AsRef<str>) -> SSOResult<Response> {
+pub(super) async fn access_services(
+    client: &Client,
+    service: impl AsRef<str>,
+) -> SSOResult<Response> {
     let res = client
         .get(SSO_LOGIN_URL)
         .query(&[("service", service.as_ref())])
         .send()
         .await?;
-    if res.status() != StatusCode::FOUND {
-        return Err(Error::NotLogin);
-    }
 
-    let jump_url = get_response_header(&res, "Location")
-        .ok_or::<Error<SSOError>>("Expected response has \"Location\" but not found".into())?;
+    ensure!(res.status() == StatusCode::FOUND, errors::NotLoginSnafu {});
+
+    let jump_url = get_response_header(&res, "Location").ok_or(ApiError::location_error())?;
 
     Ok(client.get(jump_url).send().await?)
 }
