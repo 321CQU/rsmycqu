@@ -77,9 +77,11 @@ async fn get_synjones_auth(session: &Session, ticket: impl AsRef<str>) -> CardRe
     Ok(format!("bearer {}", token))
 }
 
+/// 补助信息
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Subsidy {
+    /// 虎溪校区补助信息
     Huxi {
         /// 电剩余补助
         #[serde(alias = "电剩余补助（度）")]
@@ -88,6 +90,7 @@ pub enum Subsidy {
         #[serde(alias = "水剩余补助（吨）")]
         water: String,
     },
+    /// 老校区补助信息
     Old {
         /// 补贴余额
         #[serde(alias = "补贴余额")]
