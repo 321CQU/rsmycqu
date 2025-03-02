@@ -9,7 +9,9 @@ pub(crate) const MYCQU_TOKEN_INDEX_URL: &str = formatcp!("{MYCQU_ROOT_URL}/enrol
 pub(crate) const MYCQU_TOKEN_URL: &str = formatcp!("{MYCQU_ROOT_URL}/authserver/oauth/token");
 
 #[cfg(feature = "mycqu")]
-pub(crate) const MYCQU_AUTHORIZE_URL: &str = formatcp!("{MYCQU_ROOT_URL}/authserver/oauth/authorize?client_id=enroll-prod&response_type=code&scope=all&state=&redirect_uri={MYCQU_TOKEN_INDEX_URL}");
+pub(crate) const MYCQU_AUTHORIZE_URL: &str = formatcp!(
+    "{MYCQU_ROOT_URL}/authserver/oauth/authorize?client_id=enroll-prod&response_type=code&scope=all&state=&redirect_uri={MYCQU_TOKEN_INDEX_URL}"
+);
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_SERVICE_URL: &str =
@@ -29,6 +31,10 @@ pub(crate) const MYCQU_API_ALL_SESSION_INFO_URL: &str =
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_CURR_SESSION_INFO_URL: &str =
     formatcp!("{MYCQU_ROOT_URL}/api/resourceapi/session/cur-active-session");
+
+#[cfg(feature = "mycqu")]
+pub(crate) const MYCQU_API_SESSION_INFO_DETAIL_URL: &str =
+    formatcp!("{MYCQU_ROOT_URL}/api/resourceapi/session/detail");
 
 #[cfg(feature = "mycqu")]
 pub(crate) const MYCQU_API_TIMETABLE_URL: &str =
