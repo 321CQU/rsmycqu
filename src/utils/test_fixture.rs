@@ -21,12 +21,9 @@ pub(crate) struct LoginData {
 #[once]
 pub(crate) fn login_data() -> LoginData {
     LoginData {
-        // auth: std::env::var("AUTH").unwrap(),
-        // password: std::env::var("PASSWORD").unwrap(),
-        // student_id: std::env::var("STUDENT_ID").unwrap()
-        auth: std::env::var("AUTH").unwrap_or("07102028".to_string()),
-        password: std::env::var("PASSWORD").unwrap_or("Zhud626300".to_string()),
-        student_id: std::env::var("STUDENT_ID").unwrap_or("20204051".to_string()),
+        auth: std::env::var("AUTH").unwrap(),
+        password: std::env::var("PASSWORD").unwrap(),
+        student_id: std::env::var("STUDENT_ID").unwrap(),
     }
 }
 
