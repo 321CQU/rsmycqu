@@ -30,6 +30,30 @@ async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
 }
 
 #[rstest]
+#[ignore]
+#[tokio::test]
+async fn test_fetch_session_detail(#[future] access_mycqu_session: Session) {
+    {
+        let session = Session::new();
+        let res = CQUSessionInfo::fetch_detail(&session, 1058).await;
+        assert!(res.is_err());
+        assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
+    }
+
+    let session_info = CQUSessionInfo::fetch_detail(&access_mycqu_session.await, 1058)
+        .await
+        .unwrap();
+
+    assert!(
+        session_info.session.id.is_some()
+            && session_info.session.year == 2025
+            && !session_info.session.is_autumn
+            && session_info.begin_date_str == Some("2025-02-17 00:00:00".to_string())
+            && session_info.end_date_str == Some("2025-08-31 00:00:00".to_string())
+    )
+}
+
+#[rstest]
 fn test_parse_session_info_from_json() {
     let json1 = json!({"id": "1045", "year": "2023", "term": '秋', "beginDate": null, "endDate": null, "active": 'Y'});
     let session_info1: CQUSessionInfo = serde_json::from_value(json1).unwrap();
