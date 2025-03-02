@@ -78,10 +78,10 @@ async fn get_synjones_auth(session: &Session, ticket: impl AsRef<str>) -> CardRe
 pub enum Subsidy {
     Huxi {
         /// 电剩余补助
-        #[serde(alias = "电剩余补助")]
+        #[serde(alias = "电剩余补助（度）")]
         electricity: String,
         /// 水剩余补助
-        #[serde(alias = "水剩余补助")]
+        #[serde(alias = "水剩余补助（吨）")]
         water: String,
     },
     Old {
