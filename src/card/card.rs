@@ -26,8 +26,8 @@ use crate::{
 pub struct Card {
     /// 校园卡id
     #[serde(alias = "acctNo")]
-    #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
-    pub id: String,
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
+    pub id: u64,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     pub amount: u64,
@@ -40,7 +40,7 @@ impl ApiModel for Card {}
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Bill {
     /// 交易名称
-    #[serde(alias = "tranName")]
+    #[serde(rename = "tranName")]
     pub name: String,
     /// 交易时间
     #[serde(alias = "tranDt")]
@@ -50,11 +50,11 @@ pub struct Bill {
     pub place: String,
     /// 交易金额，单位为分
     #[serde(alias = "tranAmt")]
-    pub tran_amount: u64,
+    pub tran_amount: i64,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
-    pub acc_amount: u64,
+    pub acc_amount: i64,
 }
 
 impl ApiModel for Bill {}
@@ -143,7 +143,7 @@ impl Card {
             client.post(CARD_GET_BILL_URL).form(&[
                 ("sdate", start_date.as_ref()),
                 ("edate", end_date.as_ref()),
-                ("account", self.id.as_ref()),
+                ("account", self.id.to_string().as_ref()),
                 ("page", &page.to_string()),
                 ("row", &row.to_string()),
             ])
