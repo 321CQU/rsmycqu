@@ -3,7 +3,7 @@
 use std::{collections::HashMap, fmt::Display, future::Future, str::FromStr};
 
 use serde::{Deserialize, Serialize};
-use serde_with::serde_conv;
+use serde_with::{serde_as, serde_conv};
 
 use crate::{
     errors::{
@@ -171,16 +171,20 @@ impl CQUSession {
     /// # }
     /// ```
     pub async fn fetch_all(session: &Session) -> MyCQUResult<Vec<Self>> {
-        mycqu_request_handler(session, |client| client.get(MYCQU_API_SESSION_URL))
-            .await?
-            .json::<Vec<String>>()
-            .await?
-            .into_iter()
-            .map(|item| item.parse())
-            .collect::<Result<Vec<_>, _>>()
-            .map_err(|_| ApiError::ModelParse {
-                msg: "CQUSession parse error".to_string(),
-            })
+        #[serde_as]
+        #[derive(Serialize, Deserialize)]
+        struct LocalCQUSessionHelper(#[serde_as(deserialize_as = "CQUSessionHelper")] CQUSession);
+
+        Ok(
+            mycqu_request_handler(session, |client| client.get(MYCQU_API_SESSION_URL))
+                .await?
+                .json::<Vec<LocalCQUSessionHelper>>()
+                .await?
+                .into_iter()
+                .map(|item| item.0)
+                .filter(|item| item.id.is_some())
+                .collect::<Vec<_>>(),
+        )
     }
 }
 
