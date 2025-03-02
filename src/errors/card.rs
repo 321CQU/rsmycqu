@@ -10,10 +10,12 @@ use crate::errors::{ApiResult, RsMyCQUError};
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub(crate)))]
 pub enum CardError {
+    /// 获取校园卡信息失败
     #[snafu(display("获取访问权限失败"))]
     AccessError,
 }
 
 impl RsMyCQUError for CardError {}
 
+/// CardResult
 pub type CardResult<T> = ApiResult<T, CardError>;

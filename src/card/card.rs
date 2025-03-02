@@ -14,7 +14,10 @@ use crate::{
         card::{CardError, CardResult},
     },
     session::Session,
-    utils::consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+    utils::{
+        ApiModel,
+        consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+    },
 };
 
 /// 校园卡相关信息
@@ -23,19 +26,21 @@ use crate::{
 pub struct Card {
     /// 校园卡id
     #[serde(alias = "acctNo")]
-    #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
-    pub id: String,
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
+    pub id: u64,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     pub amount: u64,
 }
+
+impl ApiModel for Card {}
 
 /// 校园卡账单相关信息
 #[serde_as]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Bill {
     /// 交易名称
-    #[serde(alias = "tranName")]
+    #[serde(rename = "tranName")]
     pub name: String,
     /// 交易时间
     #[serde(alias = "tranDt")]
@@ -45,12 +50,14 @@ pub struct Bill {
     pub place: String,
     /// 交易金额，单位为分
     #[serde(alias = "tranAmt")]
-    pub tran_amount: u64,
+    pub tran_amount: i64,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
-    pub acc_amount: u64,
+    pub acc_amount: i64,
 }
+
+impl ApiModel for Bill {}
 
 impl Card {
     /// 通过具有校园卡查询网址权限的会话([`Session`])，获取校园卡信息([`Card`])
@@ -75,6 +82,7 @@ impl Card {
         })
         .await?;
 
+        // the result is a json string, so parse response to string first
         let text = res.json::<String>().await?;
         let mut json = from_str::<Map<String, Value>>(&text).map_err(|_| ApiError::Website {
             msg: "Website response format incorrect".to_string(),
@@ -135,7 +143,7 @@ impl Card {
             client.post(CARD_GET_BILL_URL).form(&[
                 ("sdate", start_date.as_ref()),
                 ("edate", end_date.as_ref()),
-                ("account", self.id.as_ref()),
+                ("account", self.id.to_string().as_ref()),
                 ("page", &page.to_string()),
                 ("row", &row.to_string()),
             ])

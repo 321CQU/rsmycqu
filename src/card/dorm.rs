@@ -12,8 +12,12 @@ use crate::{
     errors,
     errors::{ApiError, card::CardResult},
     session::Session,
-    utils::consts::{
-        CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL, CARD_PAGE_URL,
+    utils::{
+        ApiModel,
+        consts::{
+            CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL,
+            CARD_PAGE_URL,
+        },
     },
 };
 
@@ -73,17 +77,20 @@ async fn get_synjones_auth(session: &Session, ticket: impl AsRef<str>) -> CardRe
     Ok(format!("bearer {}", token))
 }
 
+/// 补助信息
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum Subsidy {
+    /// 虎溪校区补助信息
     Huxi {
         /// 电剩余补助
-        #[serde(alias = "电剩余补助")]
+        #[serde(alias = "电剩余补助（度）")]
         electricity: String,
         /// 水剩余补助
-        #[serde(alias = "水剩余补助")]
+        #[serde(alias = "水剩余补助（吨）")]
         water: String,
     },
+    /// 老校区补助信息
     Old {
         /// 补贴余额
         #[serde(alias = "补贴余额")]
@@ -102,6 +109,8 @@ pub struct EnergyFees {
     #[serde(flatten)]
     pub subsidies: Subsidy,
 }
+
+impl ApiModel for EnergyFees {}
 
 impl EnergyFees {
     /// 通过具有校园卡查询网址权限的会话([`Session`])，获取宿舍水电费([`EnergyFees`])
