@@ -2,6 +2,15 @@
 name = "rsmycqu"
 version = "0.1.0"
 edition = "2024"
+authors = ["ZhuLegend"]
+description = "A Rust library for interacting with Chonqing University services, including SSO authentication, campus card management, and more."
+readme = "readme.md"
+documentation = "https://docs.rs/rsmycqu"
+repository = "https://github.com/321CQU/rsmycqu"
+license = "AGPL-3.0-only"
+
+keywords = ["CQU", "ChongqingUniversity", "rsmycqu", "mycqu"]
+categories = ["api-bindings"]
 
 [features]
 default = ["sso", "mycqu"]
