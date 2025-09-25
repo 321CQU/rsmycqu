@@ -2,6 +2,8 @@
 
 use snafu::Snafu;
 
+use crate::errors::sealed::Sealed;
+
 pub mod session;
 
 #[cfg(feature = "sso")]
@@ -13,12 +15,26 @@ pub mod mycqu;
 #[cfg(feature = "card")]
 pub mod card;
 
-pub(crate) trait RsMyCQUError: std::error::Error + 'static {}
+mod sealed {
+    use crate::errors::sso;
+
+    pub trait Sealed {}
+
+    #[cfg(feature = "sso")]
+    impl Sealed for sso::SSOError {}
+
+    #[cfg(feature = "mycqu")]
+    impl Sealed for crate::errors::mycqu::MyCQUError {}
+
+    #[cfg(feature = "card")]
+    impl Sealed for card::CardError {}
+}
+
+pub trait RsMyCQUError: std::error::Error + 'static + Sealed {}
 
 /// 错误类型
 #[derive(Debug, Snafu)]
 #[snafu(visibility(pub(crate)))]
-#[allow(private_bounds)]
 pub enum ApiError<T: RsMyCQUError> {
     /// 当用户未登陆时抛出
     #[snafu(display("Request Before Login"))]

@@ -8,7 +8,7 @@ default = ["sso", "mycqu"]
 sso = []
 mycqu = ["sso"]
 card = ["sso"]
-library = ["sso"]
+#library = ["sso"]
 
 blocking = ["reqwest/blocking"]
 

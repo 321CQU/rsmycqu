@@ -33,13 +33,13 @@ pub struct Score {
     /// 成绩，可能为数字，也可能为字符（优、良等）
     #[serde_as(deserialize_as = "serde_with::FromInto<ScoreField>")]
     #[serde(flatten)]
-    score: Option<String>,
+    pub score: Option<String>,
     /// 初修/重修
     #[serde(alias = "studyNature")]
-    study_nature: String,
+    pub study_nature: String,
     /// 必修/选修
     #[serde(alias = "courseNature")]
-    course_nature: String,
+    pub course_nature: String,
 }
 
 serde_fallback!(
