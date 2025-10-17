@@ -30,9 +30,7 @@ pub struct Session {
 impl Session {
     /// 创建一个新的 `Session` 实例.
     ///
-    /// # Arguments
-    /// * `client` - 一个对共享的 `reqwest::Client` 实例的引用。
-    ///   该共享客户端应在服务启动时创建一次，并应禁用重定向。
+    /// 该示例存储了验证所需的信息，从而安全的在client中使用
     pub fn new() -> Self {
         Session {
             cookie_jar: Arc::new(Jar::default()),
@@ -57,7 +55,7 @@ impl Session {
         let builder_cloned = builder
             .try_clone()
             .expect(
-                "RequestBuilder can't be cloned which is unexpected as stream request body should not exists in current api",
+                "RequestBuilder can't be cloned which is unexpected as stream request body should not exist in current api",
             )
             .build()?;
 

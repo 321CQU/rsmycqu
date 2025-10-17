@@ -8,8 +8,6 @@ use crate::errors::session::SessionError;
 
 /// [`reqwest::Client`]的`new type`
 ///
-/// [`Client`]实现了`Deref`以支持像传递[`reqwest::Client`]一样传递[`Client`]的引用
-///
 /// [`rsmycqu`](crate)的正确运行要求[`reqwest::Client`]关闭自动跳转
 ///
 /// [`Client`]的唯二构造方法`default`, `custom`保证了这一点
@@ -44,9 +42,9 @@ impl Client {
     where
         F: Fn(ClientBuilder) -> ClientBuilder,
     {
-        let mut builder = reqwest::Client::builder();
-        builder = custom_builder(builder);
-        let client = builder.redirect(Policy::none()).build()?;
+        let client = custom_builder(reqwest::Client::builder())
+            .redirect(Policy::none())
+            .build()?;
 
         Ok(Client(client))
     }
