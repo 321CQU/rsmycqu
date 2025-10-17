@@ -18,7 +18,15 @@ fn test_login_page_encrypt() {
 #[tokio::test]
 async fn test_login(login_data: &LoginData) {
     let mut session = Session::new();
-    let res = login(&mut session, &login_data.auth, &login_data.password, false).await;
+    let client = crate::session::Client::default();
+    let res = login(
+        &client,
+        &mut session,
+        &login_data.auth,
+        &login_data.password,
+        false,
+    )
+    .await;
 
     assert_eq!(res.unwrap(), LoginResult::Success);
 }

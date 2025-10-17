@@ -66,7 +66,15 @@ pub(crate) async fn login_session(
     match session_map.get_session(&SessionType::Login) {
         None => {
             let mut session = Session::new();
-            let res = login(&mut session, &login_data.auth, &login_data.password, false).await;
+            let client = crate::session::Client::default();
+            let res = login(
+                &client,
+                &mut session,
+                &login_data.auth,
+                &login_data.password,
+                false,
+            )
+            .await;
 
             assert_eq!(res.unwrap(), LoginResult::Success);
 
@@ -89,7 +97,8 @@ pub(crate) async fn access_mycqu_session(
     match session_map.get_session(&SessionType::AccessMycqu) {
         None => {
             let mut session = login_session.await;
-            access_mycqu(&mut session).await.unwrap();
+            let client = crate::session::Client::default();
+            access_mycqu(&client, &mut session).await.unwrap();
 
             {
                 let mut session_pool = session_map.lock().unwrap();
@@ -111,7 +120,8 @@ pub(crate) async fn access_card_session(
     match session_map.get_session(&SessionType::AccessCard) {
         None => {
             let mut session = login_session.await;
-            access_card(&mut session).await.unwrap();
+            let client = crate::session::Client::default();
+            access_card(&client, &mut session).await.unwrap();
 
             {
                 let mut session_pool = session_map.lock().unwrap();
