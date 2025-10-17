@@ -41,4 +41,4 @@ hex = "0.4.3"
 
 [dev-dependencies]
 tokio = { version = "1.43.0", features = ["rt", "macros", "rt-multi-thread"] }
-rstest = "0.18.2"
+rstest = "0.26.1"
