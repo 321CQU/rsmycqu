@@ -1,8 +1,8 @@
 //! new type of [`reqwest::Client`]
 
-use std::{fmt::Debug, ops::Deref};
+use std::fmt::Debug;
 
-use reqwest::{ClientBuilder, redirect::Policy};
+use reqwest::{ClientBuilder, IntoUrl, redirect::Policy};
 
 use crate::errors::session::SessionError;
 
@@ -14,7 +14,7 @@ use crate::errors::session::SessionError;
 ///
 /// [`Client`]的唯二构造方法`default`, `custom`保证了这一点
 #[derive(Clone, Debug)]
-pub(crate) struct Client(reqwest::Client);
+pub struct Client(reqwest::Client);
 
 impl Default for Client {
     /// [`Client`]默认构建
@@ -26,7 +26,6 @@ impl Default for Client {
     fn default() -> Self {
         let req_client = reqwest::Client::builder()
             .redirect(Policy::none())
-            .cookie_store(true)
             .no_proxy()
             .build()
             .unwrap();
@@ -43,25 +42,24 @@ impl Client {
     /// - [redirect(Policy::none())](ClientBuilder::redirect)
     ///
     /// 以确保自动重定向被禁用
-    pub(super) fn custom<F>(custom_builder: F) -> Result<Self, SessionError>
+    pub fn custom<F>(custom_builder: F) -> Result<Self, SessionError>
     where
-        F: Fn(&mut ClientBuilder),
+        F: Fn(ClientBuilder) -> ClientBuilder,
     {
         let mut builder = reqwest::Client::builder();
-        custom_builder(&mut builder);
-        let client = builder
-            .redirect(Policy::none())
-            .cookie_store(true)
-            .build()?;
+        builder = custom_builder(builder);
+        let client = builder.redirect(Policy::none()).build()?;
 
         Ok(Client(client))
     }
 }
 
-impl Deref for Client {
-    type Target = reqwest::Client;
+impl Client {
+    pub(crate) fn get<U: IntoUrl>(&self, url: U) -> reqwest::RequestBuilder {
+        self.0.get(url)
+    }
 
-    fn deref(&self) -> &Self::Target {
-        &self.0
+    pub(crate) fn post<U: IntoUrl>(&self, url: U) -> reqwest::RequestBuilder {
+        self.0.post(url)
     }
 }
