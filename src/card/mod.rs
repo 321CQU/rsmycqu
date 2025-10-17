@@ -19,6 +19,7 @@ use crate::{
     },
 };
 
+#[allow(clippy::module_inception)]
 mod card;
 mod dorm;
 mod utils;

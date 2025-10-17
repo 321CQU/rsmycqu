@@ -99,8 +99,8 @@ pub(crate) const CARD_GET_CARD_URL: &str = "http://card.cqu.edu.cn/NcAccType/Get
 #[cfg(feature = "card")]
 pub(crate) const CARD_GET_BILL_URL: &str = "http://card.cqu.edu.cn/NcReport/GetMyBill";
 
-#[cfg(feature = "library")]
-pub(crate) const LIB_ROOT_URL: &str = "http://lib.cqu.edu.cn";
+// #[cfg(feature = "library")]
+// pub(crate) const LIB_ROOT_URL: &str = "http://lib.cqu.edu.cn";
 
-#[cfg(feature = "library")]
-pub(crate) const LIB_ACCESS_URL: &str = "http://lib.cqu.edu.cn:8002/api/Auth/AccessToken";
+// #[cfg(feature = "library")]
+// pub(crate) const LIB_ACCESS_URL: &str = "http://lib.cqu.edu.cn:8002/api/Auth/AccessToken";

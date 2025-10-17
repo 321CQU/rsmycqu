@@ -6,6 +6,7 @@ pub use course_timetable::*;
 pub use cqu_session::*;
 pub use cqu_session_info::*;
 
+#[allow(clippy::module_inception)]
 mod course;
 mod course_day_time;
 mod course_timetable;
