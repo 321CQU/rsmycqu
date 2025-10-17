@@ -24,7 +24,7 @@ blocking = ["reqwest/blocking"]
 [dependencies]
 reqwest = { version = "0.12.12", features = ["json", "cookies"] }
 base64 = { version = "0.22.0" }
-block-padding = { version = "0.3.3" }
+block-padding = { version = "0.4.1" }
 crypto = { version = "0.5.1", features = ["cipher"] }
 ecb = "0.1.2"
 cbc = "0.1.2"
