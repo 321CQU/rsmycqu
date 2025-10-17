@@ -5,7 +5,11 @@ use crate::{
     session::{Client, Session},
 };
 
-pub(super) async fn card_request_handler<T>(session: &Session, f: T) -> CardResult<Response>
+pub(super) async fn card_request_handler<T>(
+    client: &Client,
+    session: &Session,
+    f: T,
+) -> CardResult<Response>
 where
     T: FnOnce(&Client) -> RequestBuilder,
 {
@@ -13,7 +17,7 @@ where
         return Err(ApiError::NotAccess);
     }
 
-    let res = f(&session.client).send().await?;
+    let res = session.execute(f(client)).await?;
 
     if res.status() == StatusCode::UNAUTHORIZED {
         return Err(ApiError::NotAccess);

@@ -27,9 +27,10 @@ mod sealed {
     impl Sealed for crate::errors::mycqu::MyCQUError {}
 
     #[cfg(feature = "card")]
-    impl Sealed for card::CardError {}
+    impl Sealed for crate::errors::card::CardError {}
 }
 
+/// RsMyCQUError
 pub trait RsMyCQUError: std::error::Error + 'static + Sealed {}
 
 /// 错误类型
@@ -43,6 +44,13 @@ pub enum ApiError<T: RsMyCQUError> {
     /// 当用户未获取相应服务访问权限时抛出
     #[snafu(display("Request Before Get Access"))]
     NotAccess,
+
+    /// 当Session构造失败时抛出
+    #[snafu(display("Session Error: {source}"))]
+    Session {
+        /// Session错误
+        source: session::SessionError,
+    },
 
     /// 当使用[reqwest]发起的请求失败时抛出
     #[snafu(display("Reqwest Error: {source}"))]
@@ -95,6 +103,12 @@ impl<T: RsMyCQUError> ApiError<T> {
 impl<T: RsMyCQUError> From<reqwest::Error> for ApiError<T> {
     fn from(source: reqwest::Error) -> Self {
         ApiError::Request { source }
+    }
+}
+
+impl<T: RsMyCQUError> From<session::SessionError> for ApiError<T> {
+    fn from(source: session::SessionError) -> Self {
+        ApiError::Session { source }
     }
 }
 

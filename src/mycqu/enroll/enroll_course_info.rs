@@ -14,7 +14,7 @@ use crate::{
         course::Course,
         utils::{check_website_response, mycqu_request_handler},
     },
-    session::Session,
+    session::{Client, Session},
     utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_LIST_URL},
 };
 
@@ -67,10 +67,11 @@ impl EnrollCourseInfo {
     /// # }
     /// ```
     pub async fn fetch_all(
+        client: &Client,
         session: &Session,
         is_major: bool,
     ) -> MyCQUResult<HashMap<String, Vec<Self>>> {
-        let mut res = mycqu_request_handler(session, |client| {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_ENROLL_COURSE_LIST_URL)
                 .query(&[("selectionSource", if is_major { "主修" } else { "辅修" })])

@@ -11,25 +11,22 @@ use crate::{
 pub(super) mod access;
 pub(super) mod encrypt;
 
-pub(super) async fn mycqu_request_handler<T>(session: &Session, f: T) -> MyCQUResult<Response>
+pub(super) async fn mycqu_request_handler<T>(
+    client: &Client,
+    session: &Session,
+    f: T,
+) -> MyCQUResult<Response>
 where
     T: FnOnce(&Client) -> RequestBuilder,
 {
-    if session.access_infos.mycqu_access_info.is_none() {
+    let access_info = if let Some(access_info) = session.access_infos.mycqu_access_info.as_ref() {
+        access_info
+    } else {
         return Err(ApiError::NotAccess);
-    }
+    };
 
-    let res = f(&session.client)
-        .bearer_auth(
-            session
-                .access_infos
-                .mycqu_access_info
-                .as_ref()
-                .unwrap()
-                .auth_header
-                .as_str(),
-        )
-        .send()
+    let res = session
+        .execute(f(client).bearer_auth(access_info.auth_header.as_str()))
         .await?;
 
     if res.status() == StatusCode::UNAUTHORIZED {

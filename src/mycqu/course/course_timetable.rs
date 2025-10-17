@@ -8,7 +8,7 @@ use super::{Course, CourseDayTime};
 use crate::{
     errors::mycqu::MyCQUResult,
     mycqu::utils::mycqu_request_handler,
-    session::Session,
+    session::{Client, Session},
     utils::{
         ApiModel,
         consts::{MYCQU_API_ENROLL_TIMETABLE_URL, MYCQU_API_TIMETABLE_URL},
@@ -75,15 +75,16 @@ impl CourseTimetable {
     /// let cqu_session = CQUSession { id: Some(1234), year: 2023, is_autumn: true };
     /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
     /// access_mycqu(&mut session).await.unwrap();
-    /// let user = CourseTimetable::fetch_curr(&session, "2020xxxx", cqu_session.id.unwrap());
+    /// let user = CourseTimetable::fetch_curr(&client, &session, "2020xxxx", cqu_session.id.unwrap());
     /// # }
     /// ```
     pub async fn fetch_curr(
+        client: &Client,
         session: &Session,
         student_id: impl AsRef<str>,
         cqu_session_id: u16,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(session, |client| {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .post(MYCQU_API_TIMETABLE_URL)
                 .query(&[("sessionId", cqu_session_id)])
@@ -111,14 +112,15 @@ impl CourseTimetable {
     /// let cqu_session = CQUSession { id: Some(1234), year: 2023, is_autumn: true };
     /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
     /// access_mycqu(&mut session).await.unwrap();
-    /// let user = CourseTimetable::fetch_enroll(&session, "2020xxxx");
+    /// let user = CourseTimetable::fetch_enroll(&client, &session, "2020xxxx");
     /// # }
     /// ```
     pub async fn fetch_enroll(
+        client: &Client,
         session: &Session,
         student_id: impl AsRef<str>,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(session, |client| {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client.get(format!(
                 "{}/{}",
                 MYCQU_API_ENROLL_TIMETABLE_URL,
