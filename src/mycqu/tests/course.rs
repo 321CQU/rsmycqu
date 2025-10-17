@@ -7,24 +7,25 @@ use crate::{
     session::Session,
     utils::{
         models::Period,
-        test_fixture::{LoginData, access_mycqu_session, login_data},
+        test_fixture::{LoginData, access_mycqu_session, login_data, shared_client},
     },
 };
 
 #[rstest]
 #[ignore]
 #[tokio::test]
-async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
-    let client = crate::session::Client::default();
-
+async fn test_fetch_all_session(
+    #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
+) {
     {
         let session = Session::new();
-        let res = CQUSession::fetch_all(&client, &session).await;
+        let res = CQUSession::fetch_all(shared_client, &session).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
-    let res = CQUSession::fetch_all(&client, &access_mycqu_session.await)
+    let res = CQUSession::fetch_all(shared_client, &access_mycqu_session.await)
         .await
         .unwrap();
     assert!(res.iter().all(|item| item.id.is_some()));
@@ -34,19 +35,21 @@ async fn test_fetch_all_session(#[future] access_mycqu_session: Session) {
 #[rstest]
 #[ignore]
 #[tokio::test]
-async fn test_fetch_session_detail(#[future] access_mycqu_session: Session) {
-    let client = crate::session::Client::default();
-
+async fn test_fetch_session_detail(
+    #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
+) {
     {
         let session = Session::new();
-        let res = CQUSessionInfo::fetch_detail(&client, &session, 1058).await;
+        let res = CQUSessionInfo::fetch_detail(shared_client, &session, 1058).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
-    let session_info = CQUSessionInfo::fetch_detail(&client, &access_mycqu_session.await, 1058)
-        .await
-        .unwrap();
+    let session_info =
+        CQUSessionInfo::fetch_detail(shared_client, &access_mycqu_session.await, 1058)
+            .await
+            .unwrap();
 
     assert!(
         session_info.session.id.is_some()
@@ -95,17 +98,18 @@ fn test_parse_session_info_from_json() {
 #[rstest]
 #[ignore]
 #[tokio::test]
-async fn test_fetch_all_session_info(#[future] access_mycqu_session: Session) {
-    let client = crate::session::Client::default();
-
+async fn test_fetch_all_session_info(
+    #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
+) {
     {
         let session = Session::new();
-        let res = CQUSessionInfo::fetch_all(&client, &session).await;
+        let res = CQUSessionInfo::fetch_all(shared_client, &session).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
-    let res = CQUSessionInfo::fetch_all(&client, &access_mycqu_session.await)
+    let res = CQUSessionInfo::fetch_all(shared_client, &access_mycqu_session.await)
         .await
         .unwrap();
     assert!(!res.is_empty());
@@ -114,17 +118,18 @@ async fn test_fetch_all_session_info(#[future] access_mycqu_session: Session) {
 #[rstest]
 #[ignore]
 #[tokio::test]
-async fn test_fetch_curr_session_info(#[future] access_mycqu_session: Session) {
-    let client = crate::session::Client::default();
-
+async fn test_fetch_curr_session_info(
+    #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
+) {
     {
         let session = Session::new();
-        let res = CQUSessionInfo::fetch_curr(&client, &session).await;
+        let res = CQUSessionInfo::fetch_curr(shared_client, &session).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
-    CQUSessionInfo::fetch_curr(&client, &access_mycqu_session.await)
+    CQUSessionInfo::fetch_curr(shared_client, &access_mycqu_session.await)
         .await
         .unwrap();
 }
@@ -193,22 +198,24 @@ fn test_parse_course_timetable(example_course: Course) {
 async fn test_fetch_curr_timetable(
     login_data: &LoginData,
     #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
 ) {
-    let client = crate::session::Client::default();
-
     {
         let session = Session::new();
-        let res = CourseTimetable::fetch_curr(&client, &session, &login_data.student_id, 0).await;
+        let res =
+            CourseTimetable::fetch_curr(shared_client, &session, &login_data.student_id, 0).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
     let session = access_mycqu_session.await;
-    let cqu_session = CQUSessionInfo::fetch_curr(&client, &session).await.unwrap();
+    let cqu_session = CQUSessionInfo::fetch_curr(shared_client, &session)
+        .await
+        .unwrap();
 
     println!(
         "{:?}",
         CourseTimetable::fetch_curr(
-            &client,
+            shared_client,
             &session,
             &login_data.student_id,
             cqu_session.session.id.unwrap(),
@@ -224,17 +231,21 @@ async fn test_fetch_curr_timetable(
 async fn test_fetch_enroll_timetable(
     login_data: &LoginData,
     #[future] access_mycqu_session: Session,
+    shared_client: &'static crate::session::Client,
 ) {
-    let client = crate::session::Client::default();
-
     {
         let session = Session::new();
-        let res = CourseTimetable::fetch_enroll(&client, &session, &login_data.student_id).await;
+        let res =
+            CourseTimetable::fetch_enroll(shared_client, &session, &login_data.student_id).await;
         assert!(res.is_err());
         assert!(matches!(res.unwrap_err(), ApiError::NotAccess));
     }
 
-    CourseTimetable::fetch_enroll(&client, &access_mycqu_session.await, &login_data.student_id)
-        .await
-        .unwrap();
+    CourseTimetable::fetch_enroll(
+        shared_client,
+        &access_mycqu_session.await,
+        &login_data.student_id,
+    )
+    .await
+    .unwrap();
 }

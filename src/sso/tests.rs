@@ -3,7 +3,7 @@ use rstest::*;
 use crate::{
     session::Session,
     sso::{LoginResult, encrypt::encrypt_password, login},
-    utils::test_fixture::{LoginData, login_data},
+    utils::test_fixture::{LoginData, login_data, shared_client},
 };
 
 #[rstest]
@@ -16,11 +16,10 @@ fn test_login_page_encrypt() {
 #[rstest]
 #[ignore]
 #[tokio::test]
-async fn test_login(login_data: &LoginData) {
+async fn test_login(login_data: &LoginData, shared_client: &'static crate::session::Client) {
     let mut session = Session::new();
-    let client = crate::session::Client::default();
     let res = login(
-        &client,
+        shared_client,
         &mut session,
         &login_data.auth,
         &login_data.password,

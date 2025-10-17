@@ -1,4 +1,8 @@
-use std::{collections::HashMap, ops::Deref, sync::Mutex};
+use std::{
+    collections::HashMap,
+    ops::Deref,
+    sync::{Mutex, OnceLock},
+};
 
 use rstest::*;
 
@@ -6,7 +10,7 @@ use rstest::*;
 use crate::card::access_card;
 use crate::{
     mycqu::access_mycqu,
-    session::Session,
+    session::{Client, Session},
     sso::{LoginResult, login},
 };
 
@@ -58,17 +62,34 @@ fn session_map() -> ShareSessionMap {
     ShareSessionMap(Mutex::new(HashMap::new()))
 }
 
+static SHARED_CLIENT: OnceLock<Client> = OnceLock::new();
+
+#[fixture]
+#[once]
+pub(crate) fn shared_client() -> &'static Client {
+    SHARED_CLIENT.get_or_init(|| {
+        // 创建带连接池的client以在测试间共享TCP连接
+        Client::custom(|builder| {
+            builder
+                .pool_max_idle_per_host(10)
+                .pool_idle_timeout(std::time::Duration::from_secs(30))
+                .tcp_keepalive(std::time::Duration::from_secs(30))
+        })
+        .unwrap_or_else(|_| Client::default())
+    })
+}
+
 #[fixture]
 pub(crate) async fn login_session(
     session_map: &ShareSessionMap,
     login_data: &LoginData,
+    shared_client: &'static Client,
 ) -> Session {
     match session_map.get_session(&SessionType::Login) {
         None => {
             let mut session = Session::new();
-            let client = crate::session::Client::default();
             let res = login(
-                &client,
+                shared_client,
                 &mut session,
                 &login_data.auth,
                 &login_data.password,
@@ -92,13 +113,13 @@ pub(crate) async fn login_session(
 #[fixture]
 pub(crate) async fn access_mycqu_session(
     session_map: &ShareSessionMap,
+    shared_client: &'static Client,
     #[future] login_session: Session,
 ) -> Session {
     match session_map.get_session(&SessionType::AccessMycqu) {
         None => {
             let mut session = login_session.await;
-            let client = crate::session::Client::default();
-            access_mycqu(&client, &mut session).await.unwrap();
+            access_mycqu(shared_client, &mut session).await.unwrap();
 
             {
                 let mut session_pool = session_map.lock().unwrap();
@@ -115,13 +136,13 @@ pub(crate) async fn access_mycqu_session(
 #[fixture]
 pub(crate) async fn access_card_session(
     session_map: &ShareSessionMap,
+    shared_client: &'static Client,
     #[future] login_session: Session,
 ) -> Session {
     match session_map.get_session(&SessionType::AccessCard) {
         None => {
             let mut session = login_session.await;
-            let client = crate::session::Client::default();
-            access_card(&client, &mut session).await.unwrap();
+            access_card(shared_client, &mut session).await.unwrap();
 
             {
                 let mut session_pool = session_map.lock().unwrap();
