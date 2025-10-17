@@ -13,7 +13,7 @@ use crate::{
         enroll::{EnrollCourseTimetable, EnrollCourseTimetableHelper},
         utils::mycqu_request_handler,
     },
-    session::Session,
+    session::{Client, Session},
     utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL},
 };
 
@@ -83,11 +83,12 @@ impl EnrollCourseItem {
     /// # }
     /// ```
     pub async fn fetch_all(
+        client: &Client,
         session: &Session,
         course_id: impl AsRef<str>,
         is_major: bool,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(session, |client| {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .get(format!(
                     "{}/{}",

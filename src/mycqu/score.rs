@@ -12,7 +12,7 @@ use crate::{
         course::{CQUSession, Course},
         utils::{check_website_response, mycqu_request_handler},
     },
-    session::Session,
+    session::{Client, Session},
     utils::{
         ApiModel,
         consts::{MYCQU_API_GPA_RANKING_URL, MYCQU_API_SCORE_URL},
@@ -74,8 +74,12 @@ impl Score {
     /// let user = Score::fetch_self(&session, false);
     /// # }
     /// ```
-    pub async fn fetch_self(session: &Session, is_minor: bool) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(session, |client| {
+    pub async fn fetch_self(
+        client: &Client,
+        session: &Session,
+        is_minor: bool,
+    ) -> MyCQUResult<Vec<Self>> {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_SCORE_URL)
                 .query(&[("isMinorBoo", is_minor)])
@@ -162,8 +166,8 @@ impl GPARanking {
     /// let user = GPARanking::fetch_self(&session);
     /// # }
     /// ```
-    pub async fn fetch_self(session: &Session) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(session, |client| {
+    pub async fn fetch_self(client: &Client, session: &Session) -> MyCQUResult<Self> {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_GPA_RANKING_URL)
                 .query(&[("isMinorBoo", false)])

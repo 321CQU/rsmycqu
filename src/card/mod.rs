@@ -10,7 +10,7 @@ use crate::{
         ApiError,
         card::{CardError, CardResult},
     },
-    session::{Session, access_info::CardAccessInfo},
+    session::{Client, Session, access_info::CardAccessInfo},
     sso::access_services,
     utils::{
         consts::{CARD_HALL_TICKET_URL, CARD_SERVICE_URL},
@@ -19,6 +19,7 @@ use crate::{
     },
 };
 
+#[allow(clippy::module_inception)]
 mod card;
 mod dorm;
 mod utils;
@@ -27,35 +28,30 @@ mod utils;
 mod tests;
 
 /// 获取访问校园卡网站`card.cqu.edu.cn`的权限
-pub async fn access_card(session: &mut Session) -> CardResult<()> {
+pub async fn access_card(client: &Client, session: &mut Session) -> CardResult<()> {
     ensure!(session.is_login, errors::NotLoginSnafu);
 
     let res = whatever!(
-        access_services(&session.client, CARD_SERVICE_URL).await,
+        access_services(client, session, CARD_SERVICE_URL).await,
         "Unexpected SSOError happened"
     );
 
     let res = session
-        .client
-        .get(
+        .execute(client.get(
             get_response_header(&res, "Location").ok_or(ApiError::ModelParse {
                 msg: "Expected response has \"Location\" but not found".into(),
             })?,
-        )
-        .send()
+        ))
         .await?;
     let sso_ticket_id = card_access_parser(res.text().await?)
         .whatever_context::<&str, ApiError<CardError>>("Unable to parse card page")?;
 
     let res = session
-        .client
-        .post(CARD_HALL_TICKET_URL)
-        .form(&[
+        .execute(client.post(CARD_HALL_TICKET_URL).form(&[
             ("errorcode", "1"),
             ("ssoticketid", &sso_ticket_id),
             ("continueurl", CARD_HALL_TICKET_URL),
-        ])
-        .send()
+        ]))
         .await?;
 
     ensure!(

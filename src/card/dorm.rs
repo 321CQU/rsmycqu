@@ -11,7 +11,7 @@ use crate::{
     card::utils::card_request_handler,
     errors,
     errors::{ApiError, card::CardResult},
-    session::Session,
+    session::{Client, Session},
     utils::{
         ApiModel,
         consts::{
@@ -21,8 +21,8 @@ use crate::{
     },
 };
 
-async fn get_page_ticket(session: &Session) -> CardResult<String> {
-    let res = card_request_handler(session, |client| {
+async fn get_page_ticket(client: &Client, session: &Session) -> CardResult<String> {
+    let res = card_request_handler(client, session, |client| {
         client.post(CARD_PAGE_URL).form(&[
             ("EMenuName", "电费、网费"),
             ("MenuName", "电费、网费"),
@@ -50,8 +50,12 @@ async fn get_page_ticket(session: &Session) -> CardResult<String> {
         .to_string())
 }
 
-async fn get_synjones_auth(session: &Session, ticket: impl AsRef<str>) -> CardResult<String> {
-    let res = card_request_handler(session, |client| {
+async fn get_synjones_auth(
+    client: &Client,
+    session: &Session,
+    ticket: impl AsRef<str>,
+) -> CardResult<String> {
+    let res = card_request_handler(client, session, |client| {
         client
             .post(CARD_BLADE_AUTH_URL)
             .form(&[("ticket", ticket.as_ref()), ("json", "true")])
@@ -132,6 +136,7 @@ impl EnergyFees {
     /// # }
     /// ```
     pub async fn fetch_self(
+        client: &Client,
         session: &mut Session,
         room: impl AsRef<str>,
         is_huxi: bool,
@@ -143,8 +148,8 @@ impl EnergyFees {
             .ok_or(ApiError::NotAccess)?;
 
         if card_access_info.synjones_auth.is_none() {
-            let ticket = get_page_ticket(session).await?;
-            let synjones_auth = get_synjones_auth(session, ticket).await?;
+            let ticket = get_page_ticket(client, session).await?;
+            let synjones_auth = get_synjones_auth(client, session, ticket).await?;
             session
                 .access_infos
                 .card_access_info
@@ -167,7 +172,7 @@ impl EnergyFees {
                 msg: format!("Set cookies error: {}", err),
             })?;
 
-        let res = card_request_handler(session, |client| {
+        let res = card_request_handler(client, session, |client| {
             client
                 .post(CARD_GET_DORM_FEE_URL)
                 .form(&[

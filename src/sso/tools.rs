@@ -5,7 +5,7 @@ use crate::{
         ApiError,
         sso::{SSOError, SSOResult},
     },
-    session::Session,
+    session::{Client, Session},
     sso::{encrypt::encrypt_password, logout},
     utils::{
         consts::SSO_LOGIN_URL,
@@ -30,22 +30,23 @@ async fn launch_normal_login_result(res: Response) -> SSOResult<LoginPageRespons
 
 /// 获取登陆请求所需数据
 pub(super) async fn get_login_request_data(
+    client: &Client,
     session: &mut Session,
     force_relogin: bool,
 ) -> SSOResult<LoginPageResponse> {
-    let res = session.client.get(SSO_LOGIN_URL).send().await?;
+    let res = session.execute(client.get(SSO_LOGIN_URL)).await?;
     match res.status() {
         StatusCode::FOUND => {
             if force_relogin {
-                logout(session).await?;
-                let local_res = session.client.get(SSO_LOGIN_URL).send().await?;
+                logout(client, session).await?;
+                let local_res = session.execute(client.get(SSO_LOGIN_URL)).await?;
                 return launch_normal_login_result(local_res).await;
             }
 
             let jump_url =
                 get_response_header(&res, "Location").ok_or(ApiError::location_error())?;
 
-            let login_url_res = session.client.get(jump_url).send().await?;
+            let login_url_res = session.execute(client.get(jump_url)).await?;
 
             Ok(LoginPageResponse::HasLogin {
                 login_url: get_response_header(&login_url_res, "Location")

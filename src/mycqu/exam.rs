@@ -8,7 +8,7 @@ use crate::{
         course::Course,
         utils::{encrypt::encrypt_student_id, mycqu_request_handler},
     },
-    session::Session,
+    session::{Client, Session},
     utils::{ApiModel, consts::MYCQU_API_EXAM_LIST_URL},
 };
 
@@ -100,10 +100,11 @@ impl Exam {
     /// # }
     /// ```
     pub async fn fetch_all(
+        client: &Client,
         session: &Session,
         student_id: impl AsRef<str>,
     ) -> MyCQUResult<Vec<Exam>> {
-        let mut res = mycqu_request_handler(session, |client| {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_EXAM_LIST_URL)
                 .query(&[("studentId", encrypt_student_id(student_id))])

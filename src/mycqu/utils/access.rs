@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use crate::{
     errors::mycqu::{MyCQUError, MyCQUResult},
-    session::Client,
+    session::{Client, Session},
     utils::{
         consts::{MYCQU_AUTHORIZE_URL, MYCQU_TOKEN_INDEX_URL, MYCQU_TOKEN_URL},
         get_response_header,
@@ -20,8 +20,11 @@ fn find_code(location: &(impl AsRef<str> + ?Sized)) -> MyCQUResult<&str> {
         .as_str())
 }
 
-pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<String> {
-    let res = client.get(MYCQU_AUTHORIZE_URL).send().await?;
+pub(in crate::mycqu) async fn get_oauth_token(
+    client: &Client,
+    session: &mut Session,
+) -> MyCQUResult<String> {
+    let res = session.execute(client.get(MYCQU_AUTHORIZE_URL)).await?;
     let code = find_code(get_response_header(&res, "Location").ok_or(MyCQUError::AccessError)?)?;
     let token_data = [
         ("client_id", "enroll-prod"),
@@ -31,10 +34,8 @@ pub(in crate::mycqu) async fn get_oauth_token(client: &Client) -> MyCQUResult<St
         ("grant_type", "authorization_code"),
     ];
 
-    let access_res = client
-        .post(MYCQU_TOKEN_URL)
-        .form(&token_data)
-        .send()
+    let access_res = session
+        .execute(client.post(MYCQU_TOKEN_URL).form(&token_data))
         .await?
         .json::<HashMap<String, Value>>()
         .await?;

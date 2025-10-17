@@ -10,7 +10,7 @@ use super::CQUSession;
 use crate::{
     errors::mycqu::MyCQUResult,
     mycqu::utils::mycqu_request_handler,
-    session::Session,
+    session::{Client, Session},
     utils::{
         ApiModel,
         consts::{
@@ -114,12 +114,13 @@ impl CQUSessionInfo {
     /// let cqu_session_infos = CQUSessionInfo::fetch_all(&session);
     /// # }
     /// ```
-    pub async fn fetch_all(session: &Session) -> MyCQUResult<Vec<Self>> {
-        let mut res =
-            mycqu_request_handler(session, |client| client.get(MYCQU_API_ALL_SESSION_INFO_URL))
-                .await?
-                .json::<Map<String, Value>>()
-                .await?;
+    pub async fn fetch_all(client: &Client, session: &Session) -> MyCQUResult<Vec<Self>> {
+        let mut res = mycqu_request_handler(client, session, |client| {
+            client.get(MYCQU_API_ALL_SESSION_INFO_URL)
+        })
+        .await?
+        .json::<Map<String, Value>>()
+        .await?;
 
         Self::extract_array(&mut res, "sessionVOList")
     }
@@ -141,8 +142,8 @@ impl CQUSessionInfo {
     /// let curr_cqu_session_info = CQUSessionInfo::fetch_curr(&session);
     /// # }
     /// ```
-    pub async fn fetch_curr(session: &Session) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(session, |client| {
+    pub async fn fetch_curr(client: &Client, session: &Session) -> MyCQUResult<Self> {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client.get(MYCQU_API_CURR_SESSION_INFO_URL)
         })
         .await?
@@ -166,8 +167,12 @@ impl CQUSessionInfo {
     /// access_mycqu(&mut session).await.unwrap();
     /// let cqu_session_info = CQUSessionInfo::fetch_detail(&session, 1059);
     /// # }
-    pub async fn fetch_detail(session: &Session, session_id: u32) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(session, |client| {
+    pub async fn fetch_detail(
+        client: &Client,
+        session: &Session,
+        session_id: u32,
+    ) -> MyCQUResult<Self> {
+        let mut res = mycqu_request_handler(client, session, |client| {
             client.get(format!(
                 "{}/{}",
                 MYCQU_API_SESSION_INFO_DETAIL_URL, session_id

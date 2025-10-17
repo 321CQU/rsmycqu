@@ -7,7 +7,7 @@ use crate::{
     errors,
     errors::mycqu::MyCQUResult,
     mycqu::utils::{access::get_oauth_token, mycqu_request_handler},
-    session::{Session, access_info::MyCQUAccessInfo},
+    session::{Client, Session, access_info::MyCQUAccessInfo},
     sso::access_services,
     utils::{
         ApiModel,
@@ -25,16 +25,16 @@ mod utils;
 mod tests;
 
 /// 获取访问教务网`my.cqu.edu.cn`的权限
-pub async fn access_mycqu(session: &mut Session) -> MyCQUResult<()> {
+pub async fn access_mycqu(client: &Client, session: &mut Session) -> MyCQUResult<()> {
     ensure!(session.is_login, errors::NotLoginSnafu {});
 
     // access_services 只会因为网络原因产生异常，不会产生任何`SSOError`
     whatever!(
-        access_services(&session.client, MYCQU_SERVICE_URL).await,
+        access_services(client, session, MYCQU_SERVICE_URL).await,
         "Unexpected SSOError happened"
     );
 
-    let auth_token = get_oauth_token(&session.client).await?;
+    let auth_token = get_oauth_token(client, session).await?;
     session.access_infos.mycqu_access_info = Some(MyCQUAccessInfo {
         auth_header: auth_token,
     });
@@ -79,8 +79,9 @@ impl User {
     /// let user = User::fetch_self(&session);
     /// # }
     /// ```
-    pub async fn fetch_self(session: &Session) -> MyCQUResult<Self> {
-        let res = mycqu_request_handler(session, |client| client.get(MYCQU_API_USER_URL)).await?;
+    pub async fn fetch_self(client: &Client, session: &Session) -> MyCQUResult<Self> {
+        let res =
+            mycqu_request_handler(client, session, |client| client.get(MYCQU_API_USER_URL)).await?;
 
         Ok(res.json::<Self>().await?)
     }

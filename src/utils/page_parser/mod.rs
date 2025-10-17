@@ -8,11 +8,7 @@ use select::{
 mod tests;
 
 #[inline]
-fn get_node_by_id<'a, 'b>(
-    document: &'a Document,
-    node_name: &'a str,
-    id: &'b str,
-) -> Option<Node<'a>> {
+fn get_node_by_id<'a>(document: &'a Document, node_name: &'a str, id: &str) -> Option<Node<'a>> {
     // 寻找是`node_name`节点且id为`id`的元素
     document.find(Name(node_name).and(Attr("id", id))).next()
 }

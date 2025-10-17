@@ -13,7 +13,7 @@ use crate::{
         ApiError,
         card::{CardError, CardResult},
     },
-    session::Session,
+    session::{Client, Session},
     utils::{
         ApiModel,
         consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
@@ -76,8 +76,8 @@ impl Card {
     /// let card = Card::fetch_self(&mut session).await.unwrap();
     /// # }
     /// ```
-    pub async fn fetch_self(session: &Session) -> CardResult<Card> {
-        let res = card_request_handler(session, |client| {
+    pub async fn fetch_self(client: &Client, session: &Session) -> CardResult<Card> {
+        let res = card_request_handler(client, session, |client| {
             client.post(CARD_GET_CARD_URL).header(CONTENT_LENGTH, 0)
         })
         .await?;
@@ -133,13 +133,14 @@ impl Card {
     /// ```
     pub async fn fetch_bill(
         &self,
+        client: &Client,
         session: &Session,
         start_date: impl AsRef<str>,
         end_date: impl AsRef<str>,
         page: u16,
         row: u16,
     ) -> CardResult<Vec<Bill>> {
-        let res = card_request_handler(session, |client| {
+        let res = card_request_handler(client, session, |client| {
             client.post(CARD_GET_BILL_URL).form(&[
                 ("sdate", start_date.as_ref()),
                 ("edate", end_date.as_ref()),

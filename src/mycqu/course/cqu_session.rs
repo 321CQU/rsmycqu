@@ -11,7 +11,7 @@ use crate::{
         mycqu::{MyCQUError, MyCQUResult},
     },
     mycqu::utils::mycqu_request_handler,
-    session::Session,
+    session::{Client, Session},
     utils::{ApiModel, consts::MYCQU_API_SESSION_URL},
 };
 
@@ -146,10 +146,10 @@ impl CQUSession {
         T: Fn(u16, bool) -> U,
         U: Future<Output = Option<u16>>,
     {
-        if self.id.is_none() {
-            if let Some(session_info_provider) = session_info_provider {
-                self.id = session_info_provider(self.year, self.is_autumn).await;
-            }
+        if self.id.is_none()
+            && let Some(session_info_provider) = session_info_provider
+        {
+            self.id = session_info_provider(self.year, self.is_autumn).await;
         }
 
         self.id
@@ -164,19 +164,19 @@ impl CQUSession {
     /// # use rsmycqu::sso::login;
     /// # use rsmycqu::session::Session;
     /// # async fn async_fetch_all_cqu_session() {
-    /// # let mut session = Session::new();
+    /// let mut session = Session::new();
     /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
     /// access_mycqu(&mut session).await.unwrap();
-    /// let cqu_sessions = CQUSession::fetch_all(&session);
+    /// let cqu_sessions = CQUSession::fetch_all(&client, &session);
     /// # }
     /// ```
-    pub async fn fetch_all(session: &Session) -> MyCQUResult<Vec<Self>> {
+    pub async fn fetch_all(client: &Client, session: &Session) -> MyCQUResult<Vec<Self>> {
         #[serde_as]
         #[derive(Serialize, Deserialize)]
         struct LocalCQUSessionHelper(#[serde_as(deserialize_as = "CQUSessionHelper")] CQUSession);
 
         Ok(
-            mycqu_request_handler(session, |client| client.get(MYCQU_API_SESSION_URL))
+            mycqu_request_handler(client, session, |client| client.get(MYCQU_API_SESSION_URL))
                 .await?
                 .json::<Vec<LocalCQUSessionHelper>>()
                 .await?
