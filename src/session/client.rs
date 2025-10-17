@@ -22,11 +22,9 @@ impl Default for Client {
     /// 该默认构建会构建包含以下性质的[`reqwest::Client`]
     ///
     /// - 禁用自动重定向 [redirect(Policy::none())](ClientBuilder::redirect)
-    /// - 禁用网络代理 [no_proxy](ClientBuilder::no_proxy)
     fn default() -> Self {
         let req_client = reqwest::Client::builder()
             .redirect(Policy::none())
-            .no_proxy()
             .build()
             .unwrap();
         Client(req_client)

@@ -54,7 +54,12 @@ impl Session {
         &self,
         mut builder: reqwest::RequestBuilder,
     ) -> Result<reqwest::Response, SessionError> {
-        let builder_cloned = builder.try_clone().unwrap().build()?;
+        let builder_cloned = builder
+            .try_clone()
+            .expect(
+                "RequestBuilder can't be cloned which is unexpected as stream request body should not exists in current api",
+            )
+            .build()?;
 
         // 1. 从 Jar 中提取 cookies 并格式化为请求头字符串
         let cookie_header = self.cookie_jar.cookies(builder_cloned.url());
