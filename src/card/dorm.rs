@@ -125,14 +125,15 @@ impl EnergyFees {
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
     /// # use rsmycqu::card::{access_card, EnergyFees};
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_dorm_fee() {
-    /// let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_card(&mut session).await.unwrap();
-    /// let fees = EnergyFees::fetch_self(&mut session, "b5321", true);
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_card(&client, &mut session).await.unwrap();
+    /// let fees = EnergyFees::fetch_self(&client, &mut session, "b5321", true);
     /// # }
     /// ```
     pub async fn fetch_self(
