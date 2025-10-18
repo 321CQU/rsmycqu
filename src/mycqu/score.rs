@@ -63,15 +63,16 @@ impl Score {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::mycqu::score::Score;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_score() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession{ id: Some(1234), year: 2023, is_autumn: true};
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let user = Score::fetch_self(&session, false);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let user = Score::fetch_self(&client, &session, false);
     /// # }
     /// ```
     pub async fn fetch_self(
@@ -155,15 +156,16 @@ impl GPARanking {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::mycqu::score::GPARanking;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_gpa_ranking() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession{ id: Some(1234), year: 2023, is_autumn: true};
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let user = GPARanking::fetch_self(&session);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let user = GPARanking::fetch_self(&client, &session);
     /// # }
     /// ```
     pub async fn fetch_self(client: &Client, session: &Session) -> MyCQUResult<Self> {

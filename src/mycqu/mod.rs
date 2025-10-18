@@ -69,14 +69,15 @@ impl User {
     /// # Examples
     /// ```rust, no_run
     /// # use rsmycqu::mycqu::{access_mycqu, User};
-    /// use rsmycqu::session::Session;
+    /// use rsmycqu::session::{Client, Session};
     /// use rsmycqu::sso::login;
     ///
     /// # async fn fetch_user() {
-    /// let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let user = User::fetch_self(&session);
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let user = User::fetch_self(&client, &session);
     /// # }
     /// ```
     pub async fn fetch_self(client: &Client, session: &Session) -> MyCQUResult<Self> {

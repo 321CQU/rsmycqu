@@ -106,12 +106,13 @@ impl CQUSessionInfo {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSessionInfo;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # async fn async_fetch_all_cqu_session_info() {
+    /// # let client = Client::default();
     /// # let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let cqu_session_infos = CQUSessionInfo::fetch_all(&session);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let cqu_session_infos = CQUSessionInfo::fetch_all(&client, &session);
     /// # }
     /// ```
     pub async fn fetch_all(client: &Client, session: &Session) -> MyCQUResult<Vec<Self>> {
@@ -134,12 +135,13 @@ impl CQUSessionInfo {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSessionInfo;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # async fn async_fetch_all_cqu_session_info() {
+    /// # let client = Client::default();
     /// # let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let curr_cqu_session_info = CQUSessionInfo::fetch_curr(&session);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let curr_cqu_session_info = CQUSessionInfo::fetch_curr(&client, &session);
     /// # }
     /// ```
     pub async fn fetch_curr(client: &Client, session: &Session) -> MyCQUResult<Self> {
@@ -160,12 +162,13 @@ impl CQUSessionInfo {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSessionInfo;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # async fn async_fetch_cqu_session_detail_info() {
+    /// # let client = Client::default();
     /// # let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let cqu_session_info = CQUSessionInfo::fetch_detail(&session, 1059);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let cqu_session_info = CQUSessionInfo::fetch_detail(&client, &session, 1059);
     /// # }
     pub async fn fetch_detail(
         client: &Client,

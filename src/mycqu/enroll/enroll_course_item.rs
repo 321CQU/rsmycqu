@@ -71,15 +71,16 @@ impl EnrollCourseItem {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::mycqu::enroll::EnrollCourseItem;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     ///
     /// # async fn fetch_enroll_course_item() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession{ id: Some(1234), year: 2023, is_autumn: true };
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let user = EnrollCourseItem::fetch_all(&session, "target_course_id", true);
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let user = EnrollCourseItem::fetch_all(&client, &session, "target_course_id", true);
     /// # }
     /// ```
     pub async fn fetch_all(
