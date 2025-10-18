@@ -9,6 +9,7 @@ use base64::engine::{GeneralPurpose, general_purpose};
 pub(crate) use crypto::cipher::*;
 use des::Des;
 
+#[allow(deprecated)]
 use crate::utils::encrypt::generic_array::GenericArray;
 
 pub(crate) const BASE64PURPOSE: GeneralPurpose = general_purpose::STANDARD;
@@ -54,6 +55,7 @@ fn pad(data_to_pad: &[u8], padding_block_size: DataPaddingBlockSize) -> Vec<u8> 
     result
 }
 
+#[allow(deprecated)]
 pub(crate) fn pad8(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U8>> {
     let padded_data = pad(data_to_pad, DataPaddingBlockSize::U8);
     assert_eq!(padded_data.len() % 8, 0);
@@ -67,7 +69,7 @@ pub(crate) fn pad8(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U8>> {
     result
 }
 
-#[allow(dead_code)]
+#[allow(dead_code, deprecated)]
 pub(crate) fn pad16(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U16>> {
     let padded_data = pad(data_to_pad, DataPaddingBlockSize::U16);
     assert_eq!(padded_data.len() % 16, 0);

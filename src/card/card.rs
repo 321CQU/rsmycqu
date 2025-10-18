@@ -66,14 +66,15 @@ impl Card {
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
     /// # use rsmycqu::card::{access_card, Card};
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_card() {
-    /// let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_card(&mut session).await.unwrap();
-    /// let card = Card::fetch_self(&mut session).await.unwrap();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_card(&client, &mut session).await.unwrap();
+    /// let card = Card::fetch_self(&client, &mut session).await.unwrap();
     /// # }
     /// ```
     pub async fn fetch_self(client: &Client, session: &Session) -> CardResult<Card> {
@@ -120,15 +121,16 @@ impl Card {
     /// ```rust, no_run
     /// # use serde::de::Unexpected::Option;
     /// # use rsmycqu::card::{access_card, Card};
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_bill() {
-    /// let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_card(&mut session).await.unwrap();
-    /// let card = Card::fetch_self(&mut session).await.unwrap();
-    /// let bills = card.fetch_bill(&session, "2023-11-10", "2023-12-12", 1, 100).await.unwrap();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_card(&client, &mut session).await.unwrap();
+    /// let card = Card::fetch_self(&client, &mut session).await.unwrap();
+    /// let bills = card.fetch_bill(&client, &session, "2023-11-10", "2023-12-12", 1, 100).await.unwrap();
     /// # }
     /// ```
     pub async fn fetch_bill(
