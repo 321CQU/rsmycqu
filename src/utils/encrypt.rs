@@ -1,13 +1,15 @@
+pub(crate) use ::block_padding::array::{
+    Array,
+    typenum::{U8, U16},
+};
+use ::block_padding::{Padding, Pkcs7};
 use aes::Aes128;
 pub(crate) use base64::Engine;
 use base64::engine::{GeneralPurpose, general_purpose};
-pub(crate) use block_padding::generic_array::{
-    GenericArray,
-    typenum::{U8, U16},
-};
-use block_padding::{Padding, Pkcs7};
 pub(crate) use crypto::cipher::*;
 use des::Des;
+
+use crate::utils::encrypt::generic_array::GenericArray;
 
 pub(crate) const BASE64PURPOSE: GeneralPurpose = general_purpose::STANDARD;
 
@@ -36,13 +38,13 @@ fn pad(data_to_pad: &[u8], padding_block_size: DataPaddingBlockSize) -> Vec<u8> 
 
     match padding_block_size {
         DataPaddingBlockSize::U8 => {
-            let mut block: GenericArray<u8, U8> = [0xff; 8].into();
+            let mut block: Array<u8, U8> = [0xff; 8].into();
             block[..redundant_num].copy_from_slice(&data_to_pad[padding_start_pos..]);
             Pkcs7::pad(&mut block, redundant_num);
             result.append(&mut block.to_vec())
         }
         DataPaddingBlockSize::U16 => {
-            let mut block: GenericArray<u8, U16> = [0xff; 16].into();
+            let mut block: Array<u8, U16> = [0xff; 16].into();
             block[..redundant_num].copy_from_slice(&data_to_pad[padding_start_pos..]);
             Pkcs7::pad(&mut block, redundant_num);
             result.append(&mut block.to_vec())

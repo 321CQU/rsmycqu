@@ -12,11 +12,11 @@ pub(super) fn encrypt_password(
     let crypto = BASE64PURPOSE
         .decode(page_crypto.as_ref())
         .context(PasswordEncryptSnafu {})?;
-    let mut crypto_block: GenericArray<u8, U8> = [0xff; 8].into();
+    let mut crypto_block = [0xff; 8];
     crypto_block[..crypto.len()].copy_from_slice(&crypto);
     let mut pad_password = pad8(password.as_ref().as_bytes());
 
-    let mut des_enc = DesEcbEnc::new(&crypto_block);
+    let mut des_enc = DesEcbEnc::new_from_slice(&crypto_block).unwrap();
     des_enc.encrypt_blocks_mut(&mut pad_password);
 
     Ok(
