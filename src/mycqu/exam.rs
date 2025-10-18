@@ -88,15 +88,16 @@ impl Exam {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::mycqu::exam::Exam;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     /// #
     /// # async fn fetch_exam_list() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession {id: Some(1234), year: 2023, is_autumn: true};
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
-    /// let user = Exam::fetch_all(&session, "your_student_id");
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
+    /// let user = Exam::fetch_all(&client, &session, "your_student_id");
     /// # }
     /// ```
     pub async fn fetch_all(

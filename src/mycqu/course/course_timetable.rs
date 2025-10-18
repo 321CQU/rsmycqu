@@ -67,14 +67,15 @@ impl CourseTimetable {
     /// # use serde::de::Unexpected::Option;
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::{CourseTimetable, CQUSession};
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     ///
     /// # async fn fetch_curr_timetable() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession { id: Some(1234), year: 2023, is_autumn: true };
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
     /// let user = CourseTimetable::fetch_curr(&client, &session, "2020xxxx", cqu_session.id.unwrap());
     /// # }
     /// ```
@@ -104,14 +105,15 @@ impl CourseTimetable {
     /// # use serde::de::Unexpected::Option;
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::{CourseTimetable, CQUSession};
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use rsmycqu::sso::login;
     ///
     /// # async fn fetch_curr_timetable() {
-    /// let mut session = Session::new();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
     /// let cqu_session = CQUSession { id: Some(1234), year: 2023, is_autumn: true };
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
     /// let user = CourseTimetable::fetch_enroll(&client, &session, "2020xxxx");
     /// # }
     /// ```

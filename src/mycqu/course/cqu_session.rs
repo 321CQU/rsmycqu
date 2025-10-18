@@ -127,13 +127,14 @@ impl CQUSession {
     ///
     /// 下面是一个当无ID信息时，通过查询来获取ID的例子
     /// ```rust, no_run
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # use std::str::FromStr;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # async fn example() {
     /// async fn session_info_provider(year: u16, is_autumn: bool) -> Option<u16> {
+    ///     let client = Client::default();
     ///     let session = Session::new();
-    ///     let mut all_session = CQUSession::fetch_all(&session).await.unwrap();
+    ///     let mut all_session = CQUSession::fetch_all(&client, &session).await.unwrap();
     ///     let target = all_session.iter().find(|item| item.year == year && item.is_autumn == is_autumn);
     ///     target.and_then(|item| item.id)
     /// }
@@ -162,11 +163,12 @@ impl CQUSession {
     /// # use rsmycqu::mycqu::access_mycqu;
     /// # use rsmycqu::mycqu::course::CQUSession;
     /// # use rsmycqu::sso::login;
-    /// # use rsmycqu::session::Session;
+    /// # use rsmycqu::session::{Client, Session};
     /// # async fn async_fetch_all_cqu_session() {
-    /// let mut session = Session::new();
-    /// login(&mut session, "your_auth", "your_password", false).await.unwrap();
-    /// access_mycqu(&mut session).await.unwrap();
+    /// # let client = Client::default();
+    /// # let mut session = Session::new();
+    /// login(&client, &mut session, "your_auth", "your_password", false).await.unwrap();
+    /// access_mycqu(&client, &mut session).await.unwrap();
     /// let cqu_sessions = CQUSession::fetch_all(&client, &session);
     /// # }
     /// ```
