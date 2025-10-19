@@ -40,7 +40,7 @@ impl Client {
     /// 以确保自动重定向被禁用
     pub fn custom<F>(custom_builder: F) -> Result<Self, SessionError>
     where
-        F: Fn(ClientBuilder) -> ClientBuilder,
+        F: FnOnce(ClientBuilder) -> ClientBuilder,
     {
         let client = custom_builder(reqwest::Client::builder())
             .redirect(Policy::none())
