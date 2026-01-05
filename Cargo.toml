@@ -22,7 +22,7 @@ card = ["sso"]
 blocking = ["reqwest/blocking"]
 
 [dependencies]
-reqwest = { version = "0.12.12", features = ["json", "cookies"] }
+reqwest = { version = "0.13.1", features = ["json", "cookies", "query", "form"] }
 base64 = { version = "0.22.0" }
 block-padding = { version = "0.4.1" }
 crypto = { version = "0.5.1", features = ["cipher"] }
