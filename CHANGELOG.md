@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2](https://github.com/321CQU/rsmycqu/compare/v0.2.1...v0.2.2) - 2026-01-20
+
+### Fixed
+
+- match the latest password encryption method ([#24](https://github.com/321CQU/rsmycqu/pull/24))
+
+### Other
+
+- *(deps)* update reqwest requirement from 0.12.12 to 0.13.1 ([#23](https://github.com/321CQU/rsmycqu/pull/23))
+- *(deps)* bump actions/checkout from 4 to 6 ([#22](https://github.com/321CQU/rsmycqu/pull/22))
+
 ## [0.2.1](https://github.com/321CQU/rsmycqu/compare/v0.2.0...v0.2.1) - 2025-10-19
 
 ### Fixed
