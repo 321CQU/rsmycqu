@@ -14,15 +14,15 @@ use crate::utils::encrypt::generic_array::GenericArray;
 
 pub(crate) const BASE64PURPOSE: GeneralPurpose = general_purpose::STANDARD;
 
-pub(crate) type DesEcbEnc = ecb::Encryptor<Des>;
 #[allow(dead_code)]
+pub(crate) type DesEcbEnc = ecb::Encryptor<Des>;
 pub(crate) type Aes128EcbEnc = ecb::Encryptor<Aes128>;
 #[allow(dead_code)]
 pub(crate) type Aes128CbcEnc = cbc::Encryptor<Aes128>;
 
 enum DataPaddingBlockSize {
-    U8,
     #[allow(dead_code)]
+    U8,
     U16,
 }
 
@@ -55,7 +55,7 @@ fn pad(data_to_pad: &[u8], padding_block_size: DataPaddingBlockSize) -> Vec<u8> 
     result
 }
 
-#[allow(deprecated)]
+#[allow(dead_code, deprecated)]
 pub(crate) fn pad8(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U8>> {
     let padded_data = pad(data_to_pad, DataPaddingBlockSize::U8);
     assert_eq!(padded_data.len() % 8, 0);
@@ -69,7 +69,7 @@ pub(crate) fn pad8(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U8>> {
     result
 }
 
-#[allow(dead_code, deprecated)]
+#[allow(deprecated)]
 pub(crate) fn pad16(data_to_pad: &[u8]) -> Vec<GenericArray<u8, U16>> {
     let padded_data = pad(data_to_pad, DataPaddingBlockSize::U16);
     assert_eq!(padded_data.len() % 16, 0);

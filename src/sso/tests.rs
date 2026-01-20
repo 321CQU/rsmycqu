@@ -10,7 +10,7 @@ use crate::{
 fn test_login_page_encrypt() {
     let encrypted_password = encrypt_password("IGEOE4OMIBo=", "abc123456");
 
-    assert_eq!(encrypted_password.unwrap(), "9p5YTOsEgya0j7w0dbg/CA==")
+    assert_eq!(encrypted_password.unwrap(), "04fgkn+qsF1CZTXR/K/mbQ==")
 }
 
 #[rstest]
