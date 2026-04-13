@@ -27,7 +27,7 @@ base64 = { version = "0.22.0" }
 block-padding = { version = "0.4.1" }
 crypto = { version = "0.5.1", features = ["cipher"] }
 ecb = "0.1.2"
-cbc = "0.1.2"
+cbc = "0.2.0"
 des = "0.8.1"
 aes = "0.8.4"
 select = "0.6.0"
