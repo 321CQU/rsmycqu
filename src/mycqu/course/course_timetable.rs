@@ -1,7 +1,6 @@
 //! 课表对象，一个对象存储有相同课程、相同行课节次和相同星期的一批行课安排
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
 use serde_with::{StringWithSeparator, formats::CommaSeparator, serde_as};
 
 use super::{Course, CourseDayTime};
@@ -14,6 +13,7 @@ use crate::{
         consts::{MYCQU_API_ENROLL_TIMETABLE_URL, MYCQU_API_TIMETABLE_URL},
         datetimes::WeekStrHelper,
         models::Period,
+        response_json_map,
     },
 };
 
@@ -85,17 +85,16 @@ impl CourseTimetable {
         student_id: impl AsRef<str>,
         cqu_session_id: u16,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .post(MYCQU_API_TIMETABLE_URL)
                 .query(&[("sessionId", cqu_session_id)])
                 .json(&vec![student_id.as_ref()])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_array(&mut res, "classTimetableVOList")
+        Self::extract_array(&mut res, "classTimetableVOList", &raw_response)
     }
 
     /// 通过具有教务网权限的会话([`Session`])，获取用户已选课程的课表([`Vec<CourseTimetable>`])
@@ -122,18 +121,17 @@ impl CourseTimetable {
         session: &Session,
         student_id: impl AsRef<str>,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client.get(format!(
                 "{}/{}",
                 MYCQU_API_ENROLL_TIMETABLE_URL,
                 student_id.as_ref()
             ))
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_array(&mut res, "data")
+        Self::extract_array(&mut res, "data", &raw_response)
     }
 }
 

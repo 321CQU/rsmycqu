@@ -60,10 +60,12 @@ pub enum ApiError<T: RsMyCQUError> {
     },
 
     /// 数据模型解析异常时抛出
-    #[snafu(display("Model Parse Error: {msg}"))]
+    #[snafu(display("Model Parse Error: {msg}; Raw Response: {raw_response}"))]
     ModelParse {
         /// 错误信息
         msg: String,
+        /// 原始请求响应
+        raw_response: String,
     },
 
     /// 当请求网站出现异常时抛出

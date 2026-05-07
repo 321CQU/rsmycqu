@@ -18,6 +18,7 @@ use crate::{
             CARD_BLADE_AUTH_URL, CARD_GET_DORM_FEE_URL, CARD_PAGE_TICKET_POST_FORM_URL,
             CARD_PAGE_URL,
         },
+        response_json_map,
     },
 };
 
@@ -194,7 +195,7 @@ impl EnergyFees {
             }
         );
 
-        let mut json = res.json::<Map<String, Value>>().await?;
+        let (mut json, raw_response) = response_json_map(res).await?;
 
         let msg = json
             .get("msg")
@@ -218,6 +219,7 @@ impl EnergyFees {
             })?
             .map_err(|_| ApiError::ModelParse {
                 msg: "Website response format incorrect".to_string(),
+                raw_response,
             })
     }
 }

@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use serde_with::{serde_as, serde_conv};
 
 use super::CQUSession;
@@ -17,6 +17,7 @@ use crate::{
             MYCQU_API_ALL_SESSION_INFO_URL, MYCQU_API_CURR_SESSION_INFO_URL,
             MYCQU_API_SESSION_INFO_DETAIL_URL,
         },
+        response_json_map,
     },
 };
 
@@ -116,14 +117,13 @@ impl CQUSessionInfo {
     /// # }
     /// ```
     pub async fn fetch_all(client: &Client, session: &Session) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client.get(MYCQU_API_ALL_SESSION_INFO_URL)
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_array(&mut res, "sessionVOList")
+        Self::extract_array(&mut res, "sessionVOList", &raw_response)
     }
 
     /// 通过具有教务网权限的会话([`Session`])，从教务网获取包括了ID的当前学期详细信息([`CQUSessionInfo`])
@@ -145,14 +145,13 @@ impl CQUSessionInfo {
     /// # }
     /// ```
     pub async fn fetch_curr(client: &Client, session: &Session) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client.get(MYCQU_API_CURR_SESSION_INFO_URL)
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_object(&mut res, "data")
+        Self::extract_object(&mut res, "data", &raw_response)
     }
 
     /// 通过具有教务网权限的会话([`Session`])，从教务网查询某一学期ID对应的学期具体信息([`CQUSessionInfo`])
@@ -175,17 +174,16 @@ impl CQUSessionInfo {
         session: &Session,
         session_id: u32,
     ) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client.get(format!(
                 "{}/{}",
                 MYCQU_API_SESSION_INFO_DETAIL_URL, session_id
             ))
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_object(&mut res, "data")
+        Self::extract_object(&mut res, "data", &raw_response)
     }
 }
 

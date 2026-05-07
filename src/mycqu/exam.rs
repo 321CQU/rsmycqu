@@ -1,7 +1,5 @@
 //! 考试查询
 
-use serde_json::{Map, Value};
-
 use crate::{
     errors::mycqu::MyCQUResult,
     mycqu::{
@@ -9,7 +7,7 @@ use crate::{
         utils::{encrypt::encrypt_student_id, mycqu_request_handler},
     },
     session::{Client, Session},
-    utils::{ApiModel, consts::MYCQU_API_EXAM_LIST_URL},
+    utils::{ApiModel, consts::MYCQU_API_EXAM_LIST_URL, response_json_map},
 };
 
 /// 监考员信息
@@ -105,16 +103,15 @@ impl Exam {
         session: &Session,
         student_id: impl AsRef<str>,
     ) -> MyCQUResult<Vec<Exam>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_EXAM_LIST_URL)
                 .query(&[("studentId", encrypt_student_id(student_id))])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
-        Self::extract_array(&mut res, "data")
+        Self::extract_array(&mut res, "data", &raw_response)
     }
 }
 
