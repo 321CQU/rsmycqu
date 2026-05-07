@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0](https://github.com/321CQU/rsmycqu/compare/v0.2.2...v0.3.0) - 2026-05-07
+
+### Added
+
+- [**breaking**] include raw response in model parse errors ([#33](https://github.com/321CQU/rsmycqu/pull/33))
+
+### Other
+
+- *(deps)* migrate html parser to scraper ([#35](https://github.com/321CQU/rsmycqu/pull/35))
+- *(deps)* upgrade RustCrypto crates ([#34](https://github.com/321CQU/rsmycqu/pull/34))
+
 ## [0.2.2](https://github.com/321CQU/rsmycqu/compare/v0.2.1...v0.2.2) - 2026-01-20
 
 ### Fixed
