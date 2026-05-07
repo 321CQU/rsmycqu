@@ -17,7 +17,7 @@ pub(super) fn encrypt_password(
     let mut pad_password = pad16(password.as_ref().as_bytes());
 
     let mut des_enc = Aes128EcbEnc::new_from_slice(&crypto_block).unwrap();
-    des_enc.encrypt_blocks_mut(&mut pad_password);
+    des_enc.encrypt_blocks(&mut pad_password);
 
     Ok(
         BASE64PURPOSE.encode(pad_password.iter().fold(Vec::new(), |mut result, x| {
