@@ -17,6 +17,7 @@ use crate::{
     utils::{
         ApiModel,
         consts::{CARD_GET_BILL_URL, CARD_GET_CARD_URL},
+        response_json_map,
     },
 };
 
@@ -85,6 +86,7 @@ impl Card {
 
         // the result is a json string, so parse response to string first
         let text = res.json::<String>().await?;
+        let raw_response = text.clone();
         let mut json = from_str::<Map<String, Value>>(&text).map_err(|_| ApiError::Website {
             msg: "Website response format incorrect".to_string(),
         })?;
@@ -108,6 +110,7 @@ impl Card {
             .whatever_context::<&str, ApiError<CardError>>("Website response format incorrect")?
             .map_err(|err| ApiError::ModelParse {
                 msg: format!("Deserialize error: {}", err),
+                raw_response,
             })
     }
 }
@@ -153,7 +156,7 @@ impl Card {
         })
         .await?;
 
-        let mut json = res.json::<Map<String, Value>>().await?;
+        let (mut json, raw_response) = response_json_map(res).await?;
 
         if let Some(Value::Array(data)) = json.get_mut("rows").map(Value::take) {
             data.into_iter()
@@ -161,6 +164,7 @@ impl Card {
                 .collect::<Result<_, serde_json::Error>>()
                 .map_err(|err| ApiError::ModelParse {
                     msg: format!("Deserialize error: {}", err),
+                    raw_response,
                 })
         } else {
             Err(ApiError::Website {

@@ -111,8 +111,9 @@ impl FromStr for CQUSession {
                 year: year.parse().unwrap(),
                 is_autumn: season == "秋",
             })
-            .ok_or(ApiError::ModelParse {
+            .ok_or_else(|| ApiError::ModelParse {
                 msg: "CQUSession parse error".to_string(),
+                raw_response: s.to_string(),
             })
     }
 }

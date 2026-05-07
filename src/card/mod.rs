@@ -36,13 +36,12 @@ pub async fn access_card(client: &Client, session: &mut Session) -> CardResult<(
         "Unexpected SSOError happened"
     );
 
-    let res = session
-        .execute(client.get(
-            get_response_header(&res, "Location").ok_or(ApiError::ModelParse {
-                msg: "Expected response has \"Location\" but not found".into(),
-            })?,
-        ))
-        .await?;
+    let res =
+        session
+            .execute(client.get(
+                get_response_header(&res, "Location").ok_or_else(|| ApiError::location_error())?,
+            ))
+            .await?;
     let sso_ticket_id = card_access_parser(res.text().await?)
         .whatever_context::<&str, ApiError<CardError>>("Unable to parse card page")?;
 

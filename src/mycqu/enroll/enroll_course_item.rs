@@ -3,7 +3,7 @@
 use std::{option::Option, vec::Vec};
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use serde_with::serde_as;
 
 use crate::{
@@ -14,7 +14,7 @@ use crate::{
         utils::mycqu_request_handler,
     },
     session::{Client, Session},
-    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL},
+    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_DETAIL_URL, response_json_map},
 };
 
 /// 可选具体课程，包含课程上课时间、上课教师、教室可容纳学生等信息
@@ -89,7 +89,7 @@ impl EnrollCourseItem {
         course_id: impl AsRef<str>,
         is_major: bool,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .get(format!(
                     "{}/{}",
@@ -98,24 +98,27 @@ impl EnrollCourseItem {
                 ))
                 .query(&[("selectionSource", if is_major { "主修" } else { "辅修" })])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
         let select_course = res
             .get_mut("selectCourseListVOs")
             .and_then(Value::as_array_mut)
-            .ok_or(ApiError::ModelParse {
-                msg: "Excepted field \"selectCourseListVOs\" is missing or not an array".into(),
+            .ok_or_else(|| ApiError::ModelParse {
+                msg: "Excepted field \"selectCourseListVOs\" is missing or not an array"
+                    .to_string(),
+                raw_response: raw_response.clone(),
             })?;
 
         if !select_course.is_empty() {
             select_course[0]
                 .get_mut("selectCourseVOList")
                 .and_then(Value::as_array_mut)
-                .map(EnrollCourseItem::parse_json_array)
-                .ok_or(ApiError::ModelParse {
-                    msg: "Excepted field \"selectCourseVOList\" is missing or not an array".into(),
+                .map(|array| EnrollCourseItem::parse_json_array(array, &raw_response))
+                .ok_or_else(|| ApiError::ModelParse {
+                    msg: "Excepted field \"selectCourseVOList\" is missing or not an array"
+                        .to_string(),
+                    raw_response,
                 })?
         } else {
             Ok(Vec::new())

@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 
 use crate::{
     errors::{
@@ -15,7 +15,7 @@ use crate::{
         utils::{check_website_response, mycqu_request_handler},
     },
     session::{Client, Session},
-    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_LIST_URL},
+    utils::{ApiModel, consts::MYCQU_API_ENROLL_COURSE_LIST_URL, response_json_map},
 };
 
 /// 可选课程信息
@@ -72,43 +72,39 @@ impl EnrollCourseInfo {
         session: &Session,
         is_major: bool,
     ) -> MyCQUResult<HashMap<String, Vec<Self>>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_ENROLL_COURSE_LIST_URL)
                 .query(&[("selectionSource", if is_major { "主修" } else { "辅修" })])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
         check_website_response(&res)?;
 
-        let arrays =
-            res.get_mut("data")
-                .and_then(Value::as_array_mut)
-                .ok_or(ApiError::ModelParse {
-                    msg: "Excepted field \"data\" is missing or not an array".to_string(),
-                })?;
+        let arrays = res
+            .get_mut("data")
+            .and_then(Value::as_array_mut)
+            .ok_or_else(|| ApiError::ModelParse {
+                msg: "Excepted field \"data\" is missing or not an array".to_string(),
+                raw_response: raw_response.clone(),
+            })?;
 
-        Ok(HashMap::from_iter(
-            arrays
-                .iter_mut()
-                .filter_map(Value::as_object_mut)
-                .filter_map(|item| {
-                    let key = item
-                        .get("selectionArea")
-                        .and_then(Value::as_str)
-                        .map(ToString::to_string);
-                    let value = item.get_mut("courseVOList").and_then(Value::as_array_mut);
-                    if let (Some(key), Some(value)) = (key, value) {
-                        Some((
-                            key,
-                            EnrollCourseInfo::parse_json_array::<MyCQUError>(value).ok()?,
-                        ))
-                    } else {
-                        None
-                    }
-                }),
-        ))
+        arrays
+            .iter_mut()
+            .filter_map(Value::as_object_mut)
+            .filter_map(|item| {
+                let key = item
+                    .get("selectionArea")
+                    .and_then(Value::as_str)
+                    .map(ToString::to_string);
+                let value = item.get_mut("courseVOList").and_then(Value::as_array_mut);
+                key.zip(value)
+            })
+            .map(|(key, value)| {
+                EnrollCourseInfo::parse_json_array::<MyCQUError>(value, &raw_response)
+                    .map(|courses| (key, courses))
+            })
+            .collect::<MyCQUResult<HashMap<_, _>>>()
     }
 }
 

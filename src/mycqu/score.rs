@@ -1,9 +1,8 @@
 //! 该模块提供成绩查询、绩点查询接口
 
 use serde::{Deserialize, Serialize};
-use serde_json::{Map, Value};
+use serde_json::Value;
 use serde_with::serde_as;
-use snafu::OptionExt;
 
 use crate::{
     errors,
@@ -16,6 +15,7 @@ use crate::{
     utils::{
         ApiModel,
         consts::{MYCQU_API_GPA_RANKING_URL, MYCQU_API_SCORE_URL},
+        response_json_map,
     },
 };
 
@@ -80,30 +80,31 @@ impl Score {
         session: &Session,
         is_minor: bool,
     ) -> MyCQUResult<Vec<Self>> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_SCORE_URL)
                 .query(&[("isMinorBoo", is_minor)])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
 
         check_website_response(&res)?;
 
         res.get_mut("data")
             .and_then(Value::as_object_mut)
-            .context(errors::ModelParseSnafu {
+            .ok_or_else(|| errors::ApiError::ModelParse {
                 msg: "Excepted field \"data\" is missing or not an object".to_string(),
+                raw_response: raw_response.clone(),
             })?
             .values_mut()
             .map(|obj| {
                 obj.get_mut("stuScoreHomePgVoS")
                     .and_then(Value::as_array_mut)
-                    .context(errors::ModelParseSnafu {
+                    .ok_or_else(|| errors::ApiError::ModelParse {
                         msg: "Failed to parse score list".to_string(),
+                        raw_response: raw_response.clone(),
                     })
-                    .and_then(ApiModel::parse_json_array)
+                    .and_then(|array| ApiModel::parse_json_array(array, &raw_response))
             })
             .try_fold(Vec::<Self>::new(), |mut acc, item| {
                 acc.extend(item?);
@@ -169,17 +170,16 @@ impl GPARanking {
     /// # }
     /// ```
     pub async fn fetch_self(client: &Client, session: &Session) -> MyCQUResult<Self> {
-        let mut res = mycqu_request_handler(client, session, |client| {
+        let response = mycqu_request_handler(client, session, |client| {
             client
                 .get(MYCQU_API_GPA_RANKING_URL)
                 .query(&[("isMinorBoo", false)])
         })
-        .await?
-        .json::<Map<String, Value>>()
         .await?;
+        let (mut res, raw_response) = response_json_map(response).await?;
         check_website_response(&res)?;
 
-        Self::extract_object(&mut res, "data")
+        Self::extract_object(&mut res, "data", &raw_response)
     }
 }
 
