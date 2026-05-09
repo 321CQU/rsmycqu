@@ -170,6 +170,44 @@ fn test_parse_course_day_time() {
 }
 
 #[rstest]
+fn test_parse_course_day_time_prefers_raw_fields_and_consumes_formatted_values() {
+    let course_day_time: CourseDayTime = serde_json::from_value(json!({
+        "weekDay": 4,
+        "weekDayFormat": "星期五",
+        "period": [3, 4],
+        "periodFormat": "3-4节",
+    }))
+    .unwrap();
+
+    assert_eq!(
+        course_day_time,
+        CourseDayTime {
+            weekday: 4,
+            period: Period { start: 3, end: 4 },
+        }
+    );
+}
+
+#[rstest]
+fn test_parse_course_day_time_accepts_null_formatted_fields() {
+    let course_day_time: CourseDayTime = serde_json::from_value(json!({
+        "weekDay": 4,
+        "weekDayFormat": null,
+        "period": [3, 4],
+        "periodFormat": null,
+    }))
+    .unwrap();
+
+    assert_eq!(
+        course_day_time,
+        CourseDayTime {
+            weekday: 4,
+            period: Period { start: 3, end: 4 },
+        }
+    );
+}
+
+#[rstest]
 fn test_parse_course_timetable(example_course: Course) {
     let json_value: Value = serde_json::from_str(include_str!("course_timetable.json")).unwrap();
     let course_timetable: CourseTimetable = serde_json::from_value(json_value).unwrap();
@@ -185,6 +223,33 @@ fn test_parse_course_timetable(example_course: Course) {
                 weekday: 4,
                 period: Period { start: 3, end: 4 },
             }),
+            whole_week: false,
+            classroom_name: Some("DYC101".to_string()),
+            expr_projects: vec![],
+        }
+    )
+}
+
+#[rstest]
+fn test_parse_course_timetable_uses_none_for_null_day_time(example_course: Course) {
+    let mut json_value: Value =
+        serde_json::from_str(include_str!("course_timetable.json")).unwrap();
+    let json_object = json_value.as_object_mut().unwrap();
+    json_object.insert("weekDay".to_string(), Value::Null);
+    json_object.insert("weekDayFormat".to_string(), Value::Null);
+    json_object.insert("period".to_string(), Value::Null);
+    json_object.insert("periodFormat".to_string(), Value::Null);
+
+    let course_timetable: CourseTimetable = serde_json::from_value(json_value).unwrap();
+
+    assert_eq!(
+        course_timetable,
+        CourseTimetable {
+            course: example_course,
+            stu_num: Some(117),
+            classroom: None,
+            weeks: vec![Period { start: 14, end: 17 }],
+            day_time: None,
             whole_week: false,
             classroom_name: Some("DYC101".to_string()),
             expr_projects: vec![],

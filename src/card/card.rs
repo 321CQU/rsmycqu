@@ -102,30 +102,31 @@ impl Card {
             }
         );
 
-        if let Some(Value::Array(data)) = json.get_mut("objs").map(Value::take) {
-            let available_card_types: Vec<String> = data
-                .iter()
-                .filter_map(|value| {
-                    value
-                        .get("cardTypeName")
-                        .and_then(Value::as_str)
-                        .map(str::to_owned)
-                })
-                .collect();
+        if let Some(Value::Array(mut data)) = json.get_mut("objs").map(Value::take) {
+            fn card_type_name(value: &Value) -> Option<&str> {
+                value.get("cardTypeName").and_then(Value::as_str)
+            }
 
-            let card = data
-                .into_iter()
-                .find(|value| value.get("cardTypeName").and_then(Value::as_str) == Some("正式卡"))
-                .ok_or_else(|| ApiError::Website {
-                    msg: format!(
-                        "No formal card ('正式卡') found. Available cardTypeName values: {}",
-                        if available_card_types.is_empty() {
-                            "none".to_string()
-                        } else {
-                            available_card_types.join(", ")
-                        }
-                    ),
+            let card_index = data
+                .iter()
+                .position(|value| card_type_name(value) == Some("正式卡"))
+                .ok_or_else(|| {
+                    let available_card_types: Vec<_> =
+                        data.iter().filter_map(card_type_name).collect();
+                    let available_card_types_text = if available_card_types.is_empty() {
+                        "none".to_string()
+                    } else {
+                        available_card_types.join(", ")
+                    };
+
+                    ApiError::Website {
+                        msg: format!(
+                            "No formal card ('正式卡') found. Available cardTypeName values: {}",
+                            available_card_types_text,
+                        ),
+                    }
                 })?;
+            let card = data.remove(card_index);
 
             serde_json::from_value(card).map_err(|err| ApiError::ModelParse {
                 msg: format!("Deserialize error: {}", err),
