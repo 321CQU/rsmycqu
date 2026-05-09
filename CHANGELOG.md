@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0](https://github.com/321CQU/rsmycqu/compare/v0.3.0...v0.4.0) - 2026-05-09
+
+### Fixed
+
+- 修复校园卡多账户选择问题并兼容课程表空时间字段 ([#28](https://github.com/321CQU/rsmycqu/pull/28))
+
+### Other
+
+- *(deps)* update snafu requirement from 0.8.5 to 0.9.0 ([#26](https://github.com/321CQU/rsmycqu/pull/26))
+- improve Rust workflow caching ([#38](https://github.com/321CQU/rsmycqu/pull/38))
+
 ## [0.3.0](https://github.com/321CQU/rsmycqu/compare/v0.2.2...v0.3.0) - 2026-05-07
 
 ### Added
