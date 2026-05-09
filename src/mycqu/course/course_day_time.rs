@@ -54,31 +54,37 @@ impl<'de> Deserialize<'de> for CourseDayTime {
                 while let Some(key) = map.next_key()? {
                     match key {
                         Field::WeekDay => {
+                            let value = map.next_value().ok();
+
                             if weekday.is_none() {
-                                weekday = map.next_value().ok();
+                                weekday = value;
                             }
                         }
                         Field::WeekDayFormat => {
-                            if weekday.is_none() {
+                            let value = map.next_value::<Option<String>>()?;
+
+                            if let (None, Some(weekday_str)) = (&weekday, value) {
                                 weekday =
-                                    Some(parse_weekday(&map.next_value::<String>()?).ok_or_else(
-                                        || serde::de::Error::custom("Invalid weekday"),
-                                    )?);
+                                    Some(parse_weekday(&weekday_str).ok_or_else(|| {
+                                        serde::de::Error::custom("Invalid weekday")
+                                    })?);
                             }
                         }
                         Field::Period => {
+                            let value = map.next_value().ok();
+
                             if period.is_none() {
-                                period = map.next_value().ok();
+                                period = value;
                             }
                         }
                         Field::PeriodFormat => {
-                            if period.is_none() {
-                                period = Some(
-                                    Period::parse_period_str(&map.next_value::<String>()?)
-                                        .ok_or_else(|| {
-                                            serde::de::Error::custom("Invalid period")
-                                        })?,
-                                );
+                            let value = map.next_value::<Option<String>>()?;
+
+                            if let (None, Some(period_str)) = (&period, value) {
+                                period =
+                                    Some(Period::parse_period_str(&period_str).ok_or_else(
+                                        || serde::de::Error::custom("Invalid period"),
+                                    )?);
                             }
                         }
                         Field::Unknown => {

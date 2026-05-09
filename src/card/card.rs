@@ -1,18 +1,15 @@
-//! 校园课余额、账单查询接口
+//! 校园卡余额、账单查询接口
 
 use reqwest::header::CONTENT_LENGTH;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, from_str};
 use serde_with::serde_as;
-use snafu::{OptionExt, ensure};
+use snafu::ensure;
 
 use crate::{
     card::utils::card_request_handler,
     errors,
-    errors::{
-        ApiError,
-        card::{CardError, CardResult},
-    },
+    errors::{ApiError, card::CardResult},
     session::{Client, Session},
     utils::{
         ApiModel,
@@ -25,13 +22,16 @@ use crate::{
 #[serde_as]
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Card {
-    /// 校园卡id
+    /// 一卡通账户号
     #[serde(alias = "acctNo")]
     #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     pub id: u64,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     pub amount: u64,
+    /// 账户状态
+    #[serde(alias = "acctStatus")]
+    pub account_status: Option<String>,
 }
 
 impl ApiModel for Card {}
@@ -52,6 +52,9 @@ pub struct Bill {
     /// 交易金额，单位为分
     #[serde(alias = "tranAmt")]
     pub tran_amount: i64,
+    /// 卡类型名称
+    #[serde(alias = "cardTypeName")]
+    pub card_type_name: Option<String>,
     /// 账户余额，单位为分
     #[serde(alias = "acctAmt")]
     #[serde_as(deserialize_as = "serde_with::DisplayFromStr")]
@@ -61,7 +64,7 @@ pub struct Bill {
 impl ApiModel for Bill {}
 
 impl Card {
-    /// 通过具有校园卡查询网址权限的会话([`Session`])，获取校园卡信息([`Card`])
+    /// 通过具有校园卡查询网址权限的会话([`Session`])，获取卡类型为“正式卡”的校园卡信息([`Card`])
     ///
     /// # Examples
     /// ```rust, no_run
@@ -84,7 +87,6 @@ impl Card {
         })
         .await?;
 
-        // the result is a json string, so parse response to string first
         let text = res.json::<String>().await?;
         let raw_response = text.clone();
         let mut json = from_str::<Map<String, Value>>(&text).map_err(|_| ApiError::Website {
@@ -102,16 +104,41 @@ impl Card {
             }
         );
 
-        json.get_mut("objs")
-            .and_then(Value::as_array_mut)
-            .and_then(|array| array.get_mut(0))
-            .map(Value::take)
-            .map(serde_json::from_value)
-            .whatever_context::<&str, ApiError<CardError>>("Website response format incorrect")?
-            .map_err(|err| ApiError::ModelParse {
+        if let Some(Value::Array(mut data)) = json.get_mut("objs").map(Value::take) {
+            fn card_type_name(value: &Value) -> Option<&str> {
+                value.get("cardTypeName").and_then(Value::as_str)
+            }
+
+            let card_index = data
+                .iter()
+                .position(|value| card_type_name(value) == Some("正式卡"))
+                .ok_or_else(|| {
+                    let available_card_types: Vec<_> =
+                        data.iter().filter_map(card_type_name).collect();
+                    let available_card_types_text = if available_card_types.is_empty() {
+                        "none".to_string()
+                    } else {
+                        available_card_types.join(", ")
+                    };
+
+                    ApiError::Website {
+                        msg: format!(
+                            "No formal card ('正式卡') found. Available cardTypeName values: {}",
+                            available_card_types_text,
+                        ),
+                    }
+                })?;
+            let card = data.remove(card_index);
+
+            serde_json::from_value(card).map_err(|err| ApiError::ModelParse {
                 msg: format!("Deserialize error: {}", err),
                 raw_response,
             })
+        } else {
+            Err(ApiError::Website {
+                msg: "Website response format incorrect".to_string(),
+            })
+        }
     }
 }
 

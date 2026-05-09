@@ -41,7 +41,9 @@ pub struct CourseTimetable {
     /// 行课的星期和节次
     ///
     /// 若时间是整周（如真实地占用整周的军训和某些实习、虚拟地使用一周的思修实践）则为[`None`]
+    #[serde_as(deserialize_as = "serde_with::DefaultOnError")]
     #[serde(flatten)]
+    #[serde(default)]
     pub day_time: Option<CourseDayTime>,
     /// 是否真实地占用整周（如军训和某些实习是真实地占用、思修实践是“虚拟地占用”）
     #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
@@ -53,7 +55,9 @@ pub struct CourseTimetable {
     #[serde(default)]
     pub classroom_name: Option<String>,
     /// 实验课各次实验内容
-    #[serde_as(deserialize_as = "StringWithSeparator::<CommaSeparator, String>")]
+    #[serde_as(
+        deserialize_as = "serde_with::DefaultOnNull<StringWithSeparator::<CommaSeparator, String>>"
+    )]
     #[serde(alias = "exprProjectName")]
     #[serde(default)]
     pub expr_projects: Vec<String>,
