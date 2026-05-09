@@ -1,6 +1,13 @@
 name: CI
 
 on:
+  push:
+    branches: [master, main]
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: [master, main]
     types: [opened, synchronize, reopened]
@@ -14,63 +21,10 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    name: Check
+  rust:
+    name: Rust Check&Fmt&Test
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.head_ref, 'release-plz') }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run cargo check
-        run: cargo check --all-targets --all-features
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: check
-    if: ${{ !startsWith(github.head_ref, 'release-plz') }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run cargo build
-        run: cargo build --all-targets --all-features
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: build
-    if: ${{ !startsWith(github.head_ref, 'release-plz') }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run cargo test
-        run: cargo test --all-features
-
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.head_ref, 'release-plz') }}
+    if: ${{ github.event_name == 'push' || !startsWith(github.head_ref, 'release-plz') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -83,13 +37,22 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
+      - name: Run cargo check
+        run: cargo check --all-targets --all-features
+
+      - name: Run cargo build
+        run: cargo build --all-targets --all-features
+
+      - name: Run cargo test
+        run: cargo test --all-features
+
       - name: Run clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
   fmt:
     name: Format
     runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.head_ref, 'release-plz') }}
+    if: ${{ github.event_name == 'push' || !startsWith(github.head_ref, 'release-plz') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
