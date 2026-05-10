@@ -15,6 +15,7 @@ use crate::{
 
 mod course;
 mod enroll;
+mod exam;
 
 #[rstest]
 #[ignore]
