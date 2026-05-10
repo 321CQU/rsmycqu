@@ -1,5 +1,7 @@
 //! 考试查询
 
+use serde_with::serde_as;
+
 use crate::{
     errors::mycqu::MyCQUResult,
     mycqu::{
@@ -24,20 +26,24 @@ pub struct Invigilator {
 impl ApiModel for Invigilator {}
 
 /// 考试信息
+#[serde_as]
 #[derive(Debug, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Exam {
     /// 考试对应的课程，其中学分 "credit"、教师 "instructor"、教学班号 "course_num" 可能无法获取（其值会设置为 `None`）
+    #[serde(flatten)]
     pub course: Course,
     /// 考试批次，如 "非集中考试周"
     #[serde(alias = "batchName")]
     pub batch: String,
     /// 选课系统中考试批次的内部id
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     #[serde(alias = "batchId")]
     pub batch_id: u16,
     /// 考场楼栋
     #[serde(alias = "buildingName")]
     pub building: String,
     /// 考场楼层
+    #[serde_as(deserialize_as = "Option<serde_with::PickFirst<(_, serde_with::DisplayFromStr)>>")]
     #[serde(alias = "floorNum")]
     #[serde(default)]
     pub floor: Option<u16>,
@@ -45,6 +51,7 @@ pub struct Exam {
     #[serde(alias = "roomName")]
     pub room: String,
     /// 考场人数
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     #[serde(alias = "examStuNum")]
     pub stu_num: u16,
     /// 考试日期字符串
@@ -57,14 +64,17 @@ pub struct Exam {
     #[serde(alias = "endTime")]
     pub end_time_str: String,
     /// 周次
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     pub week: u16,
     /// 星期，0为周一，6为周日
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     #[serde(alias = "weekDay")]
     pub weekday: u8,
     /// 考生学号
     #[serde(alias = "studentId")]
     pub stu_id: String,
     /// 考生座号
+    #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
     #[serde(alias = "seatNum")]
     pub seat_num: u16,
     /// 监考员
