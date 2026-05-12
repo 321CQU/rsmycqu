@@ -79,6 +79,7 @@ pub struct Exam {
     pub seat_num: u16,
     /// 监考员
     #[serde(alias = "simpleChiefinvigilatorVOS")]
+    #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     #[serde(default)]
     pub chief_invigilator: Vec<Invigilator>,
     /// 副监考员

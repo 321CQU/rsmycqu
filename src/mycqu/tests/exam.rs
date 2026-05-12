@@ -17,7 +17,7 @@ fn test_parse_exam_from_string_number_api_response() {
         "courseCode": "EE21020",
         "batchId": "1901",
         "batchName": "非集中考试周",
-        "studentId": "20240235",
+        "studentId": "202xxxxx",
         "seatNum": "5",
         "session": "2026春",
         "courseDeptShortName": "电气",
@@ -68,7 +68,7 @@ fn test_parse_exam_from_string_number_api_response() {
             end_time_str: "16:00".to_string(),
             week: 13,
             weekday: 4,
-            stu_id: "20240235".to_string(),
+            stu_id: "202xxxxx".to_string(),
             seat_num: 5,
             chief_invigilator: vec![Invigilator {
                 name: "张莉".to_string(),
@@ -80,4 +80,34 @@ fn test_parse_exam_from_string_number_api_response() {
             }]),
         }
     );
+}
+
+#[test]
+fn test_parse_exam_with_null_chief_invigilator() {
+    let json = json!({
+        "week": "15",
+        "weekDay": "4",
+        "roomName": "D1411",
+        "buildingName": "一教学楼-D区",
+        "floorNum": "4",
+        "courseName": "航空航天工程材料",
+        "courseCode": "AEME21116",
+        "batchId": "1901",
+        "batchName": "非集中考试周",
+        "studentId": "202xxxxx",
+        "seatNum": "8",
+        "session": "2026春",
+        "courseDeptShortName": "航院",
+        "examDate": "2026-06-11",
+        "examStuNum": "32",
+        "startTime": "15:00",
+        "endTime": "17:00",
+        "simpleChiefinvigilatorVOS": null,
+        "simpleAssistantInviVOS": null
+    });
+
+    let exam: Exam = serde_json::from_value(json).unwrap();
+
+    assert_eq!(exam.chief_invigilator, Vec::new());
+    assert_eq!(exam.asst_invigilator, None);
 }
