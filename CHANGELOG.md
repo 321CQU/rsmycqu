@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2](https://github.com/321CQU/rsmycqu/compare/v0.4.1...v0.4.2) - 2026-05-12
+
+### Fixed
+
+- handle null exam invigilator lists ([#42](https://github.com/321CQU/rsmycqu/pull/42))
+
 ## [0.4.1](https://github.com/321CQU/rsmycqu/compare/v0.4.0...v0.4.1) - 2026-05-10
 
 ### Fixed
