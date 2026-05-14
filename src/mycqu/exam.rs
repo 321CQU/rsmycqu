@@ -40,7 +40,9 @@ pub struct Exam {
     #[serde(alias = "batchId")]
     pub batch_id: u16,
     /// 考场楼栋
+    #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     #[serde(alias = "buildingName")]
+    #[serde(default)]
     pub building: String,
     /// 考场楼层
     #[serde_as(deserialize_as = "Option<serde_with::PickFirst<(_, serde_with::DisplayFromStr)>>")]
@@ -48,7 +50,9 @@ pub struct Exam {
     #[serde(default)]
     pub floor: Option<u16>,
     /// 考场地点
+    #[serde_as(deserialize_as = "serde_with::DefaultOnNull")]
     #[serde(alias = "roomName")]
+    #[serde(default)]
     pub room: String,
     /// 考场人数
     #[serde_as(deserialize_as = "serde_with::PickFirst<(_, serde_with::DisplayFromStr)>")]
