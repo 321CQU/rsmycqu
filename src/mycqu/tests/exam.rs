@@ -111,3 +111,39 @@ fn test_parse_exam_with_null_chief_invigilator() {
     assert_eq!(exam.chief_invigilator, Vec::new());
     assert_eq!(exam.asst_invigilator, None);
 }
+
+#[test]
+fn test_parse_exam_with_null_room_and_building() {
+    let json = json!({
+        "week": "11",
+        "weekDay": "3",
+        "roomName": null,
+        "buildingName": null,
+        "floorNum": null,
+        "courseName": "能源与可持续发展",
+        "courseCode": "STG00006",
+        "batchId": "1901",
+        "batchName": "非集中考试周",
+        "studentId": "202xxxxx",
+        "seatNum": "7",
+        "session": "2026春",
+        "courseDeptShortName": "能动",
+        "examDate": "2026-05-13",
+        "examStuNum": "32",
+        "startTime": "19:00",
+        "endTime": "21:00",
+        "simpleChiefinvigilatorVOS": [
+            {
+                "instDeptShortName": "能动",
+                "instructor": "刘汉周"
+            }
+        ],
+        "simpleAssistantInviVOS": null
+    });
+
+    let exam: Exam = serde_json::from_value(json).unwrap();
+
+    assert_eq!(exam.building, "");
+    assert_eq!(exam.room, "");
+    assert_eq!(exam.floor, None);
+}

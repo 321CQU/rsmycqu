@@ -89,9 +89,11 @@ pub enum Subsidy {
     /// 虎溪校区补助信息
     Huxi {
         /// 电剩余补助
+        #[serde(alias = "电剩余补助")]
         #[serde(alias = "电剩余补助（度）")]
         electricity: String,
         /// 水剩余补助
+        #[serde(alias = "水剩余补助")]
         #[serde(alias = "水剩余补助（吨）")]
         water: String,
     },

@@ -1,6 +1,7 @@
 //! *Card所属feature并非默认启用，请在测试时启用`--all-features`标志以测试该模块*
 
 use rstest::*;
+use serde_json::json;
 
 use crate::{
     card::{Card, EnergyFees, access_card},
@@ -39,6 +40,34 @@ fn test_page_ticket_parse() {
             .as_str(),
         "4552BB7524AB492E83587A9E57E9E995"
     )
+}
+
+#[rstest]
+fn test_parse_energy_fee_huxi_response_without_unit_suffix() {
+    let json = json!({
+        "剩余金额": "51.89",
+        "电剩余补助": "0",
+        "水剩余补助": "74.30",
+        "电表标志": "e",
+        "电表地址": "000000461390",
+        "电表读数": "13729.93",
+        "水表标志": "w",
+        "水表地址": "00000170462452",
+        "水表读数": "605.40"
+    });
+
+    let fees: EnergyFees = serde_json::from_value(json).unwrap();
+
+    assert_eq!(
+        fees,
+        EnergyFees {
+            balance: "51.89".to_string(),
+            subsidies: crate::card::Subsidy::Huxi {
+                electricity: "0".to_string(),
+                water: "74.30".to_string(),
+            },
+        }
+    );
 }
 
 #[rstest]
