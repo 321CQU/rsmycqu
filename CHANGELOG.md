@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3](https://github.com/321CQU/rsmycqu/compare/v0.4.2...v0.4.3) - 2026-05-14
+
+### Fixed
+
+- tolerate changed server response fields ([#45](https://github.com/321CQU/rsmycqu/pull/45))
+
+### Other
+
+- release v0.4.2 ([#44](https://github.com/321CQU/rsmycqu/pull/44))
+
 ## [0.4.2](https://github.com/321CQU/rsmycqu/compare/v0.4.1...v0.4.2) - 2026-05-12
 
 ### Fixed
