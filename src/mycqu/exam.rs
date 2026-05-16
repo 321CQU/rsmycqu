@@ -45,7 +45,9 @@ pub struct Exam {
     #[serde(default)]
     pub building: String,
     /// 考场楼层
-    #[serde_as(deserialize_as = "Option<serde_with::PickFirst<(_, serde_with::DisplayFromStr)>>")]
+    #[serde_as(
+        deserialize_as = "serde_with::DefaultOnError<Option<serde_with::PickFirst<(_, serde_with::DisplayFromStr)>>>"
+    )]
     #[serde(alias = "floorNum")]
     #[serde(default)]
     pub floor: Option<u16>,

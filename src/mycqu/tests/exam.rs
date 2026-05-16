@@ -147,3 +147,37 @@ fn test_parse_exam_with_null_room_and_building() {
     assert_eq!(exam.room, "");
     assert_eq!(exam.floor, None);
 }
+
+#[test]
+fn test_parse_exam_with_floor_num_string_null() {
+    let json = json!({
+        "week": "12",
+        "weekDay": "7",
+        "roomName": "A主410(A主410)",
+        "buildingName": "主教学楼-A区",
+        "floorNum": "null",
+        "courseName": "计算思维导论",
+        "courseCode": "CST11023",
+        "batchId": "1901",
+        "batchName": "非集中考试周",
+        "studentId": "202xxxxx",
+        "seatNum": "4",
+        "session": "2026春",
+        "courseDeptShortName": "计算机",
+        "examDate": "2026-05-24",
+        "examStuNum": "11",
+        "startTime": "14:00",
+        "endTime": "15:20",
+        "simpleChiefinvigilatorVOS": [{
+            "instDeptShortName": "计算机",
+            "instructor": "李芝兴"
+        }],
+        "simpleAssistantInviVOS": null
+    });
+
+    let exam: Exam = serde_json::from_value(json).unwrap();
+
+    assert_eq!(exam.floor, None);
+    assert_eq!(exam.room, "A主410(A主410)");
+    assert_eq!(exam.building, "主教学楼-A区");
+}
