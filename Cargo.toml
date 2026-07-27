@@ -23,7 +23,7 @@ blocking = ["reqwest/blocking"]
 
 [dependencies]
 reqwest = { version = "0.13.1", features = ["json", "cookies", "query", "form"] }
-base64 = { version = "0.22.0" }
+base64 = { version = "0.23.0" }
 block-padding = { version = "0.4.2" }
 ecb = "0.2.0"
 aes = "0.9.0"
